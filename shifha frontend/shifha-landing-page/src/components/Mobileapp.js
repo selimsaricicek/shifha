@@ -1,31 +1,24 @@
 import React from 'react';
-import './MobileApp.css';
-// Gerçek bir uygulama görseli için bu URL'i değiştirin.
-const mobileAppImg = "https://cdn.dribbble.com/users/1787323/screenshots/11310632/media/e4f41c738aa82d24497e883253b3aa7f.png?compress=1&resize=1200x900";
 
-const MobileApp = () => {
-    return (
-        <div id="mobile" className="mobile-app-section">
-            <div className="mobile-app-container">
-                <div className="mobile-app-text">
-                    <h2>Kritik Bilgiler Anında Cebinizde</h2>
-                    <p>Shifha mobil uygulaması ile hastalarınızın durumu her an kontrolünüz altında. Laboratuvardan gelen acil bir sonuç veya sistemdeki önemli bir güncelleme, anında bildirim olarak telefonunuza düşer.</p>
-                    <ul>
-                        <li>✓ Anlık Bildirimler: Kritik tahlil sonuçları ve aciliyet gerektiren durumlar için anında uyarı alın.</li>
-                        <li>✓ Hasta Takibi: Nerede olursanız olun, hastalarınızın güncel verilerine ve geçmişine erişin.</li>
-                        <li>✓ Güvenli Erişim: Biyometrik ve şifreli giriş ile hasta verilerinin güvenliğini sağlayın.</li>
-                    </ul>
-                    <div className="store-buttons">
-                        <button className="store-button">App Store'dan İndirin</button>
-                        <button className="store-button">Google Play'den Edinin</button>
-                    </div>
-                </div>
-                <div className="mobile-app-image">
-                    <img src={mobileAppImg} alt="Shifha Mobil Uygulaması" />
-                </div>
-            </div>
+export default function Mobileapp() {
+  return (
+    <section id="mobile" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="w-full md:w-1/2">
+            <img src="https://placehold.co/500x700/E0F2F7/333333?text=Shifha+Mobil+Uygulama" alt="[Shifha mobil uygulamasını gösteren bir telefon görseli]" className="rounded-2xl shadow-2xl mx-auto" />
+          </div>
+          <div className="w-full md:w-1/2">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Kritik Bilgiler Anında Cebinizde</h2>
+            <p className="text-gray-600 text-lg mb-8">Shifha mobil uygulaması ile hastalarınızın durumu her an kontrolünüz altında. Laboratuvardan gelen acil bir sonuç veya sistemdeki önemli bir güncelleme, anında bildirim olarak telefonunuza ulaşır.</p>
+            <ul className="space-y-4">
+              <li className="flex items-start"><div className="flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center mr-4 mt-1">✓</div><span><strong className="text-gray-800">Anlık Bildirimler:</strong> Kritik tahlil sonuçları için anında uyarı alın.</span></li>
+              <li className="flex items-start"><div className="flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center mr-4 mt-1">✓</div><span><strong className="text-gray-800">Hasta Takibi:</strong> Nerede olursanız olun, hasta verilerine erişin.</span></li>
+              <li className="flex items-start"><div className="flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center mr-4 mt-1">✓</div><span><strong className="text-gray-800">Güvenli Erişim:</strong> Biyometrik ve şifreli giriş ile verileri koruyun.</span></li>
+            </ul>
+          </div>
         </div>
-    );
+      </div>
+    </section>
+  );
 }
-
-export default MobileApp;

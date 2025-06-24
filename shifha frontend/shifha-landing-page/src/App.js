@@ -1,26 +1,25 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
 import './App.css';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import MobileApp from './components/Mobileapp';
-import HowItWorks from './components/HowItWorks';
-import Vision from './components/Vision';
 import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <MobileApp />
-        <HowItWorks />
-        <Vision />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="App">
+        <main>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

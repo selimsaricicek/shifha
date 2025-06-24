@@ -1,45 +1,30 @@
 import React from 'react';
+import { BarChart, Dna, Users, MessageSquare } from 'lucide-react';
 import './Features.css';
-import { FaVials, FaNotesMedical, FaUserFriends, FaLaptopMedical } from 'react-icons/fa';
 
-const FeatureCard = ({ icon, title, text }) => {
-    return (
-        <div className="feature-card">
-            <div className="feature-icon">{icon}</div>
-            <h3>{title}</h3>
-            <p>{text}</p>
-        </div>
-    );
-}
+const FeatureCard = ({ icon, title, description }) => (
+  <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-cyan-100 mb-4">{icon}</div>
+    <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
+    <p className="text-gray-600">{description}</p>
+  </div>
+);
 
-const Features = () => {
+export default function Features() {
   return (
-    <div id="features" className="features-section">
-      <h2>Teşhisten Takibe, Tıbbi Zekanın Gücünü Keşfedin</h2>
-      <div className="features-container">
-        <FeatureCard 
-          icon={<FaVials size={50} />}
-          title="Anormal Değerleri Saniyeler İçinde Yakalayın"
-          text="Yapay zeka motorumuz, kan tahlillerindeki anormal değerleri anında tespit eder ve potansiyel riskler hakkında ön bilgi sunarak inceleme sürenizi kısaltır."
-        />
-        <FeatureCard 
-          icon={<FaNotesMedical size={50} />}
-          title="Diyabet Teşhisinde Bütünsel Yaklaşım"
-          text="Shifha, hasta öyküsü ve semptomlarını birleştirerek diyabet teşhisi için size kapsamlı bir yorum sunar, kararınıza rehberlik eder."
-        />
-        <FeatureCard 
-          icon={<FaUserFriends size={50} />}
-          title="Merkezi ve Paylaşımcı Hasta Geçmişi"
-          text="Hasta öyküsü ve önceki doktor notları güvenli bir profilde saklanır. Farklı doktorlar arasında bütünsel bir bakım mümkün olur."
-        />
-        <FeatureCard 
-          icon={<FaLaptopMedical size={50} />}
-          title="Doktorlar Arası Konsültasyon Platformu"
-          text="Karmaşık vakalar için platform üzerinden diğer uzmanlarla kolayca iletişim kurun, güvenli veri paylaşımı ile konsültasyonları hızlandırın."
-        />
+    <section id="features" className="py-20 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Teşhisten Takibe, Tıbbi Zekanın Gücü</h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Shifha, iş akışınızı kolaylaştırmak ve hasta bakım kalitesini artırmak için tasarlandı.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <FeatureCard icon={<BarChart className="h-8 w-8 text-cyan-600" />} title="Akıllı Tahlil Analizi" description="Yapay zeka, anormal değerleri saniyeler içinde tespit eder, potansiyel riskler hakkında ön bilgi sunar."/>
+          <FeatureCard icon={<Dna className="h-8 w-8 text-cyan-600" />} title="Diyabet Teşhis Desteği" description="Hasta öyküsü ve kan değerlerini birleştirerek diyabet teşhisi için kapsamlı bir yorum sunar."/>
+          <FeatureCard icon={<Users className="h-8 w-8 text-cyan-600" />} title="Merkezi Hasta Geçmişi" description="Tüm hasta verileri ve doktor notları, bütünsel bir bakım için tek bir güvenli profilde toplanır."/>
+          <FeatureCard icon={<MessageSquare className="h-8 w-8 text-cyan-600" />} title="Doktorlar Arası Konsültasyon" description="Karmaşık vakalar için diğer uzmanlarla güvenli bir şekilde veri paylaşarak fikir alışverişi yapın."/>
+        </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-export default Features;
+}

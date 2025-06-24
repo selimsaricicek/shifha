@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Genel Stiller ve Değişkenler */
 :root {
   --primary-color: #007bff; /* Mavi */

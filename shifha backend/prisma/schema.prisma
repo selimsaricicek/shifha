@@ -1,0 +1,36 @@
+// Prisma şema dosyası
+// Modeller: User, Patient, BloodTestAnalysis
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime @default(now())
+  analyses      BloodTestAnalysis[]
+}
+
+model Patient {
+  id    Int    @id @default(autoincrement())
+  name  String
+  age   Int
+  gender String
+}
+
+model BloodTestAnalysis {
+  id             Int      @id @default(autoincrement())
+  results        Json
+  geminiResponse String?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int
+}
