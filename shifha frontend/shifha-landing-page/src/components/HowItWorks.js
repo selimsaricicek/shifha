@@ -1,6 +1,5 @@
 import React from 'react';
 import { Upload, BrainCircuit, BellRing } from 'lucide-react';
-import './HowItWorks.css';
 
 export default function HowItWorks() {
   return (

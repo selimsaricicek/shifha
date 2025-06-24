@@ -1,6 +1,5 @@
 import React from 'react';
 import { BarChart, Dna, Users, MessageSquare } from 'lucide-react';
-import './Features.css';
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
