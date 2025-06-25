@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { LogOut, Search, Stethoscope, FileText, Users, HeartPulse, User, Dna, Syringe, PlusCircle, ArrowRightCircle, BrainCircuit } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { LogOut, Search, Stethoscope, FileText, Users, HeartPulse, User, Dna, Syringe, PlusCircle, ArrowRightCircle, BrainCircuit, Calendar, FileUp, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 import PdfUpload from '../components/PdfUpload';
 import PatientDataForm from '../components/PatientDataForm';
+import { uploadPdfAndParsePatient } from '../api/patientService';
 
 const mockPatients = [
   { id: '12345678901', name: 'Ayşe Yılmaz', age: 45, gender: 'Kadın', height: 165, weight: 70, bloodType: 'A+', profileImageUrl: 'https://placehold.co/100x100/E0E7FF/4F46E5?text=AY', allergies: ['Penisilin', 'Aspirin'], chronicDiseases: ['Hipertansiyon', 'Tip 2 Diyabet'], familyHistory: ['Babada kalp hastalığı', 'Annede diyabet'], surgeries: ['Apandisit (2010)', 'Safra kesesi (2018)'], medications: ['Metformin 1000mg', 'Ramipril 5mg'], lifestyle: 'Sedanter yaşam tarzı, ofis çalışanı.', labResults: [ { testName: 'Tam Kan Sayımı (Hemogram)', date: '2024-10-26', results: [ { parameter: 'WBC', value: 11.5, normal: '4.0-10.0', unit: '10^9/L', isAbnormal: true }, { parameter: 'RBC', value: 4.8, normal: '4.2-5.4', unit: '10^12/L' }, { parameter: 'HGB', value: 13.2, normal: '12.0-16.0', unit: 'g/dL' }, { parameter: 'PLT', value: 350, normal: '150-450', unit: '10^9/L' }, ], aiAnalysis: 'Yüksek WBC (lökosit) değeri, vücutta bir enfeksiyon veya inflamasyon olabileceğine işaret ediyor. Hastanın semptomları ve diğer bulgularla birlikte değerlendirilmesi önerilir. Enfeksiyon belirteçleri (CRP, Sedimantasyon) istenebilir.' }, { testName: 'Biyokimya Paneli', date: '2024-10-26', results: [ { parameter: 'Glikoz (Açlık)', value: 135, normal: '70-100', unit: 'mg/dL', isAbnormal: true }, { parameter: 'HbA1c', value: 7.2, normal: '< 5.7', unit: '%', isAbnormal: true }, { parameter: 'Kreatinin', value: 0.9, normal: '0.6-1.2', unit: 'mg/dL' }, { parameter: 'ALT', value: 25, normal: '10-40', unit: 'U/L' }, ], aiAnalysis: 'Yüksek açlık kan şekeri ve HbA1c değeri, hastanın diyabet regülasyonunun yetersiz olduğunu gösteriyor. Mevcut diyabet tedavisinin gözden geçirilmesi, beslenme alışkanlıklarının sorgulanması ve yaşam tarzı değişiklikleri konusunda danışmanlık verilmesi önemlidir.' } ], doctorNotes: [ { id: 1, doctor: 'Dr. Ahmet Çelik', specialty: 'İç Hastalıkları', date: '2024-09-15', note: 'Hasta, hipertansiyon ve diyabet takibi için başvurdu. İlaçları düzenlendi. 1 ay sonra kontrol önerildi.' }, { id: 2, doctor: 'Dr. Zeynep Kaya', specialty: 'Kardiyoloji', date: '2024-05-10', note: 'Efor testi sonuçları normal sınırlar içinde. Mevcut tansiyon tedavisine devam edilecek.' } ], referrals: [ { id: 1, fromDoctor: 'Dr. Ahmet Çelik', fromSpecialty: 'İç Hastalıkları', toSpecialty: 'Kardiyoloji', date: '2024-10-27', reason: 'Hastanın tansiyon takibinde düzensizlikler ve aile öyküsü nedeniyle kardiyolojik değerlendirme istenmiştir.', status: 'Beklemede' } ] },
@@ -95,6 +96,69 @@ function LabResultsTab({ labResults }) {
   );
 }
 
+// --- Radyoloji Sekmesi ---
+function RadiologyTab({ reports }) {
+  return (
+    <div>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Radyoloji Görüntüleri ve Raporları</h3>
+      {reports && reports.length > 0 ? (
+        reports.map(report => {
+          const isToday = report.date === getTodayDateString();
+          return (
+            <div key={report.id} className={`mb-6 border rounded-lg p-4 ${isToday ? 'bg-yellow-50' : ''}`}>
+              <div className="flex justify-between items-center">
+                <h4 className="font-bold text-gray-700">{report.type} - <span className="font-normal text-sm text-gray-500">{report.date}</span></h4>
+                {isToday && <span className="text-sm font-semibold text-yellow-800 bg-yellow-200 px-3 py-1 rounded-full">Bugünün Sonucu</span>}
+              </div>
+              <div className="mt-4 md:flex md:gap-4">
+                <div className="md:w-1/2 flex justify-center items-center bg-gray-100 rounded-lg p-2">
+                  <img src={report.url} alt={report.type} className="rounded-lg shadow-md max-w-full h-auto" />
+                </div>
+                <div className="mt-4 md:mt-0 md:w-1/2">
+                  <h5 className="font-semibold text-gray-800">Rapor</h5>
+                  <div className="bg-gray-50 p-3 mt-1 rounded-md text-gray-600 text-sm">{report.report}</div>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <p className="text-gray-500">Görüntülenecek radyoloji raporu bulunmamaktadır.</p>
+      )}
+    </div>
+  );
+}
+
+// --- Patoloji Sekmesi ---
+function PathologyTab({ reports }) {
+  return (
+    <div>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Patoloji Raporları</h3>
+      {reports && reports.length > 0 ? (
+        <p>Patoloji raporları burada listelenecek.</p>
+      ) : (
+        <p className="text-gray-500">Görüntülenecek patoloji raporu bulunmamaktadır.</p>
+      )}
+    </div>
+  );
+}
+
+// --- Epikriz Sekmesi ---
+function EpicrisisTab({ report }) {
+  return (
+    <div>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Epikriz (Hasta Çıkış Özeti)</h3>
+      {report ? (
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <p className="text-gray-700 whitespace-pre-wrap">{report}</p>
+        </div>
+      ) : (
+        <p className="text-gray-500">Görüntülenecek epikriz bulunmamaktadır.</p>
+      )}
+    </div>
+  );
+}
+
 function DoctorNotesTab({ notes, newNote, setNewNote }) {
   return (
     <div><h3 className="text-xl font-bold text-gray-800 mb-4">Doktor Notları</h3><div className="space-y-4 mb-6">{notes.map(note => (<div key={note.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200"><div className="flex justify-between items-center mb-1"><p className="font-semibold text-gray-800">{note.doctor} <span className="text-sm font-normal text-gray-500">- {note.specialty}</span></p><p className="text-xs text-gray-400">{note.date}</p></div><p className="text-gray-600 text-sm">{note.note}</p></div>))}</div><div className="mt-6"><h4 className="font-semibold text-gray-700 mb-2">Yeni Not Ekle</h4><textarea value={newNote} onChange={(e) => setNewNote(e.target.value)} rows="4" className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Yeni notunuzu buraya yazın..."></textarea><button className="mt-2 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center"><PlusCircle size={18} className="mr-2" />Notu Kaydet</button></div></div>
@@ -151,6 +215,9 @@ function PatientDetailPage({ patient, onBack, onLogout }) {
       case 'ozet': return <SummaryTab patient={patient} />;
       case 'bilgiler': return <InfoTab patient={patient} />;
       case 'tahliller': return <LabResultsTab labResults={patient.labResults} />;
+      case 'radyoloji': return <RadiologyTab reports={patient.radiologyReports} />;
+      case 'patoloji': return <PathologyTab reports={patient.pathologyReports} />;
+      case 'epikriz': return <EpicrisisTab report={patient.epikriz} />;
       case 'notlar': return <DoctorNotesTab notes={patient.doctorNotes} newNote={note} setNewNote={setNote} />;
       case 'konsultasyon': return <ConsultationTab />;
       case 'sevk': return <ReferralTab patient={patient} />;
@@ -180,13 +247,17 @@ function PatientDetailPage({ patient, onBack, onLogout }) {
             </div>
           </div>
         </div>
+        {/* Bugünün Kritik Bulguları kutusu eklendi */}
+        <TodaysCriticalResults labResults={patient.labResults} />
         <div className="mb-6">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
               <TabButton title="Tahliller" icon={<FileText size={18}/>} isActive={activeTab === 'tahliller'} onClick={() => setActiveTab('tahliller')} />
+              <TabButton title="Radyoloji" icon={<ImageIcon size={18}/>} isActive={activeTab === 'radyoloji'} onClick={() => setActiveTab('radyoloji')} />
+              <TabButton title="Patoloji" icon={<Dna size={18}/>} isActive={activeTab === 'patoloji'} onClick={() => setActiveTab('patoloji')} />
+              <TabButton title="Epikriz" icon={<FileText size={18}/>} isActive={activeTab === 'epikriz'} onClick={() => setActiveTab('epikriz')} />
               <TabButton title="Doktor Notları" icon={<Stethoscope size={18}/>} isActive={activeTab === 'notlar'} onClick={() => setActiveTab('notlar')} />
               <TabButton title="Özet" icon={<HeartPulse size={18}/>} isActive={activeTab === 'ozet'} onClick={() => setActiveTab('ozet')} />
-              <TabButton title="Hasta Bilgileri" icon={<User size={18}/>} isActive={activeTab === 'bilgiler'} onClick={() => setActiveTab('bilgiler')} />
               <TabButton title="Konsültasyon" icon={<Users size={18}/>} isActive={activeTab === 'konsultasyon'} onClick={() => setActiveTab('konsultasyon')} />
               <TabButton title="Sevk" icon={<ArrowRightCircle size={18}/>} isActive={activeTab === 'sevk'} onClick={() => setActiveTab('sevk')} />
             </nav>
@@ -198,15 +269,193 @@ function PatientDetailPage({ patient, onBack, onLogout }) {
   );
 }
 
+// Test.js'deki PatientDropzone ve AppointmentsCalendar bileşenlerini ekle
+const mockAppointments = [
+    { id: 1, patientName: 'Ayşe Yılmaz', time: '09:30', type: 'Randevu', urgency: 'normal' },
+    { id: 2, patientName: 'Ali Veli', time: '10:00', type: 'Sevk (Kardiyoloji)', urgency: 'acil' },
+    { id: 3, patientName: 'Hasan Kara', time: '11:15', type: 'Randevu', urgency: 'normal' },
+];
+
+const AppointmentsCalendar = ({ appointments }) => (
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="flex items-center mb-4">
+            <Calendar className="text-blue-600" size={24} />
+            <h3 className="text-xl font-bold text-gray-800 ml-2">Bugünün Akışı ({new Date().toLocaleDateString('tr-TR')})</h3>
+        </div>
+        <div className="space-y-3">
+            {appointments.map(item => (
+                <div key={item.id} className={`p-3 rounded-lg flex items-center justify-between ${item.urgency === 'acil' ? 'bg-red-50 border-l-4 border-red-500' : 'bg-gray-50'}`}>
+                    <div className="flex items-center">
+                        <span className="font-bold text-gray-800">{item.time}</span>
+                        <span className="text-gray-600 mx-2">-</span>
+                        <span className="font-semibold text-gray-700">{item.patientName}</span>
+                    </div>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${item.urgency === 'acil' ? 'bg-red-200 text-red-800' : 'bg-blue-200 text-blue-800'}`}>{item.type}</span>
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+const PatientDropzone = ({ onPatientAdd }) => {
+    const onDrop = useCallback((event) => {
+        event.preventDefault();
+        alert('Hasta PDF\'i başarıyla yüklendi (simülasyon). Yeni hasta listeye eklendi.');
+        const newPatient = {
+            id: `PDF-${Date.now().toString().slice(-6)}`,
+            name: 'Yeni Hasta (PDF)',
+            age: 42,
+            gender: 'Belirtilmemiş',
+            height: 175,
+            weight: 78,
+            bloodType: 'Bilinmiyor',
+            profileImageUrl: 'https://placehold.co/100x100/A7F3D0/047857?text=PDF',
+            allergies: [], chronicDiseases: [], familyHistory: [], surgeries: [], medications: [], lifestyle: '',
+            labResults: [], radiologyReports: [], pathologyReports: [], epikriz: '', doctorNotes: [], referrals: []
+        };
+        onPatientAdd(newPatient);
+    }, [onPatientAdd]);
+
+    const handleDragOver = (event) => event.preventDefault();
+
+    return (
+        <div onDrop={onDrop} onDragOver={handleDragOver} className="border-2 border-dashed border-gray-400 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100 transition-colors mb-8">
+            <div className="flex flex-col items-center justify-center">
+                <FileUp className="h-12 w-12 text-gray-500 mb-2" />
+                <p className="text-gray-600 font-semibold">Yeni Hasta Eklemek İçin PDF Dosyasını Buraya Sürükleyip Bırakın</p>
+                <p className="text-sm text-gray-500">Hasta tahlil veya epikriz PDF'i otomatik olarak işlenir (simülasyon).</p>
+            </div>
+        </div>
+    );
+};
+
+// Bugünün Kritik Bulguları bileşeni (Test.js'dan alınan)
+function TodaysCriticalResults({ labResults }) {
+    const getTodayDateString = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    const todaysAbnormalResults = (labResults || [])
+        .filter(test => test.date === getTodayDateString())
+        .flatMap(test => (test.results || []).filter(res => res.isAbnormal));
+    if (todaysAbnormalResults.length === 0) {
+        return null;
+    }
+    return (
+        <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+            <div className="flex items-center">
+                <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
+                <h3 className="text-lg font-bold text-red-800">Bugünün Kritik Bulguları</h3>
+            </div>
+            <ul className="mt-2 list-disc list-inside space-y-1 text-red-700">
+                {todaysAbnormalResults.map(res => (
+                    <li key={res.parameter}>
+                        <span className="font-semibold">{res.parameter}:</span> {res.value} {res.unit}
+                        <span className="text-xs ml-2">(Normal: {res.normal})</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+// Demo sekme örneği: Test.js'deki mock verileri canlıda göstermek için
+function DemoTabsExample() {
+  // Test.js'deki örnek hastayı kopyaladık (aynı veri yapısı frontenda taşındı)
+  const examplePatient = {
+    id: '12345678901',
+    name: 'Ayşe Yılmaz',
+    age: 45,
+    gender: 'Kadın',
+    height: 165,
+    weight: 70,
+    bloodType: 'A+',
+    profileImageUrl: 'https://placehold.co/100x100/E0E7FF/4F46E5?text=AY',
+    allergies: ['Penisilin', 'Aspirin'],
+    chronicDiseases: ['Hipertansiyon', 'Tip 2 Diyabet'],
+    familyHistory: ['Babada kalp hastalığı', 'Annede diyabet'],
+    surgeries: ['Apandisit (2010)', 'Safra kesesi (2018)'],
+    medications: ['Metformin 1000mg', 'Ramipril 5mg'],
+    lifestyle: 'Sedanter yaşam tarzı, ofis çalışanı.',
+    labResults: [
+      { testName: 'Tam Kan Sayımı (Hemogram)', date: '2025-06-25', results: [ { parameter: 'WBC', value: 11.5, normal: '4.0-10.0', unit: '10^9/L', isAbnormal: true }, { parameter: 'RBC', value: 4.8, normal: '4.2-5.4', unit: '10^12/L' }, { parameter: 'HGB', value: 13.2, normal: '12.0-16.0', unit: 'g/dL' }, { parameter: 'PLT', value: 350, normal: '150-450', unit: '10^9/L' }, ], aiAnalysis: 'Yüksek WBC (lökosit) değeri, vücutta bir enfeksiyon veya inflamasyon olabileceğine işaret ediyor. Hastanın semptomları ve diğer bulgularla birlikte değerlendirilmesi önerilir. Enfeksiyon belirteçleri (CRP, Sedimantasyon) istenebilir.' },
+      { testName: 'Biyokimya Paneli', date: '2025-06-25', results: [ { parameter: 'Glikoz (Açlık)', value: 135, normal: '70-100', unit: 'mg/dL', isAbnormal: true }, { parameter: 'HbA1c', value: 7.2, normal: '< 5.7', unit: '%', isAbnormal: true }, { parameter: 'Kreatinin', value: 0.9, normal: '0.6-1.2', unit: 'mg/dL' }, { parameter: 'ALT', value: 25, normal: '10-40', unit: 'U/L' }, ], aiAnalysis: 'Yüksek açlık kan şekeri ve HbA1c değeri, hastanın diyabet regülasyonunun yetersiz olduğunu gösteriyor. Mevcut diyabet tedavisinin gözden geçirilmesi, beslenme alışkanlıklarının sorgulanması ve yaşam tarzı değişiklikleri konusunda danışmanlık verilmesi önemlidir.' },
+      { testName: 'Tam Kan Sayımı (Hemogram)', date: '2024-05-15', results: [ { parameter: 'WBC', value: 8.5, normal: '4.0-10.0', unit: '10^9/L' }, { parameter: 'RBC', value: 4.7, normal: '4.2-5.4', unit: '10^12/L' }], aiAnalysis: 'Değerler normal sınırlar içinde.'}
+    ],
+    radiologyReports: [ { id: 1, type: 'Akciğer Grafisi', date: '2025-06-25', url: 'https://placehold.co/600x400/333/fff?text=Akciğer+Grafisi', report: 'Kardiyotorasik oran normal sınırlardadır. Akciğer parankim alanlarında aktif infiltrasyon veya kitle lezyonu saptanmamıştır. Sinüsler açıktır.' } ],
+    pathologyReports: [],
+    epikriz: 'Hasta, bilinen hipertansiyon ve Tip 2 Diyabet tanılarıyla takip edilmektedir. Son kontrolünde kan şekeri regülasyonunun yetersiz olduğu görülmüştür. Kardiyoloji ve Dahiliye tarafından değerlendirilmiştir. Tedavisi yeniden düzenlenmiştir ve 1 ay sonra kontrole gelmesi önerilmiştir.',
+    doctorNotes: [ { id: 1, doctor: 'Dr. Ahmet Çelik', specialty: 'İç Hastalıkları', date: '2024-09-15', note: 'Hasta, hipertansiyon ve diyabet takibi için başvurdu. İlaçları düzenlendi. 1 ay sonra kontrol önerildi.' }, { id: 2, doctor: 'Dr. Zeynep Kaya', specialty: 'Kardiyoloji', date: '2024-05-10', note: 'Efor testi sonuçları normal sınırlar içinde. Mevcut tansiyon tedavisine devam edilecek.' } ],
+    referrals: [ { id: 1, fromDoctor: 'Dr. Ahmet Çelik', fromSpecialty: 'İç Hastalıkları', toSpecialty: 'Kardiyoloji', date: '2024-10-27', reason: 'Hastanın tansiyon takibinde düzensizlikler ve aile öyküsü nedeniyle kardiyolojik değerlendirme istenmiştir.', status: 'Beklemede' } ]
+  };
+  const [activeTab, setActiveTab] = React.useState('radyoloji');
+  return (
+    <div className="p-6 bg-white rounded-xl shadow-xl mt-8">
+      <h2 className="text-2xl font-bold mb-4">Sekme Demo (Test.js Mock Data)</h2>
+      <div className="flex space-x-4 mb-4">
+        <button className={`px-4 py-2 rounded ${activeTab==='radyoloji'?'bg-blue-600 text-white':'bg-gray-200'}`} onClick={()=>setActiveTab('radyoloji')}>Radyoloji</button>
+        <button className={`px-4 py-2 rounded ${activeTab==='patoloji'?'bg-blue-600 text-white':'bg-gray-200'}`} onClick={()=>setActiveTab('patoloji')}>Patoloji</button>
+        <button className={`px-4 py-2 rounded ${activeTab==='epikriz'?'bg-blue-600 text-white':'bg-gray-200'}`} onClick={()=>setActiveTab('epikriz')}>Epikriz</button>
+      </div>
+      {activeTab==='radyoloji' && <RadiologyTab reports={examplePatient.radiologyReports} />}
+      {activeTab==='patoloji' && <PathologyTab reports={examplePatient.pathologyReports} />}
+      {activeTab==='epikriz' && <EpicrisisTab report={examplePatient.epikriz} />}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [page, setPage] = useState('dashboard');
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [patients, setPatients] = useState(mockPatients);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const filteredPatients = useMemo(() => mockPatients.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.includes(searchTerm)), [searchTerm]);
+  const filteredPatients = useMemo(() => patients.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.includes(searchTerm)), [searchTerm, patients]);
 
   const viewPatientDetails = (patient) => { setSelectedPatient(patient); setPage('patientDetail'); };
   const backToDashboard = () => { setSelectedPatient(null); setPage('dashboard'); };
+
+  // PDF upload ve hasta ekleme
+  const handlePdfUpload = async (file) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const patientData = await uploadPdfAndParsePatient(file);
+      // JSON'dan hasta objesi oluştur (gerekirse dönüştür)
+      const newPatient = {
+        ...patientData,
+        id: patientData.id || `PDF-${Date.now()}`,
+        name: patientData.name || patientData.kimlik_bilgileri?.ad_soyad || 'Yeni Hasta',
+        age: patientData.age || patientData.kimlik_bilgileri?.yas || '',
+        gender: patientData.gender || patientData.kimlik_bilgileri?.cinsiyet || '',
+        height: patientData.height || patientData.kimlik_bilgileri?.boy || '',
+        weight: patientData.weight || patientData.kimlik_bilgileri?.kilo || '',
+        bloodType: patientData.bloodType || patientData.kimlik_bilgileri?.kan_grubu || '',
+        profileImageUrl: patientData.profileImageUrl || 'https://placehold.co/100x100/A7F3D0/047857?text=PDF',
+        allergies: patientData.allergies || patientData.tibbi_gecmis?.allerjiler || [],
+        chronicDiseases: patientData.chronicDiseases || patientData.tibbi_gecmis?.kronik_hastaliklar || [],
+        familyHistory: patientData.familyHistory || patientData.tibbi_gecmis?.aile_oykusu || [],
+        surgeries: patientData.surgeries || patientData.tibbi_gecmis?.ameliyatlar || [],
+        medications: patientData.medications || patientData.ilaclar?.duzenli || [],
+        lifestyle: patientData.lifestyle || patientData.yasam_tarzi?.meslek || '',
+        labResults: patientData.labResults || [],
+        doctorNotes: patientData.doctorNotes || [],
+        referrals: patientData.referrals || [],
+      };
+      setPatients(prev => [newPatient, ...prev]);
+      setLoading(false);
+      setError(null);
+      alert('PDF başarıyla işlendi ve yeni hasta eklendi.');
+    } catch (err) {
+      setError(err.message || 'PDF yüklenemedi.');
+      setLoading(false);
+    }
+  };
 
   if (page === 'dashboard') {
     return <div className="bg-gray-50 min-h-screen">
@@ -218,8 +467,12 @@ export default function DashboardPage() {
       </header>
       <main className="p-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">Hasta Paneli</h2>
+        {/* Test.js'deki gibi bugünün akışı ve dropzone */}
+        <AppointmentsCalendar appointments={mockAppointments} />
+        <PatientDropzone onPatientAdd={patient => setPatients(prev => [patient, ...prev])} />
         <div className="mb-8"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} /> <input type="text" placeholder="Hasta adı veya T.C. Kimlik No ile arayın..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"/></div></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">{filteredPatients.map(patient => (<PatientCard key={patient.id} patient={patient} onSelectPatient={viewPatientDetails} />))}</div>
+        {/* DemoTabsExample kaldırıldı */}
       </main>
     </div>;
   }
@@ -227,4 +480,13 @@ export default function DashboardPage() {
     return <PatientDetailPage patient={selectedPatient} onBack={backToDashboard} onLogout={backToDashboard} />;
   }
   return null;
+}
+
+// Ortak tarih fonksiyonu en üste ekleniyor
+function getTodayDateString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
