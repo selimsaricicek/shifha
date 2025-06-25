@@ -1,6 +1,3 @@
-/* TailwindCSS directives and custom styles for the app */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Add any custom global styles below if needed */
