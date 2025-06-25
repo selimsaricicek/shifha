@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { LogOut, Search, Stethoscope, FileText, Users, HeartPulse, User, Dna, Syringe, PlusCircle, ArrowRightCircle, BrainCircuit } from 'lucide-react';
+import PdfUpload from '../components/PdfUpload';
+import PatientDataForm from '../components/PatientDataForm';
 
 const mockPatients = [
   { id: '12345678901', name: 'Ayşe Yılmaz', age: 45, gender: 'Kadın', height: 165, weight: 70, bloodType: 'A+', profileImageUrl: 'https://placehold.co/100x100/E0E7FF/4F46E5?text=AY', allergies: ['Penisilin', 'Aspirin'], chronicDiseases: ['Hipertansiyon', 'Tip 2 Diyabet'], familyHistory: ['Babada kalp hastalığı', 'Annede diyabet'], surgeries: ['Apandisit (2010)', 'Safra kesesi (2018)'], medications: ['Metformin 1000mg', 'Ramipril 5mg'], lifestyle: 'Sedanter yaşam tarzı, ofis çalışanı.', labResults: [ { testName: 'Tam Kan Sayımı (Hemogram)', date: '2024-10-26', results: [ { parameter: 'WBC', value: 11.5, normal: '4.0-10.0', unit: '10^9/L', isAbnormal: true }, { parameter: 'RBC', value: 4.8, normal: '4.2-5.4', unit: '10^12/L' }, { parameter: 'HGB', value: 13.2, normal: '12.0-16.0', unit: 'g/dL' }, { parameter: 'PLT', value: 350, normal: '150-450', unit: '10^9/L' }, ], aiAnalysis: 'Yüksek WBC (lökosit) değeri, vücutta bir enfeksiyon veya inflamasyon olabileceğine işaret ediyor. Hastanın semptomları ve diğer bulgularla birlikte değerlendirilmesi önerilir. Enfeksiyon belirteçleri (CRP, Sedimantasyon) istenebilir.' }, { testName: 'Biyokimya Paneli', date: '2024-10-26', results: [ { parameter: 'Glikoz (Açlık)', value: 135, normal: '70-100', unit: 'mg/dL', isAbnormal: true }, { parameter: 'HbA1c', value: 7.2, normal: '< 5.7', unit: '%', isAbnormal: true }, { parameter: 'Kreatinin', value: 0.9, normal: '0.6-1.2', unit: 'mg/dL' }, { parameter: 'ALT', value: 25, normal: '10-40', unit: 'U/L' }, ], aiAnalysis: 'Yüksek açlık kan şekeri ve HbA1c değeri, hastanın diyabet regülasyonunun yetersiz olduğunu gösteriyor. Mevcut diyabet tedavisinin gözden geçirilmesi, beslenme alışkanlıklarının sorgulanması ve yaşam tarzı değişiklikleri konusunda danışmanlık verilmesi önemlidir.' } ], doctorNotes: [ { id: 1, doctor: 'Dr. Ahmet Çelik', specialty: 'İç Hastalıkları', date: '2024-09-15', note: 'Hasta, hipertansiyon ve diyabet takibi için başvurdu. İlaçları düzenlendi. 1 ay sonra kontrol önerildi.' }, { id: 2, doctor: 'Dr. Zeynep Kaya', specialty: 'Kardiyoloji', date: '2024-05-10', note: 'Efor testi sonuçları normal sınırlar içinde. Mevcut tansiyon tedavisine devam edilecek.' } ], referrals: [ { id: 1, fromDoctor: 'Dr. Ahmet Çelik', fromSpecialty: 'İç Hastalıkları', toSpecialty: 'Kardiyoloji', date: '2024-10-27', reason: 'Hastanın tansiyon takibinde düzensizlikler ve aile öyküsü nedeniyle kardiyolojik değerlendirme istenmiştir.', status: 'Beklemede' } ] },
@@ -30,8 +32,60 @@ function SummaryTab({ patient }) {
 }
 
 function InfoTab({ patient }) {
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handlePdfSelected = async (file) => {
+    setLoading(true);
+    setError(null);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/pdf/parse', {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) throw new Error('PDF işlenemedi');
+      const data = await res.json();
+      setFormData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div><h3 className="text-xl font-bold text-gray-800 mb-4">Detaylı Hasta Bilgileri</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="bg-gray-50 rounded-lg p-4 border border-gray-200"><h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Dna size={18} className="text-blue-500"/><span className="ml-2">Tıbbi Geçmiş</span></h4><div className="text-sm text-gray-600"><p><strong>Aile Öyküsü:</strong> {patient.familyHistory.join(', ')}</p><p><strong>Geçirilmiş Ameliyatlar:</strong> {patient.surgeries.join(', ') || 'Yok'}</p></div></div><div className="bg-gray-50 rounded-lg p-4 border border-gray-200"><h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Syringe size={18} className="text-green-500"/><span className="ml-2">İlaç Kullanımı</span></h4><div className="text-sm text-gray-600"><p><strong>Kullandığı İlaçlar:</strong> {patient.medications.join(', ')}</p></div></div><div className="bg-gray-50 rounded-lg p-4 border border-gray-200"><h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Users size={18} className="text-purple-500"/><span className="ml-2">Yaşam Tarzı</span></h4><div className="text-sm text-gray-600"><p><strong>Meslek:</strong> Ofis Çalışanı</p><p><strong>Notlar:</strong> {patient.lifestyle}</p></div></div><div className="bg-gray-50 rounded-lg p-4 border border-gray-200"><h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Stethoscope size={18} className="text-indigo-500"/><span className="ml-2">Fizik Muayene</span></h4><div className="text-sm text-gray-600"><p>Akciğer oskültasyonunda ral yok, batın rahat.</p></div></div></div></div>
+    <div>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Detaylı Hasta Bilgileri</h3>
+      <PdfUpload onFileSelected={handlePdfSelected} />
+      {loading && <div className="text-blue-600">PDF işleniyor...</div>}
+      {error && <div className="text-red-600">{error}</div>}
+      {formData && (
+        <PatientDataForm initialData={formData} onChange={setFormData} />
+      )}
+      {!formData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Dna size={18} className="text-blue-500"/><span className="ml-2">Tıbbi Geçmiş</span></h4>
+            <div className="text-sm text-gray-600"><p><strong>Aile Öyküsü:</strong> {patient.familyHistory.join(', ')}</p><p><strong>Geçirilmiş Ameliyatlar:</strong> {patient.surgeries.join(', ') || 'Yok'}</p></div>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Syringe size={18} className="text-green-500"/><span className="ml-2">İlaç Kullanımı</span></h4>
+            <div className="text-sm text-gray-600"><p><strong>Kullandığı İlaçlar:</strong> {patient.medications.join(', ')}</p></div>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Users size={18} className="text-purple-500"/><span className="ml-2">Yaşam Tarzı</span></h4>
+            <div className="text-sm text-gray-600"><p><strong>Meslek:</strong> Ofis Çalışanı</p><p><strong>Notlar:</strong> {patient.lifestyle}</p></div>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="flex items-center text-md font-semibold text-gray-700 mb-2"><Stethoscope size={18} className="text-indigo-500"/><span className="ml-2">Fizik Muayene</span></h4>
+            <div className="text-sm text-gray-600"><p>Akciğer oskültasyonunda ral yok, batın rahat.</p></div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
