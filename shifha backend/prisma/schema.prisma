@@ -20,10 +20,36 @@ model User {
 }
 
 model Patient {
-  id    Int    @id @default(autoincrement())
-  name  String
-  age   Int
-  gender String
+  id                Int      @id @default(autoincrement())
+  tc_kimlik_no      String   @unique
+  ad_soyad          String
+  dogum_tarihi      String?
+  yas               Int?
+  cinsiyet          String?
+  boy               String?
+  kilo              String?
+  vki               String?
+  kan_grubu         String?
+  medeni_durum      String?
+  meslek            String?
+  egitim_durumu     String?
+  kronik_hastaliklar String?
+  ameliyatlar       String?
+  allerjiler        String?
+  aile_oykusu       String?
+  enfeksiyonlar     String?
+  ilac_duzenli      String?
+  ilac_duzensiz     String?
+  ilac_alternatif   String?
+  hareket           String?
+  uyku              String?
+  sigara_alkol      String?
+  beslenme          String?
+  psikoloji         String?
+  uyku_bozuklugu    String?
+  sosyal_destek     String?
+  patient_data      Json?
+  updated_at        DateTime?
 }
 
 model BloodTestAnalysis {

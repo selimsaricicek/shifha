@@ -1,13 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { LogOut, Search, Stethoscope, FileText, Users, HeartPulse, User, Dna, Syringe, PlusCircle, ArrowRightCircle, BrainCircuit, Calendar, FileUp, Image as ImageIcon, AlertTriangle } from 'lucide-react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { LogOut, Search, Stethoscope, FileText, Users, HeartPulse, User, Dna, Syringe, PlusCircle, ArrowRightCircle, BrainCircuit, Calendar, FileUp, Image as ImageIcon, AlertTriangle, Pencil } from 'lucide-react';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import PdfUpload from '../components/PdfUpload';
 import PatientDataForm from '../components/PatientDataForm';
-import { uploadPdfAndParsePatient } from '../api/patientService';
-
-const mockPatients = [
-  { id: '12345678901', name: 'Ayşe Yılmaz', age: 45, gender: 'Kadın', height: 165, weight: 70, bloodType: 'A+', profileImageUrl: 'https://placehold.co/100x100/E0E7FF/4F46E5?text=AY', allergies: ['Penisilin', 'Aspirin'], chronicDiseases: ['Hipertansiyon', 'Tip 2 Diyabet'], familyHistory: ['Babada kalp hastalığı', 'Annede diyabet'], surgeries: ['Apandisit (2010)', 'Safra kesesi (2018)'], medications: ['Metformin 1000mg', 'Ramipril 5mg'], lifestyle: 'Sedanter yaşam tarzı, ofis çalışanı.', labResults: [ { testName: 'Tam Kan Sayımı (Hemogram)', date: '2024-10-26', results: [ { parameter: 'WBC', value: 11.5, normal: '4.0-10.0', unit: '10^9/L', isAbnormal: true }, { parameter: 'RBC', value: 4.8, normal: '4.2-5.4', unit: '10^12/L' }, { parameter: 'HGB', value: 13.2, normal: '12.0-16.0', unit: 'g/dL' }, { parameter: 'PLT', value: 350, normal: '150-450', unit: '10^9/L' }, ], aiAnalysis: 'Yüksek WBC (lökosit) değeri, vücutta bir enfeksiyon veya inflamasyon olabileceğine işaret ediyor. Hastanın semptomları ve diğer bulgularla birlikte değerlendirilmesi önerilir. Enfeksiyon belirteçleri (CRP, Sedimantasyon) istenebilir.' }, { testName: 'Biyokimya Paneli', date: '2024-10-26', results: [ { parameter: 'Glikoz (Açlık)', value: 135, normal: '70-100', unit: 'mg/dL', isAbnormal: true }, { parameter: 'HbA1c', value: 7.2, normal: '< 5.7', unit: '%', isAbnormal: true }, { parameter: 'Kreatinin', value: 0.9, normal: '0.6-1.2', unit: 'mg/dL' }, { parameter: 'ALT', value: 25, normal: '10-40', unit: 'U/L' }, ], aiAnalysis: 'Yüksek açlık kan şekeri ve HbA1c değeri, hastanın diyabet regülasyonunun yetersiz olduğunu gösteriyor. Mevcut diyabet tedavisinin gözden geçirilmesi, beslenme alışkanlıklarının sorgulanması ve yaşam tarzı değişiklikleri konusunda danışmanlık verilmesi önemlidir.' } ], doctorNotes: [ { id: 1, doctor: 'Dr. Ahmet Çelik', specialty: 'İç Hastalıkları', date: '2024-09-15', note: 'Hasta, hipertansiyon ve diyabet takibi için başvurdu. İlaçları düzenlendi. 1 ay sonra kontrol önerildi.' }, { id: 2, doctor: 'Dr. Zeynep Kaya', specialty: 'Kardiyoloji', date: '2024-05-10', note: 'Efor testi sonuçları normal sınırlar içinde. Mevcut tansiyon tedavisine devam edilecek.' } ], referrals: [ { id: 1, fromDoctor: 'Dr. Ahmet Çelik', fromSpecialty: 'İç Hastalıkları', toSpecialty: 'Kardiyoloji', date: '2024-10-27', reason: 'Hastanın tansiyon takibinde düzensizlikler ve aile öyküsü nedeniyle kardiyolojik değerlendirme istenmiştir.', status: 'Beklemede' } ] },
-  { id: '98765432109', name: 'Mehmet Öztürk', age: 58, gender: 'Erkek', height: 178, weight: 85, bloodType: '0+', profileImageUrl: 'https://placehold.co/100x100/D1FAE5/065F46?text=MÖ', allergies: ['Bilinmiyor'], chronicDiseases: ['Hiperlipidemi'], familyHistory: ['Erkek kardeşinde 50 yaşında MI öyküsü'], surgeries: [], medications: ['Atorvastatin 20mg'], lifestyle: 'Haftada 3 gün yürüyüş yapıyor. Sigara kullanmıyor.', labResults: [], doctorNotes: [], referrals: [] }
-];
+import { uploadPdfAndParsePatient, updatePatient } from '../api/patientService';
 
 function PatientCard({ patient, onSelectPatient }) {
   return (
@@ -209,21 +205,101 @@ function ReferralTab({ patient }) {
 
 function PatientDetailPage({ patient, onBack, onLogout }) {
   const [activeTab, setActiveTab] = useState('tahliller');
-  const [note, setNote] = useState('');
-  const renderTabContent = () => {
-    switch(activeTab) {
-      case 'ozet': return <SummaryTab patient={patient} />;
-      case 'bilgiler': return <InfoTab patient={patient} />;
-      case 'tahliller': return <LabResultsTab labResults={patient.labResults} />;
-      case 'radyoloji': return <RadiologyTab reports={patient.radiologyReports} />;
-      case 'patoloji': return <PathologyTab reports={patient.pathologyReports} />;
-      case 'epikriz': return <EpicrisisTab report={patient.epikriz} />;
-      case 'notlar': return <DoctorNotesTab notes={patient.doctorNotes} newNote={note} setNewNote={setNote} />;
-      case 'konsultasyon': return <ConsultationTab />;
-      case 'sevk': return <ReferralTab patient={patient} />;
-      default: return null;
+  const [noteText, setNoteText] = useState('');
+  const [editField, setEditField] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState(null);
+  const [localPatient, setLocalPatient] = useState(patient);
+  const data = localPatient.patient_data || {};
+
+  // Inline edit handlers
+  const startEdit = (field, value) => {
+    setEditField(field);
+    setEditValue(value || '');
+    setEditError(null);
+  };
+  const cancelEdit = () => {
+    setEditField(null);
+    setEditValue('');
+    setEditError(null);
+  };
+  const saveEdit = async () => {
+    setSavingEdit(true);
+    setEditError(null);
+    try {
+      const tc = data['T.C. Kimlik No'] || localPatient.id;
+      const newPatientData = { ...data, [editField]: editValue };
+      const res = await updatePatient(tc, { patient_data: newPatientData });
+      setLocalPatient({ ...localPatient, patient_data: newPatientData });
+      setEditField(null);
+      setEditValue('');
+    } catch (e) {
+      setEditError(e.message);
+    } finally {
+      setSavingEdit(false);
     }
   };
+
+  function renderEditableField(label, fieldKey, value) {
+    // Render arrays as comma-separated, otherwise as string
+    const displayValue = Array.isArray(value) ? value.join(', ') : value || '-';
+    return (
+      <div className="flex items-center mb-2" key={fieldKey}>
+        <span className="font-semibold w-40">{label}</span>
+        {editField === fieldKey ? (
+          <>
+            <input
+              className="border rounded px-2 py-1 text-sm w-40"
+              value={editValue}
+              onChange={e => setEditValue(e.target.value)}
+              autoFocus
+            />
+            <button onClick={saveEdit} disabled={savingEdit} className="ml-1 text-green-600 font-bold">Kaydet</button>
+            <button onClick={cancelEdit} className="ml-1 text-gray-500">İptal</button>
+            {editError && <span className="text-xs text-red-600 ml-2">{editError}</span>}
+          </>
+        ) : (
+          <>
+            <span className="ml-2">{displayValue}</span>
+            <button
+              className="ml-2 opacity-60 hover:opacity-100"
+              onClick={() => startEdit(fieldKey, displayValue)}
+              title="Düzenle"
+              type="button"
+            >
+              <Pencil size={14} />
+            </button>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Tab içeriğini döndüren fonksiyon
+  function renderTabContent() {
+    switch (activeTab) {
+      case 'tahliller':
+        return <LabResultsTab labResults={patient.labResults || []} />;
+      case 'radyoloji':
+        return <RadiologyTab reports={patient.radiologyReports || []} />;
+      case 'patoloji':
+        return <PathologyTab reports={patient.pathologyReports || []} />;
+      case 'epikriz':
+        return <EpicrisisTab report={patient.epikriz || ''} />;
+      case 'notlar':
+        return <DoctorNotesTab notes={patient.doctorNotes || []} newNote={noteText} setNewNote={setNoteText} />;
+      case 'ozet':
+        return <SummaryTab patient={patient} />;
+      case 'konsultasyon':
+        return <ConsultationTab />;
+      case 'sevk':
+        return <ReferralTab patient={patient} />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center sticky top-0 z-20 shadow">
@@ -234,21 +310,19 @@ function PatientDetailPage({ patient, onBack, onLogout }) {
       </header>
       <div className="p-4 md:p-8">
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-start md:items-center">
-          <img src={patient.profileImageUrl} alt={patient.name} className="w-24 h-24 rounded-full mr-6 mb-4 md:mb-0 border-4 border-blue-200" />
+          <img src={localPatient.profileImageUrl} alt={data['Ad Soyad'] || localPatient.name} className="w-24 h-24 rounded-full mr-6 mb-4 md:mb-0 border-4 border-blue-200" />
           <div className="flex-grow">
-            <h2 className="text-3xl font-bold text-gray-900">{patient.name}</h2>
-            <p className="text-gray-600">T.C. Kimlik No: {patient.id}</p>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2 text-sm text-gray-700">
-              <span><strong>Yaş:</strong> {patient.age}</span>
-              <span><strong>Cinsiyet:</strong> {patient.gender}</span>
-              <span><strong>Boy:</strong> {patient.height} cm</span>
-              <span><strong>Kilo:</strong> {patient.weight} kg</span>
-              <span><strong>Kan Grubu:</strong> {patient.bloodType}</span>
+            <h2 className="text-3xl font-bold text-gray-900">{data['Ad Soyad'] || localPatient.name}</h2>
+            <p className="text-gray-600">T.C. Kimlik No: {data['T.C. Kimlik No'] || localPatient.id}</p>
+            <div className="flex flex-col flex-wrap gap-y-1 mt-2 text-sm text-gray-700">
+              {Object.entries(data).map(([key, value]) =>
+                key !== 'T.C. Kimlik No' && key !== 'Ad Soyad' && renderEditableField(key + ':', key, value)
+              )}
             </div>
           </div>
         </div>
         {/* Bugünün Kritik Bulguları kutusu eklendi */}
-        <TodaysCriticalResults labResults={patient.labResults} />
+        <TodaysCriticalResults labResults={localPatient.labResults} />
         <div className="mb-6">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
@@ -362,9 +436,7 @@ function TodaysCriticalResults({ labResults }) {
     );
 };
 
-// Demo sekme örneği: Test.js'deki mock verileri canlıda göstermek için
 function DemoTabsExample() {
-  // Test.js'deki örnek hastayı kopyaladık (aynı veri yapısı frontenda taşındı)
   const examplePatient = {
     id: '12345678901',
     name: 'Ayşe Yılmaz',
@@ -407,79 +479,162 @@ function DemoTabsExample() {
   );
 }
 
-export default function DashboardPage() {
-  const [page, setPage] = useState('dashboard');
-  const [selectedPatient, setSelectedPatient] = useState(null);
+function PatientDetailPageRemote() {
+  const { tc } = useParams();
+  const [patient, setPatient] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    async function fetchPatient() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/patient/${tc}`);
+        if (!res.ok) throw new Error('Hasta bulunamadı');
+        const data = await res.json();
+        setPatient(data.patient || data); // API success:true ise .patient, yoksa direkt data
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPatient();
+  }, [tc]);
+
+  if (loading) return <div className="p-8 text-blue-600">Yükleniyor...</div>;
+  if (error) return <div className="p-8 text-red-600">{error}</div>;
+  if (!patient) return null;
+  return <PatientDetailPage patient={patient} onBack={() => navigate('/dashboard')} onLogout={() => navigate('/dashboard')} />;
+}
+
+// Ana App Routing
+// Bu dosyada başka hiçbir yerde <Router> veya <BrowserRouter> kullanılmamalı!
+// DashboardPageInner, PatientDetailPageRemote veya başka bir component içinde <Router> varsa kaldırılmalı.
+// Sadece burada, en dışta kullanılmalı.
+
+export default function AppRouter() {
+  return (
+    <Routes>
+      <Route path="/dashboard" element={<DashboardPageInner />} />
+      <Route path="/patient/:tc" element={<PatientDetailPageRemote />} />
+      <Route path="*" element={<DashboardPageInner />} />
+    </Routes>
+  );
+}
+
+// DashboardPage'in içeriği (hasta listesi)
+function DashboardPageInner() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [patients, setPatients] = useState(mockPatients);
+  const [patients, setPatients] = useState([]); // Artık boş başlatıyoruz, backend'den çekeceğiz
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const filteredPatients = useMemo(() => patients.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.includes(searchTerm)), [searchTerm, patients]);
+  // İlk açılışta backend'den hasta listesini çek
+  useEffect(() => {
+    async function fetchPatients() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/patient');
+        if (!res.ok) throw new Error('Hasta listesi alınamadı');
+        const data = await res.json();
+        // API success:true ise .patients, yoksa direkt data
+        setPatients(data.patients || data);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPatients();
+  }, []);
 
-  const viewPatientDetails = (patient) => { setSelectedPatient(patient); setPage('patientDetail'); };
-  const backToDashboard = () => { setSelectedPatient(null); setPage('dashboard'); };
+  const filteredPatients = useMemo(() => patients.filter(p => {
+    // Hem klasik hem de PDF'den gelen hasta için isim ve TC araması
+    const name = p.name || (p.patient_data && p.patient_data['Ad Soyad']) || '';
+    const tc = p.tc_kimlik_no || p.id || (p.patient_data && p.patient_data['T.C. Kimlik No']) || '';
+    return name.toLowerCase().includes(searchTerm.toLowerCase()) || tc.includes(searchTerm);
+  }), [searchTerm, patients]);
+
+  const viewPatientDetails = (patient) => {
+    const tc = patient.tc_kimlik_no || patient.id || (patient.patient_data && patient.patient_data['T.C. Kimlik No']);
+    if (tc) {
+      navigate(`/patient/${tc}`);
+    }
+  };
 
   // PDF upload ve hasta ekleme
   const handlePdfUpload = async (file) => {
     setLoading(true);
     setError(null);
     try {
-      const patientData = await uploadPdfAndParsePatient(file);
-      // JSON'dan hasta objesi oluştur (gerekirse dönüştür)
-      const newPatient = {
-        ...patientData,
-        id: patientData.id || `PDF-${Date.now()}`,
-        name: patientData.name || patientData.kimlik_bilgileri?.ad_soyad || 'Yeni Hasta',
-        age: patientData.age || patientData.kimlik_bilgileri?.yas || '',
-        gender: patientData.gender || patientData.kimlik_bilgileri?.cinsiyet || '',
-        height: patientData.height || patientData.kimlik_bilgileri?.boy || '',
-        weight: patientData.weight || patientData.kimlik_bilgileri?.kilo || '',
-        bloodType: patientData.bloodType || patientData.kimlik_bilgileri?.kan_grubu || '',
-        profileImageUrl: patientData.profileImageUrl || 'https://placehold.co/100x100/A7F3D0/047857?text=PDF',
-        allergies: patientData.allergies || patientData.tibbi_gecmis?.allerjiler || [],
-        chronicDiseases: patientData.chronicDiseases || patientData.tibbi_gecmis?.kronik_hastaliklar || [],
-        familyHistory: patientData.familyHistory || patientData.tibbi_gecmis?.aile_oykusu || [],
-        surgeries: patientData.surgeries || patientData.tibbi_gecmis?.ameliyatlar || [],
-        medications: patientData.medications || patientData.ilaclar?.duzenli || [],
-        lifestyle: patientData.lifestyle || patientData.yasam_tarzi?.meslek || '',
-        labResults: patientData.labResults || [],
-        doctorNotes: patientData.doctorNotes || [],
-        referrals: patientData.referrals || [],
-      };
-      setPatients(prev => [newPatient, ...prev]);
+      const patient = await uploadPdfAndParsePatient(file); // Artık tam hasta objesi dönüyor!
+      setPatients(prev => {
+        const tc = patient.tc_kimlik_no || patient.id || (patient.patient_data && patient.patient_data['T.C. Kimlik No']);
+        const exists = prev.find(p => (p.id === tc) || (p.tc_kimlik_no === tc) || (p.patient_data?.['T.C. Kimlik No'] === tc));
+        if (exists) {
+          return prev.map(p => ((p.id === tc) || (p.tc_kimlik_no === tc) || (p.patient_data?.['T.C. Kimlik No'] === tc)) ? patient : p);
+        } else {
+          return [patient, ...prev];
+        }
+      });
       setLoading(false);
       setError(null);
-      alert('PDF başarıyla işlendi ve yeni hasta eklendi.');
+      alert('PDF başarıyla işlendi ve hasta listesi güncellendi.');
     } catch (err) {
       setError(err.message || 'PDF yüklenemedi.');
       setLoading(false);
     }
   };
 
-  if (page === 'dashboard') {
-    return <div className="bg-gray-50 min-h-screen">
-      <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
-        <div className="flex items-center text-blue-600"><Stethoscope size={28} /><h1 className="text-2xl font-bold ml-2">Shifha</h1></div>
-        <div className="flex items-center">
-          <span className="text-gray-700 mr-4">Dr. Ahmet Çelik</span>
-        </div>
-      </header>
-      <main className="p-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">Hasta Paneli</h2>
-        {/* Test.js'deki gibi bugünün akışı ve dropzone */}
-        <AppointmentsCalendar appointments={mockAppointments} />
-        <PatientDropzone onPatientAdd={patient => setPatients(prev => [patient, ...prev])} />
-        <div className="mb-8"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} /> <input type="text" placeholder="Hasta adı veya T.C. Kimlik No ile arayın..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"/></div></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">{filteredPatients.map(patient => (<PatientCard key={patient.id} patient={patient} onSelectPatient={viewPatientDetails} />))}</div>
-        {/* DemoTabsExample kaldırıldı */}
-      </main>
-    </div>;
-  }
-  if (page === 'patientDetail') {
-    return <PatientDetailPage patient={selectedPatient} onBack={backToDashboard} onLogout={backToDashboard} />;
-  }
-  return null;
+  return <div className="bg-gray-50 min-h-screen">
+    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+      <div className="flex items-center text-blue-600"><Stethoscope size={28} /><h1 className="text-2xl font-bold ml-2">Shifha</h1></div>
+      <div className="flex items-center">
+        <span className="text-gray-700 mr-4">Dr. Ahmet Çelik</span>
+      </div>
+    </header>
+    <main className="p-8">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Hasta Paneli</h2>
+      {loading && <div className="text-blue-600 mb-4">Yükleniyor...</div>}
+      {error && <div className="text-red-600 mb-4">{error}</div>}
+      <AppointmentsCalendar appointments={mockAppointments} />
+      <PatientDropzone onPatientAdd={patient => setPatients(prev => [patient, ...prev])} />
+      <div className="mb-8"><div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} /> <input type="text" placeholder="Hasta adı veya T.C. Kimlik No ile arayın..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"/></div></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredPatients.map(patient => {
+          // Adı, TC'si, yaşı, cinsiyeti, boyu, kilosu, kan grubu gibi temel bilgileri dinamik göster
+          const data = patient.patient_data || {};
+          const name = patient.name || data['Ad Soyad'] || '-';
+          const tc = patient.tc_kimlik_no || patient.id || data['T.C. Kimlik No'] || '-';
+          const age = patient.age || data['Yaş'] || data['Age'] || '-';
+          const gender = patient.gender || data['Cinsiyet'] || data['Gender'] || '-';
+          const height = patient.height || data['Boy'] || data['Height'] || '-';
+          const weight = patient.weight || data['Kilo'] || data['Weight'] || '-';
+          const bloodType = patient.bloodType || data['Kan Grubu'] || data['Blood Type'] || '-';
+          const profileImageUrl = patient.profileImageUrl || 'https://placehold.co/100x100/E0E7FF/4F46E5?text=' + (name[0] || 'H');
+          return (
+            <div key={tc} onClick={() => viewPatientDetails(patient)} className="bg-white rounded-xl shadow-lg p-5 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center">
+                <img src={profileImageUrl} alt={name} className="w-16 h-16 rounded-full mr-4" />
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">{name}</h3>
+                  <p className="text-sm text-gray-500">T.C. {tc}</p>
+                  <p className="text-sm text-gray-500">{age} yaşında, {gender}</p>
+                  <p className="text-sm text-gray-500">Boy: {height} cm, Kilo: {weight} kg</p>
+                  <p className="text-sm text-gray-500">Kan Grubu: {bloodType}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </main>
+  </div>;
 }
 
 // Ortak tarih fonksiyonu en üste ekleniyor
