@@ -29,6 +29,10 @@ async function parsePatientPdf(buffer) {
     const data = await pdfParse(buffer);
     const text = data.text;
 
+    console.log("------- PDF'ten Çıkarılan Ham Metin -------")
+    console.log(text)
+    console.log("------------------------------------------")
+
     // Temel alanları çıkar
     const kimlik_bilgileri = {
       ad_soyad: extractField(text, 'Ad Soyad'),
@@ -105,10 +109,22 @@ async function parsePatientPdf(buffer) {
       },
       updated_at: new Date().toISOString(),
     };
-    await supabase.from('patients').upsert(upsertData, { onConflict: 'tc_kimlik_no' });
-    const { data: patient, error } = await supabase.from('patients').select('*').eq('tc_kimlik_no', tc).single();
-    if (error || !patient) throw new Error('Hasta kaydı alınamadı: ' + (error?.message || 'Bilinmeyen hata'));
-    return patient;
+    // await supabase.from('patients').upsert(upsertData, { onConflict: 'tc_kimlik_no' });
+    // const { data: patient, error } = await supabase.from('patients').select('*').eq('tc_kimlik_no', tc).single();
+    // if (error || !patient) throw new Error('Hasta kaydı alınamadı: ' + (error?.message || 'Bilinmeyen hata'));
+    // return patient;
+    {const { data, error } = await supabase
+    .from('patients')
+    .upsert(upsertData, { onConflict: 'tc_kimlik_no' })
+    .select()
+    .single();
+    if (error) throw new Error('Hasta kaydı oluşturulamadı/güncellenemedi: ' + error.message);
+    return data;
+    if (error){
+      throw new Error('Hasta kaydı oluşturulamadı/güncellenemedi: ' + error.message);
+    }
+    return data;}
+    
 }
 
 module.exports = { parsePatientPdf };
