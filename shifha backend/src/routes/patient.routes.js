@@ -1,11 +1,13 @@
+// Dosya Adı: src/routes/patient.routes.js
+
 const express = require('express');
 const router = express.Router();
-const patientController = require('../controllers/patient.controller');
+const { getAllPatients, getPatientByTC } = require('../controllers/patient.controller.js');
 
-// Get patient by TC Kimlik No
-router.get('/api/patient/:tc_kimlik_no', patientController.getPatient);
+// Bütün hastaları getiren rota: GET /api/patients
+router.get('/', getAllPatients);
 
-// Update patient by TC Kimlik No
-router.put('/api/patient/:tc_kimlik_no', patientController.updatePatient);
+// Tek bir hastayı getiren rota: GET /api/patients/:tc
+router.get('/:tc', getPatientByTC);
 
 module.exports = router;

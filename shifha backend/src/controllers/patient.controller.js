@@ -1,38 +1,56 @@
+// Dosya Adı: src/controllers/patient.controller.js
+
 const supabase = require('../services/supabaseClient');
 
-// Get patient by TC Kimlik No
-exports.getPatient = async (req, res) => {
-  const tc = req.params.tc_kimlik_no;
-  if (!tc) return res.status(400).json({ error: 'TC Kimlik No gerekli.' });
-  const { data: patient, error } = await supabase
-    .from('patients')
-    .select('*')
-    .eq('tc_kimlik_no', tc)
-    .single();
-  if (error || !patient) return res.status(404).json({ error: error?.message || 'Hasta bulunamadı.' });
-  res.json({ patient });
+// Tüm hastaları getiren fonksiyon
+const getAllPatients = async (req, res) => {
+  try {
+    console.log("getAllPatients isteği alındı.");
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*')
+      .order('created_at', { ascending: false }); // En son eklenen en üstte olsun
+
+    if (error) {
+      // Supabase'den gelen hatayı loglayalım
+      console.error('Supabase get all error:', error);
+      throw error;
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Hastalar getirilemedi', details: err.message });
+  }
 };
 
-// Update patient by TC Kimlik No
-exports.updatePatient = async (req, res) => {
-  const tc = req.params.tc_kimlik_no;
-  if (!tc) return res.status(400).json({ error: 'TC Kimlik No gerekli.' });
-  const updateFields = req.body;
-  if (!updateFields || Object.keys(updateFields).length === 0) {
-    return res.status(400).json({ error: 'Güncellenecek veri yok.' });
+// Tek bir hastayı TC kimlik numarasına göre getiren fonksiyon
+const getPatientByTC = async (req, res) => {
+  try {
+    const { tc } = req.params;
+    console.log(`getPatientByTC isteği alındı: TC=${tc}`);
+
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*')
+      .eq('tc_kimlik_no', tc)
+      .single(); // Sadece 1 sonuç bekliyoruz
+
+    if (error) {
+      console.error('Supabase get by TC error:', error);
+      throw error;
+    }
+
+    if (!data) {
+      return res.status(404).json({ error: 'Hasta bulunamadı' });
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Hasta getirilemedi', details: err.message });
   }
-  // Güncelleme işlemi
-  const { error: updateError } = await supabase
-    .from('patients')
-    .update(updateFields)
-    .eq('tc_kimlik_no', tc);
-  if (updateError) return res.status(500).json({ error: updateError.message });
-  // Güncel hasta kaydını tekrar çek
-  const { data: patient, error } = await supabase
-    .from('patients')
-    .select('*')
-    .eq('tc_kimlik_no', tc)
-    .single();
-  if (error || !patient) return res.status(404).json({ error: error?.message || 'Hasta bulunamadı.' });
-  res.json({ success: true, patient });
+};
+
+module.exports = {
+  getAllPatients,
+  getPatientByTC,
 };
