@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.10.1",
     "@supabase/supabase-js": "^2.50.2",
     "bcryptjs": "^3.0.2",
