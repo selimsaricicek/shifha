@@ -1,23 +1,31 @@
-// ...existing code...
 const authService = require('../services/auth.service');
 
-const register = async (req, res) => {
+/**
+ * Kullanıcı kaydı
+ * @route POST /api/auth/register
+ * @returns {Object} 201 - { success, data }
+ */
+const register = async (req, res, next) => {
   try {
     const user = await authService.register(req.body);
-    res.status(201).json(user);
+    res.status(201).json({ success: true, data: user });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 };
 
-const login = async (req, res) => {
+/**
+ * Kullanıcı girişi
+ * @route POST /api/auth/login
+ * @returns {Object} 200 - { success, data }
+ */
+const login = async (req, res, next) => {
   try {
     const { user, token } = await authService.login(req.body);
-    res.json({ user, token });
+    res.json({ success: true, data: { user, token } });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 };
 
 module.exports = { register, login };
-// ...existing code...

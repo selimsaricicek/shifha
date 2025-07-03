@@ -2,7 +2,26 @@ const pdfParse = require('pdf-parse');
 const supabase = require('./supabaseClient');
 const { getStructuredDataFromText } = require('./gemini.service');
 
-// Bu yardımcı fonksiyon olduğu gibi kalabilir.
+/**
+ * PDF dosyasından hasta verisi çıkarır ve Supabase'e kaydeder
+ * @param {Buffer} buffer - PDF dosya içeriği
+ * @returns {Promise<object>} - Kaydedilen hasta verisi
+ * @throws {Error} - PDF veya Supabase hatası
+ */
+function extractField(text, label, options = {}) {
+  const regex = new RegExp(label + ':\\s*(.*)', 'i');
+  const match = text.match(regex);
+  if (!match) return options.default || '';
+  let value = match[1].trim();
+  if (options.type === 'number') {
+    value = value.replace(/[^\d.,-]/g, '').replace(',', '.');
+    return value ? Number(value) : '';
+  }
+  if (options.type === 'array') {
+    return value.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return value;
+}
 function arrToString(arr) {
   if (!arr) return '';
   if (Array.isArray(arr)) return arr.join(', ');

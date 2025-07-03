@@ -2,8 +2,12 @@
 
 const supabase = require('../services/supabaseClient');
 
-// Tüm hastaları getiren fonksiyon
-const getAllPatients = async (req, res) => {
+/**
+ * Tüm hastaları getirir
+ * @route GET /api/patients
+ * @returns {Object} 200 - { success, data }
+ */
+const getAllPatients = async (req, res, next) => {
   try {
     console.log("getAllPatients isteği alındı.");
     const { data, error } = await supabase
@@ -17,14 +21,18 @@ const getAllPatients = async (req, res) => {
       throw error;
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ success: true, data });
   } catch (err) {
-    res.status(500).json({ error: 'Hastalar getirilemedi', details: err.message });
+    next(err);
   }
 };
 
-// Tek bir hastayı TC kimlik numarasına göre getiren fonksiyon
-const getPatientByTC = async (req, res) => {
+/**
+ * TC Kimlik No ile hasta getirir
+ * @route GET /api/patients/:tc
+ * @returns {Object} 200 - { success, data } | 404 - { success: false, error }
+ */
+const getPatientByTC = async (req, res, next) => {
   try {
     const { tc } = req.params;
     console.log(`getPatientByTC isteği alındı: TC=${tc}`);
@@ -41,12 +49,12 @@ const getPatientByTC = async (req, res) => {
     }
 
     if (!data) {
-      return res.status(404).json({ error: 'Hasta bulunamadı' });
+      return res.status(404).json({ success: false, error: 'Hasta bulunamadı' });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ success: true, data });
   } catch (err) {
-    res.status(500).json({ error: 'Hasta getirilemedi', details: err.message });
+    next(err);
   }
 };
 
