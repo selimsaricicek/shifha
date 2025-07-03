@@ -5,20 +5,23 @@ import LoginPage from './pages/LoginPage';
 import AppRouter from './pages/DashboardPage';
 import './App.css';
 import Footer from './components/Footer';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <main>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/*" element={<AppRouter />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AuthProvider>
+        <div className="App">
+          <main>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/*" element={<AppRouter />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }

@@ -2,3 +2,9 @@ node_modules/
 .env
 .env.*
 test.js
+REMOVE_PRISMA.txt
+REMOVE_PRISMA_MANIFEST.txt
+REMOVE_PRISMA_CLEANUP.txt
+migration_instructions.txt
+tests/
+README_SECURITY.md

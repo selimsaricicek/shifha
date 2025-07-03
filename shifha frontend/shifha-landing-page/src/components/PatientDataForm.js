@@ -1,13 +1,32 @@
 import React, { useState } from 'react';
+import { patientSchema } from '../validation/patientSchema';
 
 // JSON şemasına uygun otomatik ve manuel doldurulabilir form
 export default function PatientDataForm({ initialData, onChange }) {
   const [form, setForm] = useState(initialData);
+  const [errors, setErrors] = useState({});
+
+  const validate = (data) => {
+    try {
+      patientSchema.parse(data);
+      setErrors({});
+      return true;
+    } catch (e) {
+      const fieldErrors = {};
+      e.errors?.forEach(err => {
+        const path = err.path.join('.');
+        fieldErrors[path] = err.message;
+      });
+      setErrors(fieldErrors);
+      return false;
+    }
+  };
 
   // Alan güncelleme fonksiyonu
   const handleField = (section, field, value) => {
     setForm(prev => {
       const updated = { ...prev, [section]: { ...prev[section], [field]: value } };
+      validate(updated);
       onChange && onChange(updated);
       return updated;
     });
@@ -17,6 +36,7 @@ export default function PatientDataForm({ initialData, onChange }) {
   const handleArrayField = (section, field, value) => {
     setForm(prev => {
       const updated = { ...prev, [section]: { ...prev[section], [field]: value.split(',').map(s => s.trim()) } };
+      validate(updated);
       onChange && onChange(updated);
       return updated;
     });
@@ -28,10 +48,15 @@ export default function PatientDataForm({ initialData, onChange }) {
         <div>
           <h4 className="font-bold mb-2">Kimlik ve Demografik Bilgiler</h4>
           <input className="input" placeholder="Ad Soyad" value={form.kimlik_bilgileri.ad_soyad} onChange={e => handleField('kimlik_bilgileri', 'ad_soyad', e.target.value)} />
+          {errors['kimlik_bilgileri.ad_soyad'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.ad_soyad']}</div>}
           <input className="input" placeholder="T.C. Kimlik No" value={form.kimlik_bilgileri.tc_kimlik_no} onChange={e => handleField('kimlik_bilgileri', 'tc_kimlik_no', e.target.value)} />
+          {errors['kimlik_bilgileri.tc_kimlik_no'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.tc_kimlik_no']}</div>}
           <input className="input" placeholder="Doğum Tarihi" value={form.kimlik_bilgileri.dogum_tarihi} onChange={e => handleField('kimlik_bilgileri', 'dogum_tarihi', e.target.value)} />
+          {errors['kimlik_bilgileri.dogum_tarihi'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.dogum_tarihi']}</div>}
           <input className="input" placeholder="Yaş" value={form.kimlik_bilgileri.yas} onChange={e => handleField('kimlik_bilgileri', 'yas', e.target.value)} />
+          {errors['kimlik_bilgileri.yas'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.yas']}</div>}
           <input className="input" placeholder="Cinsiyet" value={form.kimlik_bilgileri.cinsiyet} onChange={e => handleField('kimlik_bilgileri', 'cinsiyet', e.target.value)} />
+          {errors['kimlik_bilgileri.cinsiyet'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.cinsiyet']}</div>}
           <input className="input" placeholder="Boy" value={form.kimlik_bilgileri.boy} onChange={e => handleField('kimlik_bilgileri', 'boy', e.target.value)} />
           <input className="input" placeholder="Kilo" value={form.kimlik_bilgileri.kilo} onChange={e => handleField('kimlik_bilgileri', 'kilo', e.target.value)} />
           <input className="input" placeholder="VKİ" value={form.kimlik_bilgileri.vki} onChange={e => handleField('kimlik_bilgileri', 'vki', e.target.value)} />

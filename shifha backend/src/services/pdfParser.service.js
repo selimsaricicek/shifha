@@ -1,6 +1,12 @@
 const pdfParse = require('pdf-parse');
 const supabase = require('./supabaseClient');
 
+/**
+ * PDF dosyasından hasta verisi çıkarır ve Supabase'e kaydeder
+ * @param {Buffer} buffer - PDF dosya içeriği
+ * @returns {Promise<object>} - Kaydedilen hasta verisi
+ * @throws {Error} - PDF veya Supabase hatası
+ */
 function extractField(text, label, options = {}) {
   const regex = new RegExp(label + ':\s*(.*)', 'i');
   const match = text.match(regex);

@@ -1,5 +1,4 @@
-// Prisma şema dosyası
-// Modeller: User, Patient, BloodTestAnalysis
+
 
 generator client {
   provider = "prisma-client-js"
@@ -42,12 +41,11 @@ model Patient {
   ilac_duzensiz     String?
   ilac_alternatif   String?
   hareket           String?
-  uyku              String?
   sigara_alkol      String?
   beslenme          String?
   psikoloji         String?
   uyku_bozuklugu    String?
-  sosyal_destek     String?
+  stres_seviyesi    String?
   patient_data      Json?
   updated_at        DateTime?
 }
