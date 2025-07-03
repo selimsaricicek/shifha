@@ -9,7 +9,7 @@ dotenv.config();
 // Helmet ile HTTP header güvenliği
 app.use(helmet());
 
-// Sadece güvenilir origin'e izin ver (örnek: http://localhost:3000)
+// Geliştirme ortamı için CORS'u esnek bırak
 app.use(cors({
   origin: ["http://localhost:3000"],
   credentials: true
@@ -27,7 +27,7 @@ const patientRoutes = require('./routes/patient.routes');
 const authRoutes = require('./routes/auth.routes');
 const errorMiddleware = require('./middleware/error.middleware');
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Büyük PDF dosyaları için limit artırıldı
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/auth', authLimiter, authRoutes);
