@@ -1,32 +1,13 @@
 import React, { useState } from 'react';
-import { patientSchema } from '../validation/patientSchema';
 
 // JSON şemasına uygun otomatik ve manuel doldurulabilir form
 export default function PatientDataForm({ initialData, onChange }) {
   const [form, setForm] = useState(initialData);
-  const [errors, setErrors] = useState({});
-
-  const validate = (data) => {
-    try {
-      patientSchema.parse(data);
-      setErrors({});
-      return true;
-    } catch (e) {
-      const fieldErrors = {};
-      e.errors?.forEach(err => {
-        const path = err.path.join('.');
-        fieldErrors[path] = err.message;
-      });
-      setErrors(fieldErrors);
-      return false;
-    }
-  };
 
   // Alan güncelleme fonksiyonu
   const handleField = (section, field, value) => {
     setForm(prev => {
       const updated = { ...prev, [section]: { ...prev[section], [field]: value } };
-      validate(updated);
       onChange && onChange(updated);
       return updated;
     });
@@ -36,27 +17,34 @@ export default function PatientDataForm({ initialData, onChange }) {
   const handleArrayField = (section, field, value) => {
     setForm(prev => {
       const updated = { ...prev, [section]: { ...prev[section], [field]: value.split(',').map(s => s.trim()) } };
-      validate(updated);
       onChange && onChange(updated);
       return updated;
     });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
+      <style>{`
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(40px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) both; }
+        .input {
+          @apply w-full px-4 py-2 mb-2 rounded-lg border border-cyan-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none transition-all duration-200 bg-white shadow-sm placeholder-gray-400;
+        }
+        .input:disabled {
+          @apply bg-gray-100 text-gray-400;
+        }
+      `}</style>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="font-bold mb-2">Kimlik ve Demografik Bilgiler</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Kimlik ve Demografik Bilgiler</h4>
           <input className="input" placeholder="Ad Soyad" value={form.kimlik_bilgileri.ad_soyad} onChange={e => handleField('kimlik_bilgileri', 'ad_soyad', e.target.value)} />
-          {errors['kimlik_bilgileri.ad_soyad'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.ad_soyad']}</div>}
           <input className="input" placeholder="T.C. Kimlik No" value={form.kimlik_bilgileri.tc_kimlik_no} onChange={e => handleField('kimlik_bilgileri', 'tc_kimlik_no', e.target.value)} />
-          {errors['kimlik_bilgileri.tc_kimlik_no'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.tc_kimlik_no']}</div>}
           <input className="input" placeholder="Doğum Tarihi" value={form.kimlik_bilgileri.dogum_tarihi} onChange={e => handleField('kimlik_bilgileri', 'dogum_tarihi', e.target.value)} />
-          {errors['kimlik_bilgileri.dogum_tarihi'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.dogum_tarihi']}</div>}
           <input className="input" placeholder="Yaş" value={form.kimlik_bilgileri.yas} onChange={e => handleField('kimlik_bilgileri', 'yas', e.target.value)} />
-          {errors['kimlik_bilgileri.yas'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.yas']}</div>}
           <input className="input" placeholder="Cinsiyet" value={form.kimlik_bilgileri.cinsiyet} onChange={e => handleField('kimlik_bilgileri', 'cinsiyet', e.target.value)} />
-          {errors['kimlik_bilgileri.cinsiyet'] && <div className="text-red-600 text-xs">{errors['kimlik_bilgileri.cinsiyet']}</div>}
           <input className="input" placeholder="Boy" value={form.kimlik_bilgileri.boy} onChange={e => handleField('kimlik_bilgileri', 'boy', e.target.value)} />
           <input className="input" placeholder="Kilo" value={form.kimlik_bilgileri.kilo} onChange={e => handleField('kimlik_bilgileri', 'kilo', e.target.value)} />
           <input className="input" placeholder="VKİ" value={form.kimlik_bilgileri.vki} onChange={e => handleField('kimlik_bilgileri', 'vki', e.target.value)} />
@@ -66,7 +54,7 @@ export default function PatientDataForm({ initialData, onChange }) {
           <input className="input" placeholder="Eğitim Durumu" value={form.kimlik_bilgileri.egitim_durumu} onChange={e => handleField('kimlik_bilgileri', 'egitim_durumu', e.target.value)} />
         </div>
         <div>
-          <h4 className="font-bold mb-2">Başvuru Bilgileri</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Başvuru Bilgileri</h4>
           <input className="input" placeholder="Başvuru Tarihi" value={form.basvuru_bilgileri.tarih} onChange={e => handleField('basvuru_bilgileri', 'tarih', e.target.value)} />
           <input className="input" placeholder="Başvuru Nedeni" value={form.basvuru_bilgileri.nedeni} onChange={e => handleField('basvuru_bilgileri', 'nedeni', e.target.value)} />
           <input className="input" placeholder="Şikayet Süresi" value={form.basvuru_bilgileri.sikayet_suresi} onChange={e => handleField('basvuru_bilgileri', 'sikayet_suresi', e.target.value)} />
@@ -76,7 +64,7 @@ export default function PatientDataForm({ initialData, onChange }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="font-bold mb-2">Tıbbi Geçmiş</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Tıbbi Geçmiş</h4>
           <input className="input" placeholder="Kronik Hastalıklar (virgülle ayır)" value={form.tibbi_gecmis.kronik_hastaliklar.join(', ')} onChange={e => handleArrayField('tibbi_gecmis', 'kronik_hastaliklar', e.target.value)} />
           <input className="input" placeholder="Ameliyatlar (virgülle ayır)" value={form.tibbi_gecmis.ameliyatlar.join(', ')} onChange={e => handleArrayField('tibbi_gecmis', 'ameliyatlar', e.target.value)} />
           <input className="input" placeholder="Allerjiler (virgülle ayır)" value={form.tibbi_gecmis.allerjiler.join(', ')} onChange={e => handleArrayField('tibbi_gecmis', 'allerjiler', e.target.value)} />
@@ -84,7 +72,7 @@ export default function PatientDataForm({ initialData, onChange }) {
           <input className="input" placeholder="Enfeksiyonlar (virgülle ayır)" value={form.tibbi_gecmis.enfeksiyonlar.join(', ')} onChange={e => handleArrayField('tibbi_gecmis', 'enfeksiyonlar', e.target.value)} />
         </div>
         <div>
-          <h4 className="font-bold mb-2">Kullandığı İlaçlar</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Kullandığı İlaçlar</h4>
           <input className="input" placeholder="Düzenli İlaçlar (virgülle ayır)" value={form.ilaclar.duzenli.join(', ')} onChange={e => handleArrayField('ilaclar', 'duzenli', e.target.value)} />
           <input className="input" placeholder="Düzensiz İlaçlar (virgülle ayır)" value={form.ilaclar.duzensiz.join(', ')} onChange={e => handleArrayField('ilaclar', 'duzensiz', e.target.value)} />
           <input className="input" placeholder="Alternatif Tedaviler (virgülle ayır)" value={form.ilaclar.alternatif.join(', ')} onChange={e => handleArrayField('ilaclar', 'alternatif', e.target.value)} />
@@ -92,7 +80,7 @@ export default function PatientDataForm({ initialData, onChange }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="font-bold mb-2">Yaşam Tarzı / Sosyal Bilgiler</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Yaşam Tarzı / Sosyal Bilgiler</h4>
           <input className="input" placeholder="Meslek" value={form.yasam_tarzi.meslek} onChange={e => handleField('yasam_tarzi', 'meslek', e.target.value)} />
           <input className="input" placeholder="Hareket" value={form.yasam_tarzi.hareket} onChange={e => handleField('yasam_tarzi', 'hareket', e.target.value)} />
           <input className="input" placeholder="Uyku" value={form.yasam_tarzi.uyku} onChange={e => handleField('yasam_tarzi', 'uyku', e.target.value)} />
@@ -103,14 +91,14 @@ export default function PatientDataForm({ initialData, onChange }) {
           <input className="input" placeholder="Sosyal Destek" value={form.yasam_tarzi.sosyal_destek} onChange={e => handleField('yasam_tarzi', 'sosyal_destek', e.target.value)} />
         </div>
         <div>
-          <h4 className="font-bold mb-2">Fizik Muayene</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Fizik Muayene</h4>
           <input className="input" placeholder="Vital Bulgular" value={form.fizik_muayene.vital_bulgular} onChange={e => handleField('fizik_muayene', 'vital_bulgular', e.target.value)} />
           <input className="input" placeholder="Sistem Bulguları" value={form.fizik_muayene.sistem_bulgulari} onChange={e => handleField('fizik_muayene', 'sistem_bulgulari', e.target.value)} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="font-bold mb-2">Laboratuvar Sonuçları</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Laboratuvar Sonuçları</h4>
           <input className="input" placeholder="Biyokimya (virgülle ayır)" value={form.laboratuvar.biyokimya.join(', ')} onChange={e => handleArrayField('laboratuvar', 'biyokimya', e.target.value)} />
           <input className="input" placeholder="Hematoloji (virgülle ayır)" value={form.laboratuvar.hematoloji.join(', ')} onChange={e => handleArrayField('laboratuvar', 'hematoloji', e.target.value)} />
           <input className="input" placeholder="Hormonlar (virgülle ayır)" value={form.laboratuvar.hormonlar.join(', ')} onChange={e => handleArrayField('laboratuvar', 'hormonlar', e.target.value)} />
@@ -119,7 +107,7 @@ export default function PatientDataForm({ initialData, onChange }) {
           <input className="input" placeholder="Görüntüleme (virgülle ayır)" value={form.laboratuvar.goruntuleme.join(', ')} onChange={e => handleArrayField('laboratuvar', 'goruntuleme', e.target.value)} />
         </div>
         <div>
-          <h4 className="font-bold mb-2">Tanı / Ön Tanı / İzlenim</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Tanı / Ön Tanı / İzlenim</h4>
           <input className="input" placeholder="ICD-10" value={form.tani.icd10} onChange={e => handleField('tani', 'icd10', e.target.value)} />
           <input className="input" placeholder="Doktor Tanı" value={form.tani.doktor_tani} onChange={e => handleField('tani', 'doktor_tani', e.target.value)} />
           <input className="input" placeholder="Ayırıcı Tanılar (virgülle ayır)" value={form.tani.ayirici_tani.join(', ')} onChange={e => handleArrayField('tani', 'ayirici_tani', e.target.value)} />
@@ -127,7 +115,7 @@ export default function PatientDataForm({ initialData, onChange }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="font-bold mb-2">Plan ve Öneriler</h4>
+          <h4 className="font-bold mb-2 text-cyan-700">Plan ve Öneriler</h4>
           <input className="input" placeholder="Tetkik (virgülle ayır)" value={form.plan_oneri.tetkik.join(', ')} onChange={e => handleArrayField('plan_oneri', 'tetkik', e.target.value)} />
           <input className="input" placeholder="İzlem" value={form.plan_oneri.izlem} onChange={e => handleField('plan_oneri', 'izlem', e.target.value)} />
           <input className="input" placeholder="Eğitim" value={form.plan_oneri.egitim} onChange={e => handleField('plan_oneri', 'egitim', e.target.value)} />
