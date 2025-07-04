@@ -17,17 +17,50 @@ export async function uploadPdfAndParsePatient(file) {
         // Eğer sunucudan JSON formatında bir hata gelmezse, genel bir mesaj veriyoruz
         return { details: `Sunucu ${response.status} koduyla yanıt verdi.` };
       });
-      // Anlaşılır bir hata mesajı oluşturuyoruz
-      throw new Error(errorData.details || 'Bilinmeyen bir sunucu hatası oluştu.');
+      // Teknik detayı konsola yaz, kullanıcıya sade mesaj göster
+      console.error('PDF yükleme API hata detayı:', errorData.details || errorData);
+      throw new Error('PDF yüklenemedi, lütfen tekrar deneyin.');
     }
   
     // İstek başarılıysa, gelen JSON verisini (yani hasta objesini) döndürüyoruz
     return response.json();
   }
   
-  // updatePatient fonksiyonu şimdilik boş kalabilir veya mevcut haliyle durabilir
-  export async function updatePatient(tc, data) {
-    // Bu fonksiyonun implementasyonu şimdilik önemli değil
-    console.log('updatePatient çağrıldı:', tc, data);
+  // Yeni hasta ekle
+  export async function addPatient(patientData) {
+    const response = await fetch('/api/patients', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patientData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.details || 'Hasta eklenemedi.');
+    }
+    return response.json();
+  }
+
+  // Hasta güncelle
+  export async function updatePatient(tc, patientData) {
+    const response = await fetch(`/api/patients/${tc}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patientData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.details || 'Hasta güncellenemedi.');
+    }
+    return response.json();
+  }
+
+  // Hasta sil
+  export async function deletePatient(tc) {
+    const response = await fetch(`/api/patients/${tc}`, {
+      method: 'DELETE' });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.details || 'Hasta silinemedi.');
+    }
     return { success: true };
   }

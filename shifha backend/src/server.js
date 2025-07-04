@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
+// (Burada genAI veya model tanımı olmayacak, sadece dotenv ve sunucu başlatma kodu kalacak)
 
 // Helmet ile HTTP header güvenliği
 app.use(helmet());

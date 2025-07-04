@@ -58,7 +58,66 @@ const getPatientByTC = async (req, res, next) => {
   }
 };
 
+/**
+ * Yeni hasta ekle
+ * @route POST /api/patients
+ */
+const addPatient = async (req, res, next) => {
+  try {
+    const { body } = req;
+    const { data, error } = await supabase
+      .from('patients')
+      .insert([body])
+      .select();
+    if (error) throw error;
+    res.status(201).json({ success: true, data: data[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Hasta güncelle
+ * @route PUT /api/patients/:tc
+ */
+const updatePatient = async (req, res, next) => {
+  try {
+    const { tc } = req.params;
+    const { body } = req;
+    const { data, error } = await supabase
+      .from('patients')
+      .update(body)
+      .eq('tc_kimlik_no', tc)
+      .select();
+    if (error) throw error;
+    res.status(200).json({ success: true, data: data[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Hasta sil
+ * @route DELETE /api/patients/:tc
+ */
+const deletePatient = async (req, res, next) => {
+  try {
+    const { tc } = req.params;
+    const { error } = await supabase
+      .from('patients')
+      .delete()
+      .eq('tc_kimlik_no', tc);
+    if (error) throw error;
+    res.status(204).json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllPatients,
   getPatientByTC,
+  addPatient,
+  updatePatient,
+  deletePatient,
 };

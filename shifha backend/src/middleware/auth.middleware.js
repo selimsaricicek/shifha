@@ -1,28 +1,38 @@
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
-/**
- * JWT doğrulama ve rol kontrolü middleware'i
- * @param {Array<string>} allowedRoles - Erişime izin verilen roller (opsiyonel)
- */
-function authenticate(allowedRoles = []) {
+// Supabase JWT public key'i dinamik olarak almak için (isteğe bağlı, sabit de yazılabilir)
+let SUPABASE_JWT_PUBLIC_KEY = process.env.SUPABASE_JWT_PUBLIC_KEY;
+
+// Eğer public key .env'de yoksa, Supabase JWK endpointinden çekilebilir (isteğe bağlı gelişmiş)
+// const SUPABASE_JWK_URL = 'https://<your-project-id>.supabase.co/auth/v1/keys';
+
+async function supabaseAuthMiddleware(req, res, next) {
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: 'Yetkilendirme gerekli (Bearer token eksik)' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    // Public key .env'den alınır
+    if (!SUPABASE_JWT_PUBLIC_KEY) {
+      throw new Error('Supabase JWT public key tanımlı değil');
+    }
+    const user = jwt.verify(token, SUPABASE_JWT_PUBLIC_KEY, { algorithms: ['RS256'] });
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, error: 'Geçersiz veya süresi dolmuş token', details: err.message });
+  }
+}
+
+function requireRole(role) {
   return (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, error: 'Yetkilendirme gerekli' });
+    if (!req.user || req.user.role !== role) {
+      return res.status(403).json({ success: false, error: 'Yetkisiz: Bu işlem için admin yetkisi gerekli.' });
     }
-    const token = authHeader.split(' ')[1];
-    try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET);
-      // Sadece userId ve role payload'ı kabul edilir
-      req.user = { userId: payload.userId, role: payload.role };
-      if (allowedRoles.length && !allowedRoles.includes(payload.role)) {
-        return res.status(403).json({ success: false, error: 'Yetkisiz erişim' });
-      }
-      next();
-    } catch (err) {
-      return res.status(401).json({ success: false, error: 'Geçersiz veya süresi dolmuş token' });
-    }
+    next();
   };
 }
 
-module.exports = { authenticate };
+module.exports = { supabaseAuthMiddleware, requireRole };
