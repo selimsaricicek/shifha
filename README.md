@@ -7,10 +7,11 @@
 
 | Name                | Title           | Social |
 |---------------------|----------------|--------|
-| [İsim 1](#)         | Role 1         | [LinkedIn](#) |
-| [İsim 2](#)         | Role 2         | [LinkedIn](#) |
-| [İsim 3](#)         | Role 3         | [LinkedIn](#) |
-
+| [K. Selim Sarıçiçek](#)         | Role 1         | [LinkedIn](https://www.linkedin.com/in/kenan-selim-sarıçiçek ) |
+| [Mehmet Pektaş](#)         | Role 2         | [LinkedIn](http://www.linkedin.com/in/mehmetpkts) |
+| [Miyase Elif Aksoy](#)         | Role 3         | [LinkedIn](http://www.linkedin.com/in/myelifss) |
+| [Erva Nazlı Tüccar](#)         | Role 3         | [LinkedIn](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
+| [Nurhayat Doğan](#)         | Role 3         | [LinkedIn](https://www.linkedin.com/in/1nurhayat-dogan/) |
 ---
 
 ## Product Description
@@ -70,10 +71,9 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 - **Sprint Notes:**  
   - [ ] Figma for UI design  
-  - [ ] Asana for project management  
-  - [ ] WhatsApp & Discord for daily scrum  
+  - [ ] Jira for project management  
+  - [ ] WhatsApp & Google Meets for daily scrum  
   - [ ] E-mail for login system  
-  - [ ] Dark theme, English language  
 - **Expected Points:** 300  
 - **Point Completion:** 300/1200  
 - **Sprint Review:**  
@@ -81,8 +81,7 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
   - Habit-forming feature highlighted  
   - Market research and user interviews done  
   - Project management method determined  
-- **Participants:** Melisa Nur Alparslan, Olgun Baran Atik, Meltem Sena Koçak, Oğuzhan Gündüz, Onur Turan
-
+- **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan.
 </details>
 
 <!-- Diğer sprintler için de benzer şekilde ekleyebilirsiniz -->
