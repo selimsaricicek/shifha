@@ -1,7 +1,7 @@
 # Shifha
 
 <!-- Logo eklemek isterseniz aşağıdaki satırı düzenleyin veya kaldırın -->
-<!-- ![Shifha Logo](logo-url-buraya.png) -->
+![Shifha Logo](logo-url-buraya.png) 
 
 ## Team Members
 
@@ -293,38 +293,91 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 </details>
 
----
 
-### Sprint Notes
-- [x] Figma ile UI/UX tasarımı
-- [x] Jira ile proje yönetimi
-- [x] WhatsApp & Google Meets ile daily scrum
-- [x] E-mail tabanlı giriş sistemi
-- [x] React + Tailwind CSS ile landing page
 
----
+<summary><strong>🟦 Sprint 1 Özeti (Türkçe)</strong></summary>
 
-### Expected Points
-300
+### Sprint Notları
+- [x] _'Figma'_ ile UI/UX tasarımı
+- [x] _'Jira'_ ile proje yönetimi
+- [x] _'WhatsApp'_ & _'Google Meets'_ ile daily scrum
+- [x] _'E-mail'_ tabanlı giriş sistemi
+- [x] _'React'_ ile frontend web uygulaması
+- [x] _'Tailwind CSS'_ ile modern, responsive UI
+- [x] _'Node.js'_ ve _'Express.js'_ ile backend API
+- [x] _'Prisma ORM'_ ile veritabanı yönetimi
+- [x] _'PostgreSQL'_ ana ilişkisel veritabanı olarak
+- [x] _'JWT'_ ile güvenli kimlik doğrulama
+- [x] _'Supabase'_ ile bulut depolama ve kimlik doğrulama
+- [x] _'Lucide React'_ ile ikon kullanımı
+- [x] _'Context API'_ ile React'ta state yönetimi
+- [x] _'PDF parser'_ ile otomatik laboratuvar sonucu çıkarımı
+- [x] _'Google Gemini AI'_ ile kan tahlili ve diyabet analizi
 
----
+### Ürün Backlog'u
+- **Ürün Backlog'u:** [Jira Board Linki](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
 
-### Point Completion
-Projenin ilk sprint'inde, fikir planlaması ve tasarımların yapılması hedeflenmişti. Ancak sağlanan detaylı tabloya göre, bu sprint'te hedeflenen 300 puanın üzerine çıkılarak 336 puanlık bir iş planlaması yapılmıştır. Bu sprint kapsamında sadece planlama ve tasarım değil, aynı zamanda projenin temel altyapısının oluşturulması, backend servislerinin yazılması ve frontend arayüz bileşenlerinin geliştirilmesi gibi önemli teknik görevler de tamamlanmıştır.
+### Beklenen Puan
+_'300'_ Puan
 
-Başlangıç ve Bitiş: Sprint, 21 Haziran'da 336 puan ile başlamış ve 15 günlük bir süre için planlanmıştır.
-Performans: Ekip, sprint boyunca "İdeal Trend" çizgisine çok yakın bir performans sergilemiştir. Grafikte de görüldüğü gibi, "Kalan Efor" (Remaining Effort) çizgisi, ideal çizgiyi tutarlı bir şekilde takip etmiştir.
-Sonuç: Ekip, hedeflenen tüm 336 puanlık işi başarıyla tamamlamıştır. Dahası, planlanan 15 günlük süreden bir gün önce, yani 14. günde (4 Temmuz) tüm işler bitirilerek sprint hedefi zamanından önce başarıyla sonuçlandırılmıştır.
+### Puan Tamamlama Mantığı
+Toplamda 1200 puanlık bir hedef belirlendi. İlk sprintte, fikir planlandığı ve tasarımlar yapıldığı için _'300'_ puan hedeflendi ve tamamlandı. İkinci sprintte, kod yazımı ve API eklemeye odaklanılacağı için _'500'_ puan hedefleniyor. Üçüncü sprintte ise kalan işler tamamlanacak ve entegrasyon çalışmaları yapılacağı için _'400'_ puan hedeflendi.
 
----
-
-### Sprint Review
+### Sprint Değerlendirmesi
 - Landing page ve UI tasarımları tamamlandı
-- Hasta veri formu ve PDF upload özellikleri eklendi
+- Hasta veri formu ve PDF yükleme özellikleri eklendi
 - Backend API altyapısı kuruldu
 - Prisma ile veritabanı şeması oluşturuldu
 
----
+### Sprint 1 Retrospektifi
+- Sprint 1'de veritabanı şeması tasarlanmasına karar verildi.
+- Temel API uç noktalarının oluşturulmasına karar verildi.
+- Kimlik doğrulama sisteminin ilk adımının tamamlanmasına karar verildi.
+- Landing Page ve Login Page'in geliştirilmesine karar verildi.
+- Doktor arayüzünün geliştirilmesine karar verildi.
+- Kan tahlili ve diyabet teşhisi için AI promptlarının oluşturulmasına karar verildi.
+- Kanser teşhisi ve admin paneli özelliklerinin ertelenmesine karar verildi.
+- Kan tahlili sonuçları ve diyabet bulguları üzerine araştırma yapılmasına karar verildi.
+
+### Katılımcılar
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+
+
+<details>
+<summary><strong>🟩 Sprint 1 Summary (English)</strong></summary>
+
+### Sprint Notes
+- [x] UI/UX design with _'Figma'_
+- [x] Project management with _'Jira'_
+- [x] Daily scrum via _'WhatsApp'_ & _'Google Meets'_
+- [x] E-mail based login system
+- [x] Frontend web application with _'React'_
+- [x] Modern, responsive UI with _'Tailwind CSS'_
+- [x] Backend API with _'Node.js'_ and _'Express.js'_
+- [x] Database management with _'Prisma ORM'_
+- [x] _'PostgreSQL'_ as the main relational database
+- [x] Secure authentication with _'JWT'_
+- [x] Cloud storage and authentication with _'Supabase'_
+- [x] Iconography with _'Lucide React'_
+- [x] State management in React with _'Context API'_
+- [x] Automatic lab result extraction with _'PDF parser'_ service
+- [x] Blood test and diabetes analysis with _'Google Gemini AI'_
+
+### Product Backlog
+- **Product Backlog:** [Jira Board Link](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
+
+### Expected Points
+_'300'_ Points
+
+### Point Completion Logic
+A total target of 1200 points was set. In the first sprint, _'300'_ points were targeted because the idea was planned and the designs were made, and were completed. In the second sprint, _'500'_ points are targeted as the focus will be on writing code and adding APIs. In the third sprint, a target of _'400'_ points was set as the remaining tasks would be completed and integration work would be carried out.
+
+### Sprint Review
+- Landing page and UI designs completed
+- Patient data form and PDF upload features added
+- Backend API infrastructure established
+- Database schema created with Prisma
 
 ### Sprint 1 Retrospective
 - It was decided to design the database schema in Sprint 1.
@@ -336,12 +389,14 @@ Sonuç: Ekip, hedeflenen tüm 336 puanlık işi başarıyla tamamlamıştır. Da
 - It was decided to postpone the cancer diagnosis and admin panel features.
 - It was decided to conduct research on blood test results and diabetes findings.
 
----
-
 ### Participants
 Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
+</details>
+
+---
 ## Endnotes
 
-- For more information, contact the team or visit our [website](#).
 - Contributions are welcome! 
+
+---
