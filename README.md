@@ -7,11 +7,11 @@
 
 | Name                | Title           | Social |
 |---------------------|----------------|--------|
-| [K. Selim Sarıçiçek](#)         | Role 1         | [LinkedIn](https://www.linkedin.com/in/kenan-selim-sarıçiçek ) |
-| [Mehmet Pektaş](#)         | Role 2         | [LinkedIn](http://www.linkedin.com/in/mehmetpkts) |
-| [Miyase Elif Aksoy](#)         | Role 3         | [LinkedIn](http://www.linkedin.com/in/myelifss) |
-| [Erva Nazlı Tüccar](#)         | Role 3         | [LinkedIn](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
-| [Nurhayat Doğan](#)         | Role 3         | [LinkedIn](https://www.linkedin.com/in/1nurhayat-dogan/) |
+| [K. Selim Sarıçiçek](#)         | Scrum Master        | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/kenan-selim-sarıçiçek ) |
+| [Mehmet Pektaş](#)         | Developer        | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](http://www.linkedin.com/in/mehmetpkts) |
+| [Miyase Elif Aksoy](#)         | Developer     | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](http://www.linkedin.com/in/myelifss) |
+| [Erva Nazlı Tüccar](#)         | Product Owner       | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
+| [Nurhayat Doğan](#)         | Developer         | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/1nurhayat-dogan/) |
 ---
 
 ## Product Description
@@ -126,10 +126,7 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - **Supabase** - Cloud database ve authentication
 - **PDF Parser** - Tahlil sonuçlarını otomatik okuma
 
-### 📱 **Mobile & Communication**
-- **React Native** (Planlanan) - Mobil uygulama
-- **Push Notifications** - Anlık bildirimler
-- **QR Code Generation** - Güvenli veri paylaşımı
+
 
 ---
 
