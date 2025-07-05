@@ -150,9 +150,8 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
   - Prisma ile veritabanı şeması oluşturuldu
 - **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
-</details>
 
-## Sprint 1 - Daily Scrum Kareleri
+### Sprint 1 - Daily Scrum Kareleri
 
 ### 1. Gün
 |  |  |  |
@@ -216,6 +215,7 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 | ![dailyScrum11.4.png](Sprint_1/daily_scrum_s1/dailyScrum11.4.png) | ![dailyScrum11.5.png](Sprint_1/daily_scrum_s1/dailyScrum11.5.png) | ![dailyScrum11.6.png](Sprint_1/daily_scrum_s1/dailyScrum11.6.png) |
 | ![dailyScrum11.7.jpg](Sprint_1/daily_scrum_s1/dailyScrum11.7.jpg) |  |  |
 
+</details>
 
 ## Endnotes
 
