@@ -5,7 +5,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const handleLogin = (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    navigate('/Calendar/dashboard');
   };
   return (
     <div className="bg-gradient-to-b from-cyan-50 via-white to-gray-100 min-h-screen flex items-center justify-center font-sans animate-fadeInLogin">
