@@ -156,7 +156,7 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 ### 1. Gün
 |  |  |  |
 |--|--|--|
-| ![dailyScrum1.png](Sprint_1/daily_scrum_s1/dailyScrum1.png) | ![dailyScrum1.1.png](Sprint_1/daily_scrum_s1/dailyScrum1.1.png) | ![dailyScrum1.2.png](Sprint_1/daily_scrum_s1/dailyScrum1.2.png) |
+| ![dailyScrum1.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day1/dailyScrum1.1.png) | ![dailyScrum1.1.png](Sprint_1/daily_scrum_s1/dailyScrum1.1.png) | ![dailyScrum1.2.png](Sprint_1/daily_scrum_s1/dailyScrum1.2.png) |
 
 ### 2. Gün
 |  |  |  |
