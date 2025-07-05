@@ -133,25 +133,69 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 ## Sprints
 
 <details>
-<summary><strong>Sprint 1</strong></summary>
+  <summary><h1>Sprint 1</h1></summary>
 
-- **Sprint Notes:**  
-  - [x] Figma ile UI/UX tasarımı  
-  - [x] Jira ile proje yönetimi  
-  - [x] WhatsApp & Google Meets ile daily scrum  
-  - [x] E-mail tabanlı giriş sistemi  
-  - [x] React + Tailwind CSS ile landing page
-- **Expected Points:** 300  
-- **Point Completion:** 300/1200  
-- **Sprint Review:**  
-  - Landing page ve UI tasarımları tamamlandı
-  - Hasta veri formu ve PDF upload özellikleri eklendi
-  - Backend API altyapısı kuruldu
-  - Prisma ile veritabanı şeması oluşturuldu
-- **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+---
+<details>
+  <summary><h2>App Screenshots</h2></summary>
 
+### Login Page
+![Loginpage]({ekleyin{loginpage_screenshot}})
 
-### Sprint 1 - Daily Scrum Kareleri
+---
+### Dashboard Page
+![Dashboard]({ekleyin{dashboard_screenshot}})
+
+---
+### Patient Page
+![PatientPage]({ekleyin{patientpage_screenshot}})
+
+---
+### Analysis Page
+![AnalysisPage]({ekleyin{analysispage_screenshot}})
+
+---
+### Profile Page
+![ProfilePage]({ekleyin{profilepage_screenshot}})
+
+---
+### Settings Page
+<img src="{ekleyin{settingspage_screenshot}}" width="500">
+
+</details>
+
+---
+<details>
+  <summary><h2>App Map</h2></summary>
+
+![App Flowchart]({ekleyin{app_map}})
+
+</details>
+
+---
+<details>
+  <summary><h2>Project Management</h2></summary>
+
+![pm_1]({ekleyin{pm_1}})
+![pm_2]({ekleyin{pm_2}})
+![pm_3]({ekleyin{pm_3}})
+![pm_4]({ekleyin{pm_4}})
+![pm_5]({ekleyin{pm_5}})
+
+</details>
+
+---
+<details>
+  <summary><h2>Burndown Chart</h2></summary>
+
+![Burndown Chart 1]({ekleyin{burndown_1}})
+![Burndown Chart 2]({ekleyin{burndown_2}})
+
+</details>
+
+---
+<details>
+  <summary><h2>Daily Scrum</h2></summary>
 
 ### 1. Gün
 |  |  |  |
@@ -214,6 +258,35 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 | ![dailyScrum11.1.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.1.png) | ![dailyScrum11.2.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.2.png) | ![dailyScrum11.3.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.3.png) |
 | ![dailyScrum11.4.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.4.png) | ![dailyScrum11.5.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.5.png) | ![dailyScrum11.6.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.6.png) |
 | ![dailyScrum11.7.jpg](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.7.jpg) |  |  |
+
+</details>
+
+---
+
+- **Sprint Notes:**
+   * {ekleyin{sprint_notes}}
+
+- **Expected point completion within Sprint:** {ekleyin{expected_points}}
+
+- **Point Completion Logic:**
+  {ekleyin{point_completion_logic}}
+
+- **Daily Scrum:** [Sprint 1 Daily Scrum](https://github.com/selimsaricicek/shifha/tree/main/scrumsS1)
+
+- **Sprint Review:**
+    * {ekleyin{sprint_review}}
+
+- **Sprint Review Participants:**  
+  {ekleyin{sprint_review_participants}}
+
+- **Sprint Retrospective:**
+   * {ekleyin{sprint_retrospective}}
+
+<details>
+  <summary><h4>Türkçe açıklama</h4></summary>
+
+  {ekleyin{turkce_aciklama}}
+</details>
 
 </details>
 
