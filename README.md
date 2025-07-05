@@ -1,7 +1,7 @@
 # Shifha
 
-<!-- Logo eklemek isterseniz aşağıdaki satırı düzenleyin veya kaldırın -->
-![Shifha Logo](logo-url-buraya.png) 
+<!-- Shifha gerçek logosu -->
+![Shifha Logo](https://github.com/selimsaricicek/shifha/blob/main/LogoShifha/ShifhaLogoReadme.png) 
 
 ## Team Members
 
@@ -44,7 +44,7 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 
-## Product Features
+## Ürün Özellikleri  
 
 ### 🩸 **Akıllı Kan Tahlili Analizi**
 - Yapay zeka destekli anormal değer tespiti
@@ -82,9 +82,50 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - Şifreli ve güvenli veri transferi
 - Hasta onayı ile kontrollü paylaşım
 
+<details>
+<summary><strong>Product Features (English)</strong></summary>
+
+### 🩸 **Smart Blood Test Analysis**
+- AI-powered abnormal value detection
+- Potential risk analysis in seconds
+- Clinical comments tailored to each test type
+- Fast pre-evaluation for doctors
+
+### 🩺 **Diabetes Diagnosis Support**
+- AI analysis combining patient history and blood values
+- Early detection of diabetes risk factors
+- Comprehensive diagnostic suggestions and clinical comments
+- Optimized patient follow-up processes
+
+### 📱 **Mobile App Support**
+- Instant test result notifications
+- Immediate alert system for urgent cases
+- Fast communication between doctors
+- Mobile access to patient data
+
+### 👥 **Centralized Patient Management**
+- Patient search by national ID
+- Comprehensive patient profile (age, weight, nutrition habits)
+- Family disease history and medication tracking
+- Doctor notes and diagnosis history
+
+### 🔄 **Doctor-to-Doctor Communication**
+- Patient-based secure messaging system
+- Consultation for complex cases
+- Patient data sharing between doctors
+- Cause-effect related note system
+
+### 🌍 **International Data Sharing**
+- Secure patient information sharing with QR code support
+- Sharing patient history with doctors abroad
+- Encrypted and secure data transfer
+- Controlled sharing with patient consent
+
+</details>
+
 ---
 
-## Target Audience
+## Hedef Kitle  
 
 ### 👨‍⚕️ **Doktorlar ve Sağlık Profesyonelleri**
 - Pratisyen hekimler ve uzmanlar
@@ -104,9 +145,32 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - Yurtdışı seyahat eden hastalar
 - Detaylı sağlık geçmişi takibi isteyen hastalar
 
+<details>
+<summary><strong>Target Audience (English)</strong></summary>
+
+### 👨‍⚕️ **Doctors and Healthcare Professionals**
+- General practitioners and specialists
+- Laboratory doctors and technicians
+- Emergency and intensive care doctors
+- Family physicians and outpatient doctors
+
+### 🏥 **Healthcare Institutions**
+- Hospitals and medical centers
+- Private clinics and practices
+- Laboratory and imaging centers
+- Ministry of Health and provincial health directorates
+
+### 👥 **Patients**
+- Patients requiring chronic disease monitoring
+- Patients consulting multiple doctors
+- Patients traveling abroad
+- Patients seeking detailed health history tracking
+
+</details>
+
 ---
 
-## Technology Stack
+## Teknoloji Tercihleri  
 
 ### 🎨 **Frontend**
 - **React.js** - Modern web uygulaması geliştirme
@@ -126,7 +190,28 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - **Supabase** - Cloud database ve authentication
 - **PDF Parser** - Tahlil sonuçlarını otomatik okuma
 
+<details>
+<summary><strong>Technology Stack (English)</strong></summary>
 
+### 🎨 **Frontend**
+- **React.js** - Modern web application development
+- **Tailwind CSS** - Responsive and modern UI design
+- **Lucide React** - Icon library
+- **Context API** - State management
+
+### ⚙️ **Backend**
+- **Node.js** - Server-side JavaScript runtime
+- **Express.js** - Web framework
+- **Prisma ORM** - Database management
+- **PostgreSQL** - Relational database
+- **JWT** - Authentication
+
+### 🤖 **AI & Services**
+- **Google Gemini AI** - Blood test analysis
+- **Supabase** - Cloud database and authentication
+- **PDF Parser** - Automatic lab result reading
+
+</details>
 
 ---
 
