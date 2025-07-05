@@ -295,23 +295,38 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 
-**Sprint Notes:**
+### Sprint Notes
 - [x] Figma ile UI/UX tasarımı
 - [x] Jira ile proje yönetimi
 - [x] WhatsApp & Google Meets ile daily scrum
 - [x] E-mail tabanlı giriş sistemi
 - [x] React + Tailwind CSS ile landing page
-**Expected Points:** 300
+
 ---
-**Point Completion:** 300/1200
+
+### Expected Points
+300
+
 ---
-**Sprint Review:**
+
+### Point Completion
+Projenin ilk sprint'inde, fikir planlaması ve tasarımların yapılması hedeflenmişti. Ancak sağlanan detaylı tabloya göre, bu sprint'te hedeflenen 300 puanın üzerine çıkılarak 336 puanlık bir iş planlaması yapılmıştır. Bu sprint kapsamında sadece planlama ve tasarım değil, aynı zamanda projenin temel altyapısının oluşturulması, backend servislerinin yazılması ve frontend arayüz bileşenlerinin geliştirilmesi gibi önemli teknik görevler de tamamlanmıştır.
+
+Başlangıç ve Bitiş: Sprint, 21 Haziran'da 336 puan ile başlamış ve 15 günlük bir süre için planlanmıştır.
+Performans: Ekip, sprint boyunca "İdeal Trend" çizgisine çok yakın bir performans sergilemiştir. Grafikte de görüldüğü gibi, "Kalan Efor" (Remaining Effort) çizgisi, ideal çizgiyi tutarlı bir şekilde takip etmiştir.
+Sonuç: Ekip, hedeflenen tüm 336 puanlık işi başarıyla tamamlamıştır. Dahası, planlanan 15 günlük süreden bir gün önce, yani 14. günde (4 Temmuz) tüm işler bitirilerek sprint hedefi zamanından önce başarıyla sonuçlandırılmıştır.
+
+---
+
+### Sprint Review
 - Landing page ve UI tasarımları tamamlandı
 - Hasta veri formu ve PDF upload özellikleri eklendi
 - Backend API altyapısı kuruldu
 - Prisma ile veritabanı şeması oluşturuldu
+
 ---
-**Sprint 1 Retrospective:**
+
+### Sprint 1 Retrospective
 - It was decided to design the database schema in Sprint 1.
 - It was decided to create the basic API Endpoints.
 - It was decided to complete the first step of the authentication system.
@@ -320,11 +335,11 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - It was decided to create the AI prompts for blood tests and diabetes diagnosis.
 - It was decided to postpone the cancer diagnosis and admin panel features.
 - It was decided to conduct research on blood test results and diabetes findings.
-**Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
+---
 
-
-</details>
+### Participants
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
 ## Endnotes
 
