@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Search, Calendar, FileUp, Check, X, Pencil, ArrowLeft } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User } from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
 import { toast } from 'react-toastify';
+import Calendar from '../components/Calendar';
 
 // BİLEŞENLERİNİZDE HİÇBİR DEĞİŞİKLİK YAPILMADI
 // PatientCard, TabButton, SummaryTab vb. tüm bileşenleriniz olduğu gibi kalıyor.
@@ -25,6 +26,9 @@ function DashboardPageInner() {
     const navigate = useNavigate();
     const [editPatient, setEditPatient] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
+    const [showAppointmentModal, setShowAppointmentModal] = useState(false);
 
     // Hasta listesini çeken fonksiyon
     const fetchPatients = useCallback(async () => {
@@ -54,7 +58,7 @@ function DashboardPageInner() {
 
     const viewPatientDetails = (patient) => {
         const tc = patient.tc_kimlik_no;
-        if (tc) navigate(`/dashboard/patients/${tc}`);
+        if (tc) navigate(`/Calendar/dashboard/patient/${tc}`);
     };
 
     // PDF yükleme ve hasta listesini güncelleme (GERÇEK FONKSİYON)
@@ -147,14 +151,33 @@ function DashboardPageInner() {
         }
     };
 
-    // Bugünün randevuları
-    const today = new Date().toISOString().slice(0, 10);
-    const todaysAppointments = useMemo(
-        () =>
-            patients
+    // Seçili günün randevuları
+    const selectedDateString = selectedDate.toISOString().slice(0, 10);
+
+    // Demo randevular (boş array - gerçek veri kullanılacak)
+    const demoAppointments = [];
+
+    // Tüm randevuları takvim için hazırla
+    const allAppointments = useMemo(() => {
+        return patients.flatMap((patient) =>
+            (patient.appointments || []).map((app) => ({
+                ...app,
+                patientName: patient.ad_soyad,
+                patientId: patient.id,
+                patient,
+            }))
+        );
+    }, [patients]);
+
+    const calendarAppointments = allAppointments.length > 0 ? allAppointments : demoAppointments;
+
+    // Seçili günün randevuları
+    const selectedDateAppointments = useMemo(
+        () => {
+            const patientAppointments = patients
                 .flatMap((patient) =>
                     (patient.appointments || [])
-                        .filter((app) => app.date === today)
+                        .filter((app) => app.date === selectedDateString)
                         .map((app) => ({
                             ...app,
                             patientName: patient.ad_soyad,
@@ -162,8 +185,16 @@ function DashboardPageInner() {
                             patient,
                         }))
                 )
-                .sort((a, b) => a.time.localeCompare(b.time)),
-        [patients, today]
+                .sort((a, b) => a.time.localeCompare(b.time));
+
+            // Demo randevuları da ekle
+            const demoAppointmentsForDate = demoAppointments.filter(
+                app => app.date === selectedDateString
+            );
+
+            return [...patientAppointments, ...demoAppointmentsForDate].sort((a, b) => a.time.localeCompare(b.time));
+        },
+        [patients, selectedDateString, demoAppointments]
     );
 
     return (
@@ -186,47 +217,78 @@ function DashboardPageInner() {
                 </div>
             </header>
             <main className="p-8 max-w-7xl mx-auto">
-                {/* Bugünün Hasta Akışı */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                    <div className="flex items-center mb-4">
-                        <Calendar className="text-cyan-600" size={24} />
+                {/* Takvim ve Bugünün Hasta Akışı */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    {/* Takvim */}
+                    <div className="lg:col-span-2">
+                        <Calendar 
+                            appointments={calendarAppointments}
+                            onDateSelect={(date) => {
+                                setSelectedDate(date);
+                                console.log('Seçilen tarih:', date);
+                            }}
+                            onAppointmentClick={(appointment) => {
+                                setSelectedAppointment(appointment);
+                                setShowAppointmentModal(true);
+                                console.log('Randevu tıklandı:', appointment);
+                            }}
+                        />
+                    </div>
+                    
+                    {/* Bugünün Hasta Akışı */}
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                                            <div className="flex items-center mb-4">
+                        <CalendarIcon className="text-cyan-600" size={24} />
                         <h3 className="text-xl font-bold text-gray-800 ml-2">
-                            Bugünün Hasta Akışı ({new Date().toLocaleDateString('tr-TR')})
+                            {selectedDate.toDateString() === new Date().toDateString() ? 'Bugünün' : 'Seçili Günün'} Hasta Akışı
                         </h3>
                     </div>
-                    {todaysAppointments.length > 0 ? (
-                        <div className="space-y-2">
-                            {todaysAppointments.map((item, index) => (
-                                <div
+                        <div className="text-sm text-gray-600 mb-4">
+                            {selectedDate.toLocaleDateString('tr-TR', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                            })}
+                        </div>
+                        {selectedDateAppointments.length > 0 ? (
+                            <div className="space-y-2">
+                                {selectedDateAppointments.map((item, index) => (
+                                                                    <div
                                     key={index}
-                                    className={`flex items-center justify-between rounded-lg px-4 py-2 text-sm cursor-pointer ${
+                                    onClick={() => {
+                                        setSelectedAppointment(item);
+                                        setShowAppointmentModal(true);
+                                    }}
+                                    className={`flex items-center justify-between rounded-lg px-4 py-2 text-sm cursor-pointer hover:shadow-md transition-all duration-200 ${
                                         item.urgency === 'acil'
-                                            ? 'bg-red-50 border-l-4 border-red-400'
-                                            : 'bg-gray-50 border-l-4 border-cyan-400'
+                                            ? 'bg-red-50 border-l-4 border-red-400 hover:bg-red-100'
+                                            : 'bg-gray-50 border-l-4 border-cyan-400 hover:bg-cyan-100'
                                     }`}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold text-gray-800">{item.time}</span>
-                                        <span className="text-gray-600">-</span>
-                                        <span className="font-semibold text-gray-700">{item.patientName}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-gray-800">{item.time}</span>
+                                            <span className="text-gray-600">-</span>
+                                            <span className="font-semibold text-gray-700">{item.patientName}</span>
+                                        </div>
+                                        <span
+                                            className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                                item.urgency === 'acil'
+                                                    ? 'bg-red-200 text-red-800'
+                                                    : 'bg-cyan-200 text-cyan-800'
+                                            }`}
+                                        >
+                                            {item.type}
+                                        </span>
                                     </div>
-                                    <span
-                                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                                            item.urgency === 'acil'
-                                                ? 'bg-red-200 text-red-800'
-                                                : 'bg-cyan-200 text-cyan-800'
-                                        }`}
-                                    >
-                                        {item.type}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500 text-center py-4">
-                            Bugün için planlanmış bir hasta akışı bulunmamaktadır.
-                        </p>
-                    )}
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-center py-4">
+                                Bugün için planlanmış bir hasta akışı bulunmamaktadır.
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* PDF Yükleme Alanı (modern dropzone) */}
@@ -338,6 +400,96 @@ function DashboardPageInner() {
                             <div className="flex justify-end mt-4 gap-2">
                                 <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => setShowEditModal(false)}>İptal</button>
                                 <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleUpdatePatient(editPatient)}>Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Randevu Detay Modalı */}
+                {showAppointmentModal && selectedAppointment && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative">
+                            <button 
+                                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl" 
+                                onClick={() => setShowAppointmentModal(false)}
+                            >
+                                ×
+                            </button>
+                            
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">Randevu Detayları</h2>
+                                <p className="text-gray-600">
+                                    {selectedDate.toLocaleDateString('tr-TR', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                    })}
+                                </p>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg p-6 mb-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className={`
+                                            p-3 rounded-full
+                                            ${selectedAppointment.urgency === 'acil' ? 'bg-red-200' : 'bg-blue-200'}
+                                        `}>
+                                            <User className={`h-6 w-6 ${selectedAppointment.urgency === 'acil' ? 'text-red-600' : 'text-blue-600'}`} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-800">{selectedAppointment.patientName}</h3>
+                                            <p className="text-gray-600">{selectedAppointment.type}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-2xl font-bold text-gray-800">{selectedAppointment.time}</div>
+                                        <div className={`
+                                            text-sm px-3 py-1 rounded-full font-semibold
+                                            ${selectedAppointment.urgency === 'acil' 
+                                                ? 'bg-red-200 text-red-800' 
+                                                : 'bg-blue-200 text-blue-800'
+                                            }
+                                        `}>
+                                            {selectedAppointment.urgency === 'acil' ? 'Acil' : 'Normal'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="font-semibold text-gray-700">Randevu ID:</span>
+                                        <span className="ml-2 text-gray-600">#{selectedAppointment.id}</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold text-gray-700">Durum:</span>
+                                        <span className="ml-2 text-green-600 font-semibold">Onaylandı</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3">
+                                <button 
+                                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                                    onClick={() => setShowAppointmentModal(false)}
+                                >
+                                    Kapat
+                                </button>
+                                <button 
+                                    className="px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-semibold"
+                                    onClick={() => {
+                                        // Hasta detaylarına git
+                                        if (selectedAppointment.patient) {
+                                            navigate(`/Calendar/dashboard/patient/${selectedAppointment.patient.tc_kimlik_no}`);
+                                        } else {
+                                            // Demo hasta için
+                                            navigate(`/Calendar/dashboard/patient/demo-${selectedAppointment.id}`);
+                                        }
+                                        setShowAppointmentModal(false);
+                                    }}
+                                >
+                                    Hasta Detaylarına Git
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -634,7 +786,7 @@ function DashboardPage() {
     return (
         <Routes>
             <Route path="/dashboard" element={<DashboardPageInner />} />
-            <Route path="/dashboard/patients/:tc" element={<PatientDetailPageRemote />} />
+            <Route path="/dashboard/patient/:tc" element={<PatientDetailPageRemote />} />
             <Route path="*" element={<DashboardPageInner />} />
         </Routes>
     );
