@@ -302,12 +302,15 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - [x] E-mail tabanlı giriş sistemi
 - [x] React + Tailwind CSS ile landing page
 **Expected Points:** 300
+---
 **Point Completion:** 300/1200
+---
 **Sprint Review:**
 - Landing page ve UI tasarımları tamamlandı
 - Hasta veri formu ve PDF upload özellikleri eklendi
 - Backend API altyapısı kuruldu
 - Prisma ile veritabanı şeması oluşturuldu
+---
 **Sprint 1 Retrospective:**
 - It was decided to design the database schema in Sprint 1.
 - It was decided to create the basic API Endpoints.
