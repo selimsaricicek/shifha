@@ -139,28 +139,30 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 <details>
   <summary><h2>App Screenshots</h2></summary>
 
+### Landing Page
+![LandingPage](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/LandingPageS1.png)
+
+---
 ### Login Page
-![Loginpage]({ekleyin{loginpage_screenshot}})
+![Loginpage](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/LoginPageS1.png)
 
 ---
 ### Dashboard Page
-![Dashboard]({ekleyin{dashboard_screenshot}})
+![Dashboard](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/AppointmentS1.png)
 
 ---
 ### Patient Page
-![PatientPage]({ekleyin{patientpage_screenshot}})
+![PatientPage1](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/PatientsInfo1.1S1.png)
+![PatientPage2](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/PatientsInfoS1.png)
 
 ---
-### Analysis Page
-![AnalysisPage]({ekleyin{analysispage_screenshot}})
+### AI Assistant Page
+![AI_AssistantPage](https://github.com/selimsaricicek/shifha/blob/main/App_ScreenshotsS1/AI_AssistantPage.png)
 
 ---
-### Profile Page
-![ProfilePage]({ekleyin{profilepage_screenshot}})
 
----
-### Settings Page
-<img src="{ekleyin{settingspage_screenshot}}" width="500">
+
+
 
 </details>
 
@@ -176,11 +178,40 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 <details>
   <summary><h2>Project Management</h2></summary>
 
-![pm_1]({ekleyin{pm_1}})
-![pm_2]({ekleyin{pm_2}})
-![pm_3]({ekleyin{pm_3}})
-![pm_4]({ekleyin{pm_4}})
-![pm_5]({ekleyin{pm_5}})
+### Jira Board 1
+![Jira1](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/1.jpg)
+
+---
+### Jira Board 2
+![Jira2](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/2.jpg)
+
+---
+### Jira Board 3
+![Jira3](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/3.jpg)
+
+---
+### Jira Board 4
+![Jira4](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/4.jpg)
+
+---
+### Jira Board 5
+![Jira5](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/5.jpg)
+
+---
+### Jira Board 6
+![Jira6](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/6.jpg)
+
+---
+### Jira Board 7
+![Jira7](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/7.jpg)
+
+---
+### Jira Board 8
+![Jira8](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/8.jpg)
+
+---
+### Jira Board 9
+![Jira9](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS1/jira/9.jpg)
 
 </details>
 
@@ -188,8 +219,12 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 <details>
   <summary><h2>Burndown Chart</h2></summary>
 
-![Burndown Chart 1]({ekleyin{burndown_1}})
-![Burndown Chart 2]({ekleyin{burndown_2}})
+### Burndown Chart 1
+![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownchartsS1/burndownchartS1.1.jpg)
+
+---
+### Burndown Chart 2
+![Burndown Chart 2](https://github.com/selimsaricicek/shifha/blob/main/burndownchartsS1/burndowncharts1.2.jpg)
 
 </details>
 
@@ -263,24 +298,20 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 
-- **Sprint Notes:**
-   * {ekleyin{sprint_notes}}
-
-- **Expected point completion within Sprint:** {ekleyin{expected_points}}
-
-- **Point Completion Logic:**
-  {ekleyin{point_completion_logic}}
-
-- **Daily Scrum:** [Sprint 1 Daily Scrum](https://github.com/selimsaricicek/shifha/tree/main/scrumsS1)
-
-- **Sprint Review:**
-    * {ekleyin{sprint_review}}
-
-- **Sprint Review Participants:**  
-  {ekleyin{sprint_review_participants}}
-
-- **Sprint Retrospective:**
-   * {ekleyin{sprint_retrospective}}
+**Sprint Notes:**
+- [x] Figma ile UI/UX tasarımı
+- [x] Jira ile proje yönetimi
+- [x] WhatsApp & Google Meets ile daily scrum
+- [x] E-mail tabanlı giriş sistemi
+- [x] React + Tailwind CSS ile landing page
+**Expected Points:** 300
+**Point Completion:** 300/1200
+**Sprint Review:**
+- Landing page ve UI tasarımları tamamlandı
+- Hasta veri formu ve PDF upload özellikleri eklendi
+- Backend API altyapısı kuruldu
+- Prisma ile veritabanı şeması oluşturuldu
+**Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
 <details>
   <summary><h4>Türkçe açıklama</h4></summary>
