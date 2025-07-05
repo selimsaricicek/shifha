@@ -46,47 +46,121 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ## Product Features
 
-- AI-powered blood test analysis
-- Abnormal value detection and medical suggestions
-- Patient history management and sharing
-- Internal doctor-to-doctor messaging
-- Real-time notifications for urgent results
-- QR code-based secure data sharing
-- Web and mobile platform support
+### 🩸 **Akıllı Kan Tahlili Analizi**
+- Yapay zeka destekli anormal değer tespiti
+- Saniyeler içinde potansiyel risk analizi
+- Her tahlil türüne özel klinik yorumlar
+- Doktorlara hızlı ön değerlendirme sunumu
+
+### 🩺 **Diyabet Teşhis Desteği**
+- Hasta öyküsü ve kan değerlerini birleştiren AI analizi
+- Diyabet risk faktörlerinin erken tespiti
+- Kapsamlı teşhis önerileri ve klinik yorumlar
+- Hasta takip süreçlerinin optimizasyonu
+
+### 📱 **Mobil Uygulama Desteği**
+- Anlık tahlil sonucu bildirimleri
+- Aciliyet durumlarında anında uyarı sistemi
+- Doktorlar arası hızlı iletişim
+- Hasta verilerine mobil erişim
+
+### 👥 **Merkezi Hasta Yönetimi**
+- T.C. kimlik numarası ile hasta arama
+- Kapsamlı hasta profili (yaş, kilo, beslenme alışkanlıkları)
+- Aile hastalık geçmişi ve ilaç kullanımı takibi
+- Doktor notları ve teşhis geçmişi
+
+### 🔄 **Doktorlar Arası İletişim**
+- Hasta bazlı güvenli mesajlaşma sistemi
+- Karmaşık vakalar için konsültasyon imkanı
+- Hasta verilerinin doktorlar arası paylaşımı
+- Sebep-sonuç ilişkili not sistemi
+
+### 🌍 **Uluslararası Veri Paylaşımı**
+- QR kod destekli güvenli hasta bilgisi paylaşımı
+- Yurtdışı doktorlarla hasta geçmişi paylaşımı
+- Şifreli ve güvenli veri transferi
+- Hasta onayı ile kontrollü paylaşım
 
 ---
 
 ## Target Audience
 
-- Doctors and healthcare professionals
-- Patients seeking efficient and secure health data management
-- Hospitals and clinics aiming to digitalize and optimize workflows
+### 👨‍⚕️ **Doktorlar ve Sağlık Profesyonelleri**
+- Pratisyen hekimler ve uzmanlar
+- Laboratuvar doktorları ve teknisyenleri
+- Acil servis ve yoğun bakım doktorları
+- Aile hekimleri ve poliklinik doktorları
+
+### 🏥 **Sağlık Kurumları**
+- Hastaneler ve tıp merkezleri
+- Özel klinikler ve muayenehaneler
+- Laboratuvar ve görüntüleme merkezleri
+- Sağlık Bakanlığı ve il sağlık müdürlükleri
+
+### 👥 **Hastalar**
+- Kronik hastalık takibi gereken hastalar
+- Birden fazla doktora başvuran hastalar
+- Yurtdışı seyahat eden hastalar
+- Detaylı sağlık geçmişi takibi isteyen hastalar
+
+---
+
+## Technology Stack
+
+### 🎨 **Frontend**
+- **React.js** - Modern web uygulaması geliştirme
+- **Tailwind CSS** - Responsive ve modern UI tasarımı
+- **Lucide React** - İkon kütüphanesi
+- **Context API** - State yönetimi
+
+### ⚙️ **Backend**
+- **Node.js** - Server-side JavaScript runtime
+- **Express.js** - Web framework
+- **Prisma ORM** - Database management
+- **PostgreSQL** - Relational database
+- **JWT** - Authentication
+
+### 🤖 **AI & Services**
+- **Google Gemini AI** - Kan tahlili analizi
+- **Supabase** - Cloud database ve authentication
+- **PDF Parser** - Tahlil sonuçlarını otomatik okuma
+
+### 📱 **Mobile & Communication**
+- **React Native** (Planlanan) - Mobil uygulama
+- **Push Notifications** - Anlık bildirimler
+- **QR Code Generation** - Güvenli veri paylaşımı
 
 ---
 
 ## Sprints
 
 <details>
-<summary><strong>Sprint 1</strong></summary>
+<summary><strong>Sprint 1 - Temel Altyapı ve UI</strong></summary>
 
 - **Sprint Notes:**  
-  - [ ] Figma for UI design  
-  - [ ] Jira for project management  
-  - [ ] WhatsApp & Google Meets for daily scrum  
-  - [ ] E-mail for login system  
+  - [x] Figma ile UI/UX tasarımı  
+  - [x] Jira ile proje yönetimi  
+  - [x] WhatsApp & Google Meets ile daily scrum  
+  - [x] E-mail tabanlı giriş sistemi  
+  - [x] React + Tailwind CSS ile landing page
 - **Expected Points:** 300  
 - **Point Completion:** 300/1200  
 - **Sprint Review:**  
-  - Prototypes and designs completed  
-  - Habit-forming feature highlighted  
-  - Market research and user interviews done  
-  - Project management method determined  
-- **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan.
+  - Landing page ve UI tasarımları tamamlandı
+  - Hasta veri formu ve PDF upload özellikleri eklendi
+  - Backend API altyapısı kuruldu
+  - Prisma ile veritabanı şeması oluşturuldu
+- **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
 </details>
+
+
+
+
 
 <!-- Diğer sprintler için de benzer şekilde ekleyebilirsiniz -->
 
----
 
 ## Endnotes
 
