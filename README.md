@@ -16,7 +16,7 @@
 
 ## Product Description
 
-<details>
+
 <summary><strong>Türkçe Açıklama</strong></summary>
 
 Günümüzde sağlık hizmetlerinin daha hızlı, doğru ve kişiselleştirilmiş verilere dayalı olması, hem doktorlar hem de hastalar için kritik bir gereklilik haline gelmiştir. Shifha, bu ihtiyaca yönelik geliştirilen, yapay zeka destekli akıllı bir doktor asistanıdır. Web ve mobil platformlar üzerinden çalışan bu sistem, doktorların hastalarıyla ilgili verilere anında ve doğru biçimde ulaşmasını sağlayarak klinik karar alma süreçlerini kolaylaştırır.
@@ -27,7 +27,7 @@ Shifha ile doktorlar, hastaların yaş, kilo, beslenme alışkanlıkları, ilaç
 
 Sonuç olarak, Shifha, modern sağlık sisteminde doktorların karar alma süreçlerini hızlandırmak ve hasta geçmişini bütünsel bir şekilde yönetmek için geliştirilen güçlü bir çözümdür.
 
-</details>
+
 
 <details>
 <summary><strong>English Description</strong></summary>
