@@ -453,7 +453,7 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 - **Product Backlog:** [Jira Board Link](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
 
 ### Expected Points
-_'300'_ Points
+_300_ Points
 
 ### Point Completion Logic
 A total target of 1200 points was set. In the first sprint, _'300'_ points were targeted because the idea was planned and the designs were made, and were completed. In the second sprint, _'500'_ points are targeted as the focus will be on writing code and adding APIs. In the third sprint, a target of _'400'_ points was set as the remaining tasks would be completed and integration work would be carried out.
