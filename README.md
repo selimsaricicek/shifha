@@ -168,14 +168,6 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 <details>
-  <summary><h2>App Map</h2></summary>
-
-![App Flowchart]({ekleyin{app_map}})
-
-</details>
-
----
-<details>
   <summary><h2>Project Management</h2></summary>
 
 ### Jira Board 1
@@ -217,13 +209,13 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 <details>
-  <summary><h2>Burndown Chart</h2></summary>
+  <summary><h2>Burndown Chart S1</h2></summary>
 
 ### Burndown Chart 1
 ![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownchartsS1/burndownchartS1.1.jpg)
 
 ---
-### Burndown Chart 2
+### Burndown Graph 2
 ![Burndown Chart 2](https://github.com/selimsaricicek/shifha/blob/main/burndownchartsS1/burndowncharts1.2.jpg)
 
 </details>
@@ -294,6 +286,11 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 | ![dailyScrum11.4.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.4.png) | ![dailyScrum11.5.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.5.png) | ![dailyScrum11.6.png](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.6.png) |
 | ![dailyScrum11.7.jpg](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrum_day11/dailyScrum11.7.jpg) |  |  |
 
+### 12. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum12.1.jpg](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrums_day12/dailyScrum12.1.jpg) | ![dailyScrum12.2.jpg](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrums_day12/dailyScrum12.2.jpg) | ![dailyScrum12.3.jpg](https://github.com/selimsaricicek/shifha/blob/main/scrumsS1/daily_scrums_day12/dailyScrum12.3.jpg) |
+
 </details>
 
 ---
@@ -311,13 +308,18 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 - Hasta veri formu ve PDF upload özellikleri eklendi
 - Backend API altyapısı kuruldu
 - Prisma ile veritabanı şeması oluşturuldu
+**Sprint 1 Retrospective:**
+- It was decided to design the database schema in Sprint 1.
+- It was decided to create the basic API Endpoints.
+- It was decided to complete the first step of the authentication system.
+- It was decided to develop the Landing Page and Login Page.
+- It was decided to develop the Doctor UI.
+- It was decided to create the AI prompts for blood tests and diabetes diagnosis.
+- It was decided to postpone the cancer diagnosis and admin panel features.
+- It was decided to conduct research on blood test results and diabetes findings.
 **Participants:** Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
 
-<details>
-  <summary><h4>Türkçe açıklama</h4></summary>
 
-  {ekleyin{turkce_aciklama}}
-</details>
 
 </details>
 
