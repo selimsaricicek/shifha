@@ -7,11 +7,11 @@
 
 | Name                | Title           | Social |
 |---------------------|----------------|--------|
-| [K. Selim Sarıçiçek](#)         | Scrum Master        | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/kenan-selim-sarıçiçek ) |
-| [Mehmet Pektaş](#)         | Developer        | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](http://www.linkedin.com/in/mehmetpkts) |
-| [Miyase Elif Aksoy](#)         | Developer     | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](http://www.linkedin.com/in/myelifss) |
-| [Erva Nazlı Tüccar](#)         | Product Owner       | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
-| [Nurhayat Doğan](#)         | Developer         | [[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>]](https://www.linkedin.com/in/1nurhayat-dogan/) |
+| [K. Selim Sarıçiçek](#)         | Scrum Master        | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](https://www.linkedin.com/in/kenan-selim-sarıçiçek ) |
+| [Mehmet Pektaş](#)         | Developer        | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](http://www.linkedin.com/in/mehmetpkts) |
+| [Miyase Elif Aksoy](#)         | Developer     | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](http://www.linkedin.com/in/myelifss) |
+| [Erva Nazlı Tüccar](#)         | Product Owner       | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
+| [Nurhayat Doğan](#)         | Developer         | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](https://www.linkedin.com/in/1nurhayat-dogan/) |
 ---
 
 ## Product Description
@@ -152,11 +152,69 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 </details>
 
+## Sprint 1 - Daily Scrum Kareleri
 
+### 1. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum1.png](daily_scrum_day1/dailyScrum1.png) | ![dailyScrum1.1.png](daily_scrum_day1/dailyScrum1.1.png) | ![dailyScrum1.2.png](daily_scrum_day1/dailyScrum1.2.png) |
 
+### 2. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum2.1.png](daily_scrum_day2/dailyScrum2.1.png) | ![dailyScrum2.2.png](daily_scrum_day2/dailyScrum2.2.png) | ![dailyScrum2.3.png](daily_scrum_day2/dailyScrum2.3.png) |
+| ![dailyScrum2.4.png](daily_scrum_day2/dailyScrum2.4.png) |  |  |
 
+### 3. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum3.1.png](daily_scrum_day3/dailyScrum3.1.png) | ![dailyScrum3.2.png](daily_scrum_day3/dailyScrum3.2.png) | ![dailyScrum3.3.png](daily_scrum_day3/dailyScrum3.3.png) |
+| ![dailyScrum3.4.png](daily_scrum_day3/dailyScrum3.4.png) | ![dailyScrum3.5.png](daily_scrum_day3/dailyScrum3.5.png) | ![dailyScrum3.6.jpg](daily_scrum_day3/dailyScrum3.6.jpg) |
 
-<!-- Diğer sprintler için de benzer şekilde ekleyebilirsiniz -->
+### 4. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum4.1.png](daily_scrum_day4/dailyScrum4.1.png) | ![dailyScrum4.2.png](daily_scrum_day4/dailyScrum4.2.png) | ![dailyScrum4.3.jpg](daily_scrum_day4/dailyScrum4.3.jpg) |
+
+### 5. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum5.1.png](daily_scrum_day5/dailyScrum5.1.png) |  |  |
+
+### 6. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum6.1.png](daily_scrum_day6/dailyScrum6.1.png) | ![dailyScrum6.2.png](daily_scrum_day6/dailyScrum6.2.png) | ![dailyScrum6.3.png](daily_scrum_day6/dailyScrum6.3.png) |
+| ![dailyScrum6.4.png](daily_scrum_day6/dailyScrum6.4.png) |  |  |
+
+### 7. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum7.1.png](daily_scrum_day7/dailyScrum7.1.png) | ![dailyScrum7.2.png](daily_scrum_day7/dailyScrum7.2.png) | ![dailyScrum7.3.jpg](daily_scrum_day7/dailyScrum7.3.jpg) |
+
+### 8. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum8.1.png](daily_scrum_day8/dailyScrum8.1.png) | ![dailyScrum8.2.png](daily_scrum_day8/dailyScrum8.2.png) | ![dailyScrum8.3.png](daily_scrum_day8/dailyScrum8.3.png) |
+| ![dailyScrum8.4.jpg](daily_scrum_day8/dailyScrum8.4.jpg) |  |  |
+
+### 9. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum9.1.png](daily_scrum_day9/dailyScrum9.1.png) | ![dailyScrum9.2.png](daily_scrum_day9/dailyScrum9.2.png) | ![dailyScrum9.3.png](daily_scrum_day9/dailyScrum9.3.png) |
+| ![dailyScrum9.4.png](daily_scrum_day9/dailyScrum9.4.png) |  |  |
+
+### 10. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum10.1.png](daily_scrum_day10/dailyScrum10.1.png) | ![dailyScrum10.2.png](daily_scrum_day10/dailyScrum10.2.png) | ![dailyScrum10.3.png](daily_scrum_day10/dailyScrum10.3.png) |
+
+### 11. Gün
+|  |  |  |
+|--|--|--|
+| ![dailyScrum11.1.png](daily_scrum_day11/dailyScrum11.1.png) | ![dailyScrum11.2.png](daily_scrum_day11/dailyScrum11.2.png) | ![dailyScrum11.3.png](daily_scrum_day11/dailyScrum11.3.png) |
+| ![dailyScrum11.4.png](daily_scrum_day11/dailyScrum11.4.png) | ![dailyScrum11.5.png](daily_scrum_day11/dailyScrum11.5.png) | ![dailyScrum11.6.png](daily_scrum_day11/dailyScrum11.6.png) |
+| ![dailyScrum11.7.jpg](daily_scrum_day11/dailyScrum11.7.jpg) |  |  |
 
 
 ## Endnotes
