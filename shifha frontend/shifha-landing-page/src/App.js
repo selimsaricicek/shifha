@@ -87,6 +87,7 @@ function App() {
 
     return (
         <div className="font-sans">
+            <ToastContainer />
             {toast && <Toast key={toast.key} message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
 
             {/* Manuel `renderPage()` fonksiyonu yerine Routes bileşeni kullanılır */}
