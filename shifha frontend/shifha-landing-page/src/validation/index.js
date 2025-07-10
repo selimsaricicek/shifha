@@ -1,14 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom'; // Bu satırı ekleyin
 import App from './App';
 import './App.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter> {/* App bileşenini bununla sarmalayın */}
-      <App />
-    </BrowserRouter>
+    <App />
   </React.StrictMode>
 );
