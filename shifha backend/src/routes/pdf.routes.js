@@ -29,7 +29,7 @@ router.post('/parse', pdfRateLimiter, upload.single('file'), async (req, res, ne
       throw new Error('PDF dosyası yüklenmedi.');
     }
     const result = await parsePatientPdf(req.file.buffer);
-    res.json({ success: true, data: result });
+    res.status(201).json(result);
   } catch (err) {
     // Multer veya fileFilter hatası için özel mesaj
     if (err instanceof multer.MulterError || err.message.includes('PDF')) {

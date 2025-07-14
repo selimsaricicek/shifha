@@ -354,7 +354,7 @@ function DashboardPageInner() {
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
                                     style={{ background: "#E0E7FF", color: "#4F46E5" }}>
-                                    {patient.ad_soyad
+                                    {(patient.ad_soyad || '') 
                                         .split(' ')
                                         .map((s) => s[0])
                                         .join('')
@@ -763,7 +763,7 @@ function PatientDetailPageRemote() {
         <div>
           <InfoRowEditable label="Kronik Hastalıklar" value={patient.kronik_hastaliklar} onSave={v => handleFieldUpdate('kronik_hastaliklar', v)} />
           <InfoRowEditable label="Alerjiler" value={patient.allerjiler} onSave={v => handleFieldUpdate('allerjiler', v)} />
-          <InfoRowEditable label="Tanı" value={patient.onTani?.join(", ")} onSave={v => handleFieldUpdate('onTani', v.split(/,\s*/))} />
+          <InfoRowEditable label="Tanı" value={patient.onTani?.join(", ")} onSave={v => handleFieldUpdate('onTani', (v || '').split(/,\s*/))} />
           <InfoRowEditable label="Plan" value={patient.plan?.takip} onSave={v => handleFieldUpdate('plan', { ...patient.plan, takip: v })} />
         </div>
       </div>
