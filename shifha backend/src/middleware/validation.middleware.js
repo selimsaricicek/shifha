@@ -26,4 +26,20 @@ function validatePatient(req, res, next) {
   }
 }
 
-module.exports = { validatePatient }; 
+// Assay analysis için örnek validation şeması
+const assayAnalysisSchema = z.object({
+  sampleId: z.string().min(1, 'Numune ID zorunlu'),
+  testType: z.string().min(1, 'Test tipi zorunlu'),
+  values: z.array(z.number()).min(1, 'En az bir değer girilmeli')
+});
+
+function validateAssayAnalysis(req, res, next) {
+  try {
+    assayAnalysisSchema.parse(req.body);
+    next();
+  } catch (err) {
+    return res.status(400).json({ success: false, error: 'Geçersiz analiz verisi', details: err.errors });
+  }
+}
+
+module.exports = { validatePatient, validateAssayAnalysis }; 

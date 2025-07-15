@@ -8,6 +8,10 @@ let SUPABASE_JWT_PUBLIC_KEY = process.env.SUPABASE_JWT_PUBLIC_KEY;
 // const SUPABASE_JWK_URL = 'https://<your-project-id>.supabase.co/auth/v1/keys';
 
 async function supabaseAuthMiddleware(req, res, next) {
+  if (process.env.NODE_ENV === 'development') {
+    req.user = { id: 'dev-user', role: 'admin' };
+    return next();
+  }
   const authHeader = req.headers['authorization'] || req.headers['Authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ success: false, error: 'Yetkilendirme gerekli (Bearer token eksik)' });

@@ -10,9 +10,12 @@ dotenv.config();
 // Helmet ile HTTP header güvenliği
 app.use(helmet());
 
-// Geliştirme ortamı için CORS'u esnek bırak
+// CORS yapılandırması: Geliştirme ve production ortamı için güvenli ayar
+const allowedOrigins = process.env.PRODUCTION_ORIGINS
+  ? process.env.PRODUCTION_ORIGINS.split(',')
+  : ["http://localhost:3000"];
 app.use(cors({
-  origin: ["http://localhost:3000"],
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -28,9 +31,23 @@ const patientRoutes = require('./routes/patient.routes');
 const authRoutes = require('./routes/auth.routes');
 const errorMiddleware = require('./middleware/error.middleware');
 
+// Hasta işlemleri için rate limit (ör: 5 istek/dk)
+const patientLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 dakika
+  max: 5,
+  message: { success: false, error: 'Çok fazla istek! Lütfen daha sonra tekrar deneyin.' }
+});
+// Analiz işlemleri için rate limit (ör: 3 istek/dk)
+const analysisLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 dakika
+  max: 3,
+  message: { success: false, error: 'Çok fazla analiz isteği! Lütfen daha sonra tekrar deneyin.' }
+});
+
 app.use(express.json({ limit: '10mb' })); // Büyük PDF dosyaları için limit artırıldı
 app.use('/api/pdf', pdfRoutes);
-app.use('/api/patients', patientRoutes);
+app.use('/api/patients', patientLimiter, patientRoutes);
+app.use('/api/analysis', analysisLimiter, require('./routes/analysis.routes'));
 app.use('/api/auth', authLimiter, authRoutes);
 
 // Merkezi error handler en sonda

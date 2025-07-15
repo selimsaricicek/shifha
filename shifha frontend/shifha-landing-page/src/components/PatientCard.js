@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pencil } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 export default function PatientCard({ patient, onEdit, onDelete, onView }) {
   return (
@@ -17,10 +18,10 @@ export default function PatientCard({ patient, onEdit, onDelete, onView }) {
             .toUpperCase()}
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900">{patient.ad_soyad}</h3>
-          <p className="text-sm text-gray-500">T.C. {patient.tc_kimlik_no}</p>
+          <h3 className="text-lg font-bold text-gray-900" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(patient.ad_soyad)}} />
+          <p className="text-sm text-gray-500">T.C. {DOMPurify.sanitize(patient.tc_kimlik_no)}</p>
           <p className="text-sm text-gray-500">
-            {patient.yas} yaşında, {patient.cinsiyet}
+            {DOMPurify.sanitize(String(patient.yas))} yaşında, {DOMPurify.sanitize(patient.cinsiyet)}
           </p>
         </div>
       </div>
@@ -28,7 +29,7 @@ export default function PatientCard({ patient, onEdit, onDelete, onView }) {
         patient.tibbi_gecmis.allerjiler[0] !== 'Bilinmiyor' && (
           <div className="mt-2">
             <p className="text-xs text-red-600 font-semibold">
-              Alerji: {patient.tibbi_gecmis.allerjiler.join(', ')}
+              Alerji: {DOMPurify.sanitize(patient.tibbi_gecmis.allerjiler.join(', '))}
             </p>
           </div>
         )}
