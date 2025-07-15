@@ -25,31 +25,65 @@ Sen, "Shifha Doktor Asistanı" adlı, yüksek düzeyde uzmanlaşmış bir yapay 
 Tüm çıktını, SADECE ve SADECE aşağıda tanımlanan yapıya uygun, geçerli bir JSON nesnesi olarak oluşturacaksın. Cevabının başına veya sonuna başka hiçbir açıklama, selamlama, "İşte JSON:" gibi bir metin veya markdown formatı (\\\`json) ekleme. Cevabın doğrudan '{' ile başlamalı ve '}' ile bitmelidir.
 
 {
-  "tcKimlikNo": "12345678901",
-  "adSoyad": "ÖRNEK HASTA ADI",
-  "yas": 45,
-  "cinsiyet": "Erkek",
-  "dogumTarihi": "1979-01-15",
-  "hastaVeriAnaliziOzeti": "1-2 cümlelik kısa klinik özet buraya gelecek.",
-  "potansiyelTanilar": [
-    {
-      "hastalikAdi": "Örnek Hastalık Adı 1",
-      "olasilikSkoru": 75,
-      "destekleyiciKanitlar": [
-        "Bulgu 1: Örn: Yüksek Glukoz (Açlık): 140 mg/dL",
-        "Bulgu 2: Örn: Hasta öyküsünde belirtilen poliüri ve polifaji",
-        "Bulgu 3: Örn: Aile öyküsünde Tip 2 Diyabet varlığı"
-      ]
-    },
-    {
-      "hastalikAdi": "Örnek Hastalık Adı 2",
-      "olasilikSkoru": 15,
-      "destekleyiciKanitlar": [
-        "Bulgu 1",
-        "Bulgu 2"
-      ]
-    }
-  ]
+  "tcKimlikNo": "23456789012",
+  "adSoyad": "Zeynep Çelik",
+  "yas": 28,
+  "cinsiyet": "Kadın",
+  "dogumTarihi": "1997-11-10",
+  "boy": "165 cm",
+  "kilo": "58 kg",
+  "vki": "21.3",
+  "kanGrubu": "A Rh(-)",
+  "medeniDurum": "Bekar",
+  "meslek": "Grafik Tasarımcı",
+  "egitimDurumu": "Lisans",
+  "beslenme": "Vejetaryen beslenmeye yakın, kırmızı et tüketimi çok az, düzensiz öğünler",
+  "sigaraAlkol": "Kullanmıyor",
+  "hareket": "Düşük",
+  "uyku": "Günde 7-8 saat, ancak sabah yorgun uyanma",
+  "psikoloji": "Yorgunluğa bağlı konsantrasyon güçlüğü ve isteksizlik",
+  "sosyalDestek": "Ailesi ile yaşıyor",
+  "uykuBozuklugu": "Yok",
+  "kronikHastaliklar": [
+      "Bilinen kronik hastalık yok"
+  ],
+  "ameliyatlar": [
+      "Önemli bir operasyon öyküsü yok"
+  ],
+  "allerjiler": [
+      "Bilinen alerjisi yok"
+  ],
+  "aileOykusu": [
+      "Annede demir eksikliği anemisi öyküsü"
+  ],
+  "enfeksiyonlar": [
+      "Özel bir durum yok"
+  ],
+  "ilacDuzenli": [
+      "Yok"
+  ],
+  "ilacDuzensiz": [
+      "Ağrı kesici (ibuprofen), adet dönemlerinde"
+  ],
+  "ilacAlternatif": [
+      "Yok"
+  ],
+  "patient_data": {
+    "hastaVeriAnaliziOzeti": "...",
+    "potansiyelTanilar": [
+        {
+            "hastalikAdi": "Demir Eksikliği Anemisi",
+            "olasilikSkoru": 90,
+            "destekleyiciKanitlar": [
+                "Ferritin: 8 ng/mL (Düşük)",
+                "Hb (Hemoglobin): 9.8 g/dL (Düşük)",
+                "MCV: 72 fL (Düşük)",
+                "Sürekli yorgunluk, solukluk, saç dökülmesi şikayetleri",
+                "Vejetaryen beslenme ve annede anemi öyküsü"
+            ]
+        }
+    ]
+  }
 }
 
 ## SINIRLAR VE ETKİLEŞİM KURALLARI ##
