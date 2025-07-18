@@ -34,14 +34,17 @@ const getAllPatients = async (req, res, next) => {
  */
 const getPatientByTC = async (req, res, next) => {
   try {
-    const { tc } = req.params;
-    console.log(`getPatientByTC isteği alındı: TC=${tc}`);
+    let { tc } = req.params;
+    tc = String(tc).trim();
+    console.log(`getPatientByTC isteği alındı: TC=`, tc, '| typeof:', typeof tc);
 
     const { data, error } = await supabase
       .from('patients')
       .select('*')
       .eq('tc_kimlik_no', tc)
       .single(); // Sadece 1 sonuç bekliyoruz
+
+    console.log('Supabase dönen data:', data, '| error:', error);
 
     if (error) {
       console.error('Supabase get by TC error:', error);

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
-    Users, ArrowRightCircle, FileText, Dna, AlertTriangle, CheckCircle,
-    Edit, Save, MessageCircle, Send, PlusCircle, Quote, BrainCircuit
+    Users, ArrowRightCircle, FileText, Dna, CheckCircle,
+    Edit, Save, BrainCircuit
 } from 'lucide-react';
 
 // ===================================================================================
@@ -17,32 +18,7 @@ const getTodayDateString = () => {
     return `${year}-${month}-${day}`;
 };
 
-const TodaysCriticalResults = ({ labResults = [] }) => {
-    const todaysAbnormalResults = labResults
-        .filter(test => test.date === getTodayDateString())
-        .flatMap(test => (test.results || []).filter(res => res.isAbnormal));
-
-    if (todaysAbnormalResults.length === 0) {
-        return null;
-    }
-
-    return (
-        <div className="mt-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg animate-fadeIn">
-            <div className="flex items-center">
-                <AlertTriangle className="h-6 w-6 text-rose-600 mr-3" />
-                <h3 className="text-lg font-bold text-rose-800">Bugünün Önemli Bulguları</h3>
-            </div>
-            <ul className="mt-2 list-disc list-inside space-y-1 text-rose-700">
-                {todaysAbnormalResults.map(res => (
-                    <li key={res.parameter}>
-                        <span className="font-semibold">{res.parameter}:</span> {res.value} {res.unit}
-                        <span className="text-xs ml-2">(Normal: {res.normal})</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-};
+// TodaysCriticalResults fonksiyonu kaldırıldı
 
 const TabButton = ({ title, icon, isActive, onClick }) => (
     <button onClick={onClick} className={`${ isActive ? 'border-cyan-500 text-cyan-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors`}>
@@ -50,66 +26,66 @@ const TabButton = ({ title, icon, isActive, onClick }) => (
     </button>
 );
 
+// Her sekme için ayrı component (içerikleri aşağıda doldurulacak)
 const SummaryTab = ({ patient }) => (
-    <div className="animate-fadeIn">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Kritik Tıbbi Özet</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-rose-50 border-l-4 border-rose-500 text-rose-700 p-4 rounded-r-lg">
-                <h4 className="font-bold">Alerjiler</h4>
-                <p>{(patient.allergies || []).join(', ') || 'Raporlanmadı'}</p>
-            </div>
-            <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg">
-                <h4 className="font-bold">Kronik Hastalıklar</h4>
-                <p>{(patient.chronicDiseases || []).join(', ') || 'Raporlanmadı'}</p>
-            </div>
-        </div>
+  <div className="animate-fadeIn">
+    <h3 className="text-xl font-bold text-gray-800 mb-4">Kritik Tıbbi Özet</h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-rose-50 border-l-4 border-rose-500 text-rose-700 p-4 rounded-r-lg">
+        <h4 className="font-bold">Alerjiler</h4>
+        <p>{(patient.allerjiler || patient.patient_data?.allerjiler || '').toString() || 'Raporlanmadı'}</p>
+      </div>
+      <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg">
+        <h4 className="font-bold">Kronik Hastalıklar</h4>
+        <p>{(patient.kronik_hastaliklar || patient.patient_data?.kronikHastaliklar || '').toString() || 'Raporlanmadı'}</p>
+      </div>
     </div>
+  </div>
+);
+
+// Move InfoItem and EditableInfoItem to top level
+const InfoItem = ({ label, value }) => (
+  <div className="grid grid-cols-3 gap-4 py-2">
+    <dt className="font-medium text-gray-500">{label}</dt>
+    <dd className="text-gray-700 col-span-2">{value}</dd>
+  </div>
+);
+const EditableInfoItem = ({ label, value, name, type = 'text', onChange }) => (
+  <div className="grid grid-cols-3 gap-4 items-center py-1">
+    <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
+    <input type={type} id={name} name={name} value={value} onChange={(e) => onChange(name, e.target.value)} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
+  </div>
 );
 
 const InfoTab = ({ patient, isEditing, onChange, onSave, onToggleEdit }) => {
-    const InfoItem = ({ label, value }) => (
-        <div className="grid grid-cols-3 gap-4 py-2">
-            <dt className="font-medium text-gray-500">{label}</dt>
-            <dd className="text-gray-700 col-span-2">{value}</dd>
+  return (
+    <div className="animate-fadeIn">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-bold text-gray-800">Detaylı Hasta Bilgileri</h3>
+        <button onClick={isEditing ? onSave : onToggleEdit} className={`flex items-center font-bold py-2 px-4 rounded-lg transition-colors ${isEditing ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+          {isEditing ? <><Save size={18} className="mr-2"/> Kaydet</> : <><Edit size={18} className="mr-2"/> Bilgileri Güncelle</>}
+        </button>
+      </div>
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 p-4 rounded-lg ${isEditing ? 'bg-gray-50' : ''}`}> 
+        <div className="divide-y divide-gray-200">
+          {isEditing ? <EditableInfoItem label="Ad Soyad" name="ad_soyad" value={patient.ad_soyad || ''} onChange={onChange} /> : <InfoItem label="Ad Soyad" value={patient.ad_soyad || ''} />}
+          {isEditing ? <EditableInfoItem label="T.C. Kimlik No" name="tc_kimlik_no" value={patient.tc_kimlik_no || ''} onChange={onChange} /> : <InfoItem label="T.C. Kimlik No" value={patient.tc_kimlik_no || ''} />}
+          {isEditing ? <EditableInfoItem label="Doğum Tarihi" name="dogum_tarihi" value={patient.dogum_tarihi || ''} onChange={onChange} /> : <InfoItem label="Doğum Tarihi" value={patient.dogum_tarihi || ''} />}
+          {isEditing ? <EditableInfoItem label="Yaş" name="yas" value={patient.yas || ''} type="number" onChange={onChange}/> : <InfoItem label="Yaş" value={patient.yas || ''} />}
+          {isEditing ? <EditableInfoItem label="Cinsiyet" name="cinsiyet" value={patient.cinsiyet || ''} onChange={onChange} /> : <InfoItem label="Cinsiyet" value={patient.cinsiyet || ''} />}
+          {isEditing ? <EditableInfoItem label="Boy (cm)" name="boy" value={patient.boy || ''} type="number" onChange={onChange}/> : <InfoItem label="Boy (cm)" value={patient.boy || ''} />}
+          {isEditing ? <EditableInfoItem label="Kilo (kg)" name="kilo" value={patient.kilo || ''} type="number" onChange={onChange}/> : <InfoItem label="Kilo (kg)" value={patient.kilo || ''} />}
+          {isEditing ? <EditableInfoItem label="Kan Grubu" name="kan_grubu" value={patient.kan_grubu || ''} onChange={onChange} /> : <InfoItem label="Kan Grubu" value={patient.kan_grubu || ''} />}
         </div>
-    );
-    const EditableInfoItem = ({ label, value, name, type = 'text' }) => (
-        <div className="grid grid-cols-3 gap-4 items-center py-1">
-            <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
-            <input type={type} id={name} name={name} value={value} onChange={(e) => onChange(name, e.target.value)} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
+        <div className="divide-y divide-gray-200">
+          {isEditing ? <EditableInfoItem label="Kronik Hastalıklar" name="kronik_hastaliklar" value={patient.kronik_hastaliklar || ''} onChange={onChange} /> : <InfoItem label="Kronik Hastalıklar" value={patient.kronik_hastaliklar || ''} />}
+          {isEditing ? <EditableInfoItem label="Alerjiler" name="allerjiler" value={patient.allerjiler || ''} onChange={onChange} /> : <InfoItem label="Alerjiler" value={patient.allerjiler || ''} />}
+          {isEditing ? <EditableInfoItem label="Ameliyatlar" name="ameliyatlar" value={patient.ameliyatlar || ''} onChange={onChange} /> : <InfoItem label="Ameliyatlar" value={patient.ameliyatlar || ''} />}
+          {/* Diğer alanlar ve patient_data içindeki özel alanlar buraya eklenebilir */}
         </div>
-    );
-    const allergiesStr = Array.isArray(patient.allergies) ? patient.allergies.join(', ') : '';
-    const chronicDiseasesStr = Array.isArray(patient.chronicDiseases) ? patient.chronicDiseases.join(', ') : '';
-    
-    return (
-        <div className="animate-fadeIn">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Detaylı Hasta Bilgileri</h3>
-                <button onClick={isEditing ? onSave : onToggleEdit} className={`flex items-center font-bold py-2 px-4 rounded-lg transition-colors ${isEditing ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                    {isEditing ? <><Save size={18} className="mr-2"/> Kaydet</> : <><Edit size={18} className="mr-2"/> Bilgileri Güncelle</>}
-                </button>
-            </div>
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 p-4 rounded-lg ${isEditing ? 'bg-gray-50' : ''}`}>
-                <div className="divide-y divide-gray-200">
-                    {isEditing ? <EditableInfoItem label="Ad Soyad" name="name" value={patient.name} /> : <InfoItem label="Ad Soyad" value={patient.name} />}
-                    {isEditing ? <EditableInfoItem label="Yaş" name="age" value={patient.age} type="number"/> : <InfoItem label="Yaş" value={patient.age} />}
-                    {isEditing ? <EditableInfoItem label="Cinsiyet" name="gender" value={patient.gender} /> : <InfoItem label="Cinsiyet" value={patient.gender} />}
-                    {isEditing ? <EditableInfoItem label="Kan Grubu" name="bloodType" value={patient.bloodType} /> : <InfoItem label="Kan Grubu" value={patient.bloodType} />}
-                </div>
-                <div className="divide-y divide-gray-200">
-                    {isEditing ? <EditableInfoItem label="Boy (cm)" name="height" value={patient.height} type="number"/> : <InfoItem label="Boy (cm)" value={patient.height} />}
-                    {isEditing ? <EditableInfoItem label="Kilo (kg)" name="weight" value={patient.weight} type="number"/> : <InfoItem label="Kilo (kg)" value={patient.weight} />}
-                    <div className="py-1">
-                        {isEditing ? <EditableInfoItem label="Alerjiler (virgülle ayırın)" name="allergies" value={allergiesStr} /> : <InfoItem label="Alerjiler" value={allergiesStr || 'Raporlanmadı'} />}
-                    </div>
-                    <div className="py-1">
-                        {isEditing ? <EditableInfoItem label="Kronik Hastalıklar (virgülle ayırın)" name="chronicDiseases" value={chronicDiseasesStr} /> : <InfoItem label="Kronik Hastalıklar" value={chronicDiseasesStr || 'Raporlanmadı'} />}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 const ValueVisualizer = ({ value, normalRange = "" }) => {
@@ -192,11 +168,43 @@ const LabResultsTab = ({ labResults = [] }) => (
 );
 
 // Diğer Tab bileşenleri... (Radiology, Pathology, Epikriz, DoctorNotes, Consultation)
-const RadiologyTab = ({ reports = [] }) => ( <div className="animate-fadeIn">...</div> );
-const PathologyTab = ({ reports = [] }) => ( <div className="animate-fadeIn">...</div> );
-const EpikrizTab = ({ report = "" }) => ( <div className="animate-fadeIn">...</div> );
-const DoctorNotesTab = ({ notes, newNote, setNewNote, showToast }) => ( <div className="animate-fadeIn">...</div> );
-const ConsultationTab = () => ( <div className="animate-fadeIn">...</div> );
+const RadiologyTab = ({ reports = [] }) => (<div className="animate-fadeIn">Radyoloji raporu bulunamadı.</div>);
+const PathologyTab = ({ reports = [] }) => (<div className="animate-fadeIn">Patoloji raporu bulunamadı.</div>);
+const EpikrizTab = ({ report = "" }) => (<div className="animate-fadeIn">Epikriz raporu bulunamadı.</div>);
+const DoctorNotesTab = ({ notes, onAddNote }) => (
+  <div className="animate-fadeIn">
+    <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
+    <ul className="mb-4">
+      {notes && notes.length > 0 ? notes.map((n, i) => (
+        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{n.text} <span className="text-xs text-gray-400">{n.date}</span></li>
+      )) : <li>Not bulunamadı.</li>}
+    </ul>
+    <form onSubmit={onAddNote} className="flex gap-2">
+      <input name="note" className="border rounded px-2 py-1 flex-1" placeholder="Yeni not..." />
+      <button type="submit" className="bg-cyan-600 text-white px-4 py-1 rounded">Ekle</button>
+    </form>
+  </div>
+);
+const ConsultationTab = ({ consultations }) => (
+  <div className="animate-fadeIn">
+    <h3 className="text-lg font-bold mb-2">Konsültasyonlar</h3>
+    <ul>
+      {consultations && consultations.length > 0 ? consultations.map((c, i) => (
+        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{c.text} <span className="text-xs text-gray-400">{c.date}</span></li>
+      )) : <li>Konsültasyon bulunamadı.</li>}
+    </ul>
+  </div>
+);
+const ReferralTab = ({ referrals }) => (
+  <div className="animate-fadeIn">
+    <h3 className="text-lg font-bold mb-2">Sevkler</h3>
+    <ul>
+      {referrals && referrals.length > 0 ? referrals.map((r, i) => (
+        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{r.text} <span className="text-xs text-gray-400">{r.date}</span></li>
+      )) : <li>Sevk bulunamadı.</li>}
+    </ul>
+  </div>
+);
 
 
 // ===================================================================================
@@ -204,89 +212,112 @@ const ConsultationTab = () => ( <div className="animate-fadeIn">...</div> );
 // ===================================================================================
 
 const PatientDetailPage = () => {
-    const [activeTab, setActiveTab] = useState('summary');
-    const [isEditing, setIsEditing] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [newNote, setNewNote] = useState('');
+  const { tc } = useParams();
+  // All hooks must be called here, unconditionally, before any return
+  const [activeTab, setActiveTab] = useState('summary');
+  const [isEditing, setIsEditing] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [patientData, setPatientData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState([]);
+  const [consultations, setConsultations] = useState([]);
+  const [referrals, setReferrals] = useState([]);
+  // ... other hooks ...
 
-    // Bu veriler normalde bir üst bileşenden (prop) veya API çağrısından gelir.
-    const [patientData, setPatientData] = useState({
-        id: '12345678901', name: 'Ayşe Yılmaz', age: 45, gender: 'Kadın', height: 165, weight: 70, bloodType: 'A+',
-        allergies: ['Penisilin', 'Aspirin'],
-        chronicDiseases: ['Hipertansiyon', 'Tip 2 Diyabet'],
-        labResults: [
-            { testName: 'Tam Kan Sayımı (Hemogram)', date: getTodayDateString(), results: [ { parameter: 'WBC', value: 11.5, normal: '4.0-10.0', unit: '10^9/L', isAbnormal: true }, { parameter: 'RBC', value: 4.8, normal: '4.2-5.4', unit: '10^12/L' } ], aiAnalysis: 'WBC (lökosit) değerindeki yükseklik, vücutta bir enfeksiyon veya inflamasyon olabileceğine işaret edebilir.' },
-            { testName: 'Biyokimya Paneli', date: '2024-05-15', results: [ { parameter: 'Glikoz (Açlık)', value: 135, normal: '70-100', unit: 'mg/dL', isAbnormal: true }], aiAnalysis: 'Açlık kan şekeri ve HbA1c değerlerinin yüksek olması, diyabet kontrolünün gözden geçirilmesi gerektiğini düşündürmektedir.'}
-        ],
-        // Diğer veriler buraya eklenebilir...
-    });
-
-    const handleInfoChange = (field, value) => {
-        const updatedValue = (field === 'allergies' || field === 'chronicDiseases') ? value.split(',').map(s => s.trim()) : value;
-        setPatientData(prev => ({ ...prev, [field]: updatedValue }));
-    };
-
-    const handleSave = () => {
-        setIsEditing(false);
-        showToast("Hasta bilgileri başarıyla güncellendi.");
-        // API kaydetme çağrısı burada yapılabilir.
-    };
-    
-    const showToast = (message) => {
-        setToastMessage(message);
-        setTimeout(() => setToastMessage(''), 3000);
-    };
-
-    const renderActiveTab = () => {
-        switch (activeTab) {
-            case 'summary': return <SummaryTab patient={patientData} />;
-            case 'info': return <InfoTab patient={patientData} isEditing={isEditing} onChange={handleInfoChange} onSave={handleSave} onToggleEdit={() => setIsEditing(!isEditing)} />;
-            case 'labs': return <LabResultsTab labResults={patientData.labResults} />;
-            // Diğer caseler buraya eklenebilir
-            default: return <SummaryTab patient={patientData} />;
+  useEffect(() => {
+    if (!tc || tc === 'undefined') return;
+    setLoading(true);
+    fetch(`/api/patients/${tc}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("API'den dönen data:", data);
+        // data.data varsa onu, yoksa data'nın kendisini ata
+        if (data && data.data) {
+          setPatientData(data.data);
+        } else if (data) {
+          setPatientData(data);
+        } else {
+          setPatientData(null);
         }
-    };
-    
-    return (
-        <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
-            <div className="max-w-7xl mx-auto">
-                <header className="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{patientData.name}</h1>
-                        <p className="text-gray-500">T.C. {patientData.id} - {patientData.age} yaşında, {patientData.gender}</p>
-                    </div>
-                    <button onClick={() => window.history.back()} className="flex items-center text-cyan-600 font-semibold hover:underline">
-                        <ArrowRightCircle size={20} className="mr-2"/> Dashboard'a Geri Dön
-                    </button>
-                </header>
+      })
+      .catch(err => {
+        console.error("Hasta verisi alınırken hata:", err);
+        setPatientData(null);
+      })
+      .finally(() => setLoading(false));
+    fetch(`/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
+    fetch(`/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
+    fetch(`/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
+  }, [tc]);
 
-                <TodaysCriticalResults labResults={patientData.labResults} />
+  if (!tc || tc === 'undefined') {
+    return <div className="p-8 text-center text-red-600 font-bold text-xl">Geçersiz hasta adresi. Lütfen listeden bir hasta seçin.</div>;
+  }
+  if (loading) return <div>Yükleniyor...</div>;
+  if (!patientData) return <div className="p-8 text-center text-red-600 font-bold text-xl">Hasta bulunamadı veya API'den veri alınamadı.</div>;
 
-                <div className="border-b border-gray-200 mt-6">
-                    <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
-                        <TabButton title="Özet" icon={<HeartPulse />} isActive={activeTab === 'summary'} onClick={() => setActiveTab('summary')} />
-                        <TabButton title="Hasta Bilgileri" icon={<User />} isActive={activeTab === 'info'} onClick={() => setActiveTab('info')} />
-                        <TabButton title="Tahliller" icon={<FileJson />} isActive={activeTab === 'labs'} onClick={() => setActiveTab('labs')} />
-                        <TabButton title="Radyoloji" icon={<ImageIcon />} isActive={activeTab === 'radiology'} onClick={() => setActiveTab('radiology')} />
-                        <TabButton title="Doktor Notları" icon={<FileText />} isActive={activeTab === 'notes'} onClick={() => setActiveTab('notes')} />
-                        <TabButton title="Konsültasyon" icon={<Users />} isActive={activeTab === 'consultation'} onClick={() => setActiveTab('consultation')} />
-                    </nav>
-                </div>
+  const handleInfoChange = (field, value) => {
+    setPatientData(prev => ({ ...prev, [field]: value }));
+  };
+  const handleSave = () => {
+    setIsEditing(false);
+    setToastMessage('Hasta bilgileri başarıyla güncellendi.');
+    // API'ye güncelleme isteği gönderilebilir
+  };
+  const handleAddNote = (e) => {
+    e.preventDefault();
+    const text = e.target.note.value;
+    if (!text) return;
+    // API'ye not ekleme isteği gönderilebilir
+    setNotes(prev => [...prev, { text, date: new Date().toLocaleString() }]);
+    e.target.reset();
+  };
 
-                <main className="mt-8 bg-white p-6 rounded-xl shadow-sm">
-                    {renderActiveTab()}
-                </main>
-
-                {toastMessage && (
-                    <div className="fixed bottom-10 right-10 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn">
-                        <CheckCircle className="mr-2" /> {toastMessage}
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <header className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{patientData.ad_soyad || patientData.name}</h1>
+            <p className="text-gray-500">T.C. {patientData.tc_kimlik_no || patientData.id} - {patientData.yas || patientData.age} yaşında, {patientData.cinsiyet || patientData.gender}</p>
+          </div>
+          <button onClick={() => window.history.back()} className="flex items-center text-cyan-600 font-semibold hover:underline">
+            <ArrowRightCircle size={20} className="mr-2"/> Dashboard'a Geri Dön
+          </button>
+        </header>
+        {/* Kritik bulgular ve üst özet alanı burada olabilir */}
+        <div className="border-b border-gray-200 mt-6">
+          <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
+            <TabButton title="Özet" icon={<HeartPulse />} isActive={activeTab === 'summary'} onClick={() => setActiveTab('summary')} />
+            <TabButton title="Hasta Bilgileri" icon={<User />} isActive={activeTab === 'info'} onClick={() => setActiveTab('info')} />
+            <TabButton title="Tahliller" icon={<FileJson />} isActive={activeTab === 'labs'} onClick={() => setActiveTab('labs')} />
+            <TabButton title="Radyoloji" icon={<ImageIcon />} isActive={activeTab === 'radiology'} onClick={() => setActiveTab('radiology')} />
+            <TabButton title="Doktor Notları" icon={<FileText />} isActive={activeTab === 'notes'} onClick={() => setActiveTab('notes')} />
+            <TabButton title="Konsültasyon" icon={<Users />} isActive={activeTab === 'consultation'} onClick={() => setActiveTab('consultation')} />
+            <TabButton title="Sevk" icon={<Stethoscope />} isActive={activeTab === 'referral'} onClick={() => setActiveTab('referral')} />
+            <TabButton title="Epikriz" icon={<Dna />} isActive={activeTab === 'epikriz'} onClick={() => setActiveTab('epikriz')} />
+            <TabButton title="Patoloji" icon={<FileJson />} isActive={activeTab === 'pathology'} onClick={() => setActiveTab('pathology')} />
+          </nav>
         </div>
-    );
+        <main className="mt-8 bg-white p-6 rounded-xl shadow-sm">
+          {activeTab === 'summary' && <SummaryTab patient={patientData} />}
+          {activeTab === 'info' && <InfoTab patient={patientData} isEditing={isEditing} onChange={handleInfoChange} onSave={handleSave} onToggleEdit={() => setIsEditing(!isEditing)} />}
+          {activeTab === 'labs' && <LabResultsTab labResults={patientData.labResults || patientData.laboratuvar || []} />}
+          {activeTab === 'radiology' && <RadiologyTab reports={patientData.radyoloji || []} />}
+          {activeTab === 'notes' && <DoctorNotesTab notes={notes} onAddNote={handleAddNote} />}
+          {activeTab === 'consultation' && <ConsultationTab consultations={consultations} />}
+          {activeTab === 'referral' && <ReferralTab referrals={referrals} />}
+          {activeTab === 'epikriz' && <EpikrizTab report={patientData.epikriz} />}
+          {activeTab === 'pathology' && <PathologyTab reports={patientData.patoloji || []} />}
+        </main>
+        {toastMessage && (
+          <div className="fixed bottom-10 right-10 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn">
+            <CheckCircle className="mr-2" /> {toastMessage}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-// EN ÖNEMLİ KISIM: Oluşturulan ana bileşeni dışa aktararak
-// projenin başka yerlerinde kullanılabilir hale getiriyoruz.
 export default PatientDetailPage;

@@ -20,10 +20,10 @@ import Calendar from '../components/Calendar';
 
 // DashboardPage'in ana mantığı (GÜNCELLENMİŞ HALİ)
 function DashboardPageInner() {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
     const [editPatient, setEditPatient] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -53,12 +53,14 @@ function DashboardPageInner() {
     const filteredPatients = useMemo(() => patients.filter(p => {
         const name = p.ad_soyad || '';
         const tc = p.tc_kimlik_no || '';
-        return name.toLowerCase().includes(searchTerm.toLowerCase()) || tc.includes(searchTerm);
+        // TC Kimlik No olmayan hastaları listeleme
+        return (name.toLowerCase().includes(searchTerm.toLowerCase()) || tc.includes(searchTerm)) && tc;
     }), [searchTerm, patients]);
 
     const viewPatientDetails = (patient) => {
         const tc = patient.tc_kimlik_no;
-        if (tc) navigate(`/Calendar/dashboard/patient/${tc}`);
+        if (tc) navigate(`/dashboard/patient/${tc}`);
+        else alert('Bu hastanın TC Kimlik Numarası yok!');
     };
 
     // PDF yükleme ve hasta listesini güncelleme (GERÇEK FONKSİYON)
@@ -155,7 +157,38 @@ function DashboardPageInner() {
     const selectedDateString = selectedDate.toISOString().slice(0, 10);
 
     // Demo randevular (boş array - gerçek veri kullanılacak)
-    const demoAppointments = [];
+    const demoAppointments = useMemo(() => [
+        {
+            id: 1,
+            date: '2023-10-26',
+            time: '09:00',
+            patientName: 'Ahmet Yılmaz',
+            patientId: '12345678901',
+            patient: { id: 1, ad_soyad: 'Ahmet Yılmaz', tc_kimlik_no: '12345678901', yas: 35, cinsiyet: 'Erkek', boy: 175, kilo: 75, kan_grubu: 'A+', kronik_hastaliklar: ['Hipertansiyon'], allerjiler: ['Aspirin'], onTani: ['Gastroenterit'], plan: { takip: '1 ay' } },
+            type: 'Randevu',
+            urgency: 'normal',
+        },
+        {
+            id: 2,
+            date: '2023-10-26',
+            time: '10:00',
+            patientName: 'Ayşe Demir',
+            patientId: '12345678902',
+            patient: { id: 2, ad_soyad: 'Ayşe Demir', tc_kimlik_no: '12345678902', yas: 28, cinsiyet: 'Kadın', boy: 162, kilo: 55, kan_grubu: 'B-', kronik_hastaliklar: ['Diyabet'], allerjiler: ['Aspirin'], onTani: ['Anemi'], plan: { takip: '3 ay' } },
+            type: 'Acil',
+            urgency: 'acil',
+        },
+        {
+            id: 3,
+            date: '2023-10-26',
+            time: '11:00',
+            patientName: 'Mehmet Kaya',
+            patientId: '12345678903',
+            patient: { id: 3, ad_soyad: 'Mehmet Kaya', tc_kimlik_no: '12345678903', yas: 42, cinsiyet: 'Erkek', boy: 180, kilo: 85, kan_grubu: 'O+', kronik_hastaliklar: ['Koroner arter hastalığı'], allerjiler: ['Aspirin'], onTani: ['Koroner arter hastalığı'], plan: { takip: '6 ay' } },
+            type: 'Randevu',
+            urgency: 'normal',
+        },
+    ], []);
 
     // Tüm randevuları takvim için hazırla
     const allAppointments = useMemo(() => {
@@ -785,7 +818,7 @@ function PatientDetailPageRemote() {
 function DashboardPage() {
     return (
         <Routes>
-            <Route path="/dashboard" element={<DashboardPageInner />} />
+            <Route path="/dashboard/*" element={<DashboardPageInner />} />
             <Route path="/dashboard/patient/:tc" element={<PatientDetailPageRemote />} />
             <Route path="*" element={<DashboardPageInner />} />
         </Routes>

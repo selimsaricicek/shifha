@@ -16,7 +16,7 @@ export default function LandingNavbar({ onLoginClick }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
-                        <a href="#home" className="flex items-center">
+                        <a href="/" className="flex items-center">
                             <img src={newLogoUrl} alt="Shifha Logosu" className="h-12" />
                             <img src={newTextUrl} alt="Shifha Yazısı" className="h-7 -ml-3" />
                         </a>

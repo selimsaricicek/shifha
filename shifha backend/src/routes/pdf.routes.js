@@ -24,7 +24,7 @@ const pdfRateLimiter = rateLimit({
 });
 
 // POST /api/pdf/parse
-router.post('/parse', supabaseAuthMiddleware, pdfRateLimiter, upload.single('file'), async (req, res, next) => {
+router.post('/parse', pdfRateLimiter, upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
       throw new Error('PDF dosyası yüklenmedi.');

@@ -3,18 +3,12 @@ import { createContext, useContext, useState } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  // Her zaman giriş yapılmış gibi örnek kullanıcı
+  const [user] = useState({ id: 'dev-user', name: 'Test User', role: 'admin' });
+  const [token] = useState('dev-token');
 
-  const login = (userData, tokenData) => {
-    setUser(userData);
-    setToken(tokenData);
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-  };
+  const login = () => {};
+  const logout = () => {};
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>
