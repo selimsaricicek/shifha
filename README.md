@@ -505,7 +505,7 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ![Hasta14](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta14.jpg)
 
 ---
-### Mobil Uygulama Genel
+### Mobil Register ve Login
 ![Mobil1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil1.jpg)
 ![Mobil2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil2.jpg)
 ![Mobil3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil3.jpg)
@@ -738,6 +738,10 @@ In Sprint 2, _'500'_ points were targeted as the focus was on mobile application
 
 ### Participants
 Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+</details>
+
+---
 
 </details>
 
