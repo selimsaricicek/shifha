@@ -575,7 +575,7 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 <details>
   <summary><h2>Burndown Chart S2</h2></summary>
 
-### Burndown Chart 1
+### Burndown Chart 2
 ![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS2/burndownChartS2chart.jpg)
 
 ---
@@ -591,67 +591,76 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ### 07.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum07.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.1.png) | ![dailyScrum07.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.2.png) | ![dailyScrum07.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/2.png) | ![3.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/3.jpg) |
 
 ### 08.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum08.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.1.png) | ![dailyScrum08.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.2.png) | ![dailyScrum08.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/1.png) |  |  |
 
 ### 09.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum09.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.1.png) | ![dailyScrum09.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.2.png) | ![dailyScrum09.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/3.png) |
 
 ### 10.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum10.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.1.png) | ![dailyScrum10.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.2.png) | ![dailyScrum10.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/3.png) |
+| ![4.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/4.png) | ![5.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/5.png) | ![6.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/6.png) |
+| ![7.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/7.png) | ![8.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/8.png) |  |
 
 ### 11.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum11.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.1.png) | ![dailyScrum11.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.2.png) | ![dailyScrum11.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/1.png) |  |  |
 
 ### 12.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum12.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.1.png) | ![dailyScrum12.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.2.png) | ![dailyScrum12.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/3.png) |
+| ![4.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/4.png) | ![5.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/5.png) |  |
 
 ### 13.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum13.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.1.png) | ![dailyScrum13.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.2.png) | ![dailyScrum13.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/3.png) |
+| ![4.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/4.png) | ![5.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/5.png) | ![6.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/6.png) |
+| ![7.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/7.png) |  |  |
 
 ### 14.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum14.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.1.png) | ![dailyScrum14.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.2.png) | ![dailyScrum14.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/3.png) |
+| ![4.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/4.jpg) |  |  |
 
 ### 15.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum15.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.1.png) | ![dailyScrum15.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.2.png) | ![dailyScrum15.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/2.png) |  |
 
 ### 16.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum16.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.1.png) | ![dailyScrum16.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.2.png) | ![dailyScrum16.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/3.png) |
+| ![4.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/4.png) | ![5.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/5.png) |  |
 
 ### 17.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum17.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.1.png) | ![dailyScrum17.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.2.png) | ![dailyScrum17.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/3.png) |
 
 ### 18.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum18.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.1.png) | ![dailyScrum18.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.2.png) | ![dailyScrum18.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/3.png) |
 
 ### 19.07.2025
 |  |  |  |
 |--|--|--|
-| ![dailyScrum19.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.1.png) | ![dailyScrum19.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.2.png) | ![dailyScrum19.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.3.png) |
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/3.png) |
+| ![4.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/4.png) | ![5.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/5.png) | ![6.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/6.png) |
+| ![7.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/7.png) | ![8.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/8.jpg) |  |
 
 </details>
 
