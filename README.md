@@ -479,7 +479,11 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 </details>
 
+---
 
+</details>
+
+---
 
 <details>
   <summary><h1>Sprint 2</h1></summary>
