@@ -4,6 +4,7 @@ import HastaApp from './App';
 import DoctorPanel from './components/doktor/DoctorPanel';
 import LandingPage from './screens/LandingPage';
 import RegisterScreen from './screens/RegisterScreen';
+import { AuthProvider } from './context/AuthContext';
 
 export default function MainApp() {
   const [userType, setUserType] = useState(null); // 'doctor' | 'patient'
@@ -65,4 +66,12 @@ export default function MainApp() {
   }
 
   return null;
+}
+
+export function AppWithProviders() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  );
 } 

@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
+import { loginUser } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = ({ onBack, onRegister, onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { setUser } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onLoginSuccess) onLoginSuccess();
+    try {
+      const result = await loginUser({ email, password });
+      if (result && result.user) {
+        setUser(result.user);
+        if (onLoginSuccess) onLoginSuccess();
+      } else {
+        setError(result.message || 'Giriş başarısız!');
+      }
+    } catch (err) {
+      setError('Sunucu hatası!');
+    }
   };
 
   return (

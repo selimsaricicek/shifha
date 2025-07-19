@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { registerUser } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterScreen = ({ onBack, onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,9 +12,26 @@ const RegisterScreen = ({ onBack, onLogin }) => {
     phone: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const { setUser } = useAuth();
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await registerUser(form);
+      if (result && result.user) {
+        setUser(result.user);
+        if (onLogin) onLogin();
+      } else {
+        setError(result.message || 'Kayıt başarısız!');
+      }
+    } catch (err) {
+      setError('Sunucu hatası!');
+    }
   };
 
   return (
