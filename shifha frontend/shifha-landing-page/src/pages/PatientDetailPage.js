@@ -212,7 +212,7 @@ const ReferralTab = ({ referrals }) => (
 // ===================================================================================
 
 const PatientDetailPage = () => {
-  const { tc } = useParams();
+  const { patientId } = useParams();
   // All hooks must be called here, unconditionally, before any return
   const [activeTab, setActiveTab] = useState('summary');
   const [isEditing, setIsEditing] = useState(false);
@@ -222,16 +222,35 @@ const PatientDetailPage = () => {
   const [notes, setNotes] = useState([]);
   const [consultations, setConsultations] = useState([]);
   const [referrals, setReferrals] = useState([]);
-  // ... other hooks ...
+
+  // TC'yi hash'ten çöz
+  const decodeTcFromHash = (hash) => {
+    try {
+      // Basit bir hash çözme (gerçek uygulamada daha güvenli olmalı)
+      return atob(hash);
+    } catch (error) {
+      console.error('TC hash çözme hatası:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    if (!tc || tc === 'undefined') return;
+    if (!patientId || patientId === 'undefined') return;
+    
+    const tc = decodeTcFromHash(patientId);
+    if (!tc) {
+      setLoading(false);
+      setPatientData(null);
+      return;
+    }
+
     setLoading(true);
-    fetch(`/api/patients/${tc}`)
+    
+    // Backend'den hasta verilerini çek
+    fetch(`http://localhost:3001/api/patients/${tc}`)
       .then(res => res.json())
       .then(data => {
         console.log("API'den dönen data:", data);
-        // data.data varsa onu, yoksa data'nın kendisini ata
         if (data && data.data) {
           setPatientData(data.data);
         } else if (data) {
@@ -245,12 +264,14 @@ const PatientDetailPage = () => {
         setPatientData(null);
       })
       .finally(() => setLoading(false));
-    fetch(`/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
-    fetch(`/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
-    fetch(`/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
-  }, [tc]);
+      
+    // Notlar, konsültasyonlar ve sevkler için ayrı istekler (opsiyonel)
+    // fetch(`http://localhost:3001/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
+    // fetch(`http://localhost:3001/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
+    // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
+  }, [patientId]);
 
-  if (!tc || tc === 'undefined') {
+  if (!patientId || patientId === 'undefined') {
     return <div className="p-8 text-center text-red-600 font-bold text-xl">Geçersiz hasta adresi. Lütfen listeden bir hasta seçin.</div>;
   }
   if (loading) return <div>Yükleniyor...</div>;

@@ -27,6 +27,8 @@ const authLimiter = rateLimit({
   message: { success: false, error: 'Çok fazla deneme, lütfen daha sonra tekrar deneyin.' }
 });
 
+app.use(express.json({ limit: '10mb' })); // Büyük PDF dosyaları için limit artırıldı
+
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
@@ -42,8 +44,6 @@ const analysisLimiter = rateLimit({
   max: 3,
   message: { success: false, error: 'Çok fazla analiz isteği! Lütfen daha sonra tekrar deneyin.' }
 });
-
-app.use(express.json({ limit: '10mb' })); // Büyük PDF dosyaları için limit artırıldı
 
 // Merkezi error handler en sonda
 app.use(errorMiddleware);

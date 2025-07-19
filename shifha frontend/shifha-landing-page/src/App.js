@@ -5,6 +5,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PatientDetailPage from './pages/PatientDetailPage';
 import './App.css';
@@ -34,6 +35,7 @@ function App() {
     const [patients, setPatients] = useState(mockPatientsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [toast, setToast] = useState(null);
+    const [user, setUser] = useState(null);
     // useNavigate hook'u, fonksiyonlar içinden sayfa değiştirmemizi sağlar
     const navigate = useNavigate();
 
@@ -41,22 +43,42 @@ function App() {
         setToast({ message, type, key: Date.now() });
     };
 
+    const handleLogin = (userData) => {
+        setUser(userData.user);
+        // Check if user is a doctor based on email
+        const isDoctor = userData.user.email.toLowerCase().endsWith('@saglik.gov.tr');
+        if (isDoctor) {
+            navigate('/dashboard');
+        } else {
+            navigate('/dashboard');
+        }
+    };
+
+    const handleRegisterSuccess = (userData, role) => {
+        setUser(userData.user);
+        navigate('/login');
+    };
+
     const filteredPatients = useMemo(() =>
-        patients.filter(p =>
-            p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.id.includes(searchTerm)
-        ), [searchTerm, patients]);
+        patients.filter(p => {
+            const name = (p?.name || '').toString();
+            const id = (p?.id || '').toString();
+            const searchLower = (searchTerm || '').toLowerCase();
+            return name.toLowerCase().includes(searchLower) || id.includes(searchTerm);
+        }), [searchTerm, patients]);
 
     const handleUpdatePatient = (updatedPatient) => {
+        if (!updatedPatient?.id) return;
+        
         const handleValue = (value) => typeof value === 'string' ? value.split(',').map(item => item.trim()) : value;
         const processedPatient = {
             ...updatedPatient,
-            allergies: handleValue(updatedPatient.allergies),
-            chronicDiseases: handleValue(updatedPatient.chronicDiseases),
+            allergies: handleValue(updatedPatient?.allergies),
+            chronicDiseases: handleValue(updatedPatient?.chronicDiseases),
         };
         setPatients(prevPatients => {
             const newPatients = [...prevPatients];
-            const patientIndex = newPatients.findIndex(p => p.id === processedPatient.id);
+            const patientIndex = newPatients.findIndex(p => p?.id === processedPatient.id);
             if (patientIndex > -1) {
                 newPatients[patientIndex] = processedPatient;
             }
@@ -67,22 +89,8 @@ function App() {
     // Bu yardımcı bileşen, URL'den hasta ID'sini alır ve ilgili hastanın
     // bilgilerini PatientDetailPage bileşenine prop olarak geçirir.
     const PatientDetailWrapper = () => {
-        const { patientId } = useParams(); // URL'den /:patientId kısmını alır
-        const selectedPatient = patients.find(p => p.id === patientId);
-
-        if (!selectedPatient) {
-            return <div>Hasta bulunamadı.</div>;
-        }
-
-        return (
-            <PatientDetailPage
-                patient={selectedPatient}
-                onBack={() => navigate('/dashboard')}
-                onLogout={() => navigate('/')}
-                onUpdatePatient={handleUpdatePatient}
-                showToast={showToast}
-            />
-        );
+        // Bu wrapper artık gerekli değil çünkü PatientDetailPage kendi verilerini çekiyor
+        return <PatientDetailPage />;
     };
 
     return (
@@ -93,18 +101,43 @@ function App() {
             {/* Manuel `renderPage()` fonksiyonu yerine Routes bileşeni kullanılır */}
             <Routes>
                 <Route path="/" element={<LandingPage onLoginClick={() => navigate('/login')} />} />
-                <Route path="/login" element={<LoginPage onLogin={() => navigate('/dashboard')} />} />
+                <Route 
+                    path="/login" 
+                    element={
+                        <LoginPage 
+                            onLogin={handleLogin}
+                            onRegisterClick={() => navigate('/register')}
+                        />
+                    } 
+                />
+                <Route 
+                    path="/register" 
+                    element={
+                        <RegisterPage 
+                            onRegisterSuccess={handleRegisterSuccess}
+                            onBackToLogin={() => navigate('/login')}
+                        />
+                    } 
+                />
                 <Route
-                    path="/dashboard"
+                    path="/dashboard/*"
                     element={
                         <DashboardPage
                             patients={filteredPatients}
                             setPatients={setPatients}
-                            onSelectPatient={(patient) => navigate(`/dashboard/patient/${patient.id}`)}
-                            onLogout={() => navigate('/')}
+                            onSelectPatient={(patient) => {
+                              // TC'yi hash'le (güvenlik için)
+                              const hashedTc = btoa(patient?.tc_kimlik_no || '');
+                              navigate(`/dashboard/patient/${hashedTc}`);
+                            }}
+                            onLogout={() => {
+                                setUser(null);
+                                navigate('/');
+                            }}
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
                             showToast={showToast}
+                            user={user}
                         />
                     }
                 />

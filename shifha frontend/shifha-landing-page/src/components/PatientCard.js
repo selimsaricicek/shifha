@@ -11,17 +11,17 @@ export default function PatientCard({ patient, onEdit, onDelete, onView }) {
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
           style={{ background: "#E0E7FF", color: "#4F46E5" }}>
-          {patient.ad_soyad
+          {(patient?.ad_soyad || '')
             .split(' ')
             .map((s) => s[0])
             .join('')
             .toUpperCase()}
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(patient.ad_soyad)}} />
-          <p className="text-sm text-gray-500">T.C. {DOMPurify.sanitize(patient.tc_kimlik_no)}</p>
+          <h3 className="text-lg font-bold text-gray-900" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(patient?.ad_soyad || '')}} />
+          <p className="text-sm text-gray-500">T.C. {DOMPurify.sanitize(patient?.tc_kimlik_no || '')}</p>
           <p className="text-sm text-gray-500">
-            {DOMPurify.sanitize(String(patient.yas))} yaşında, {DOMPurify.sanitize(patient.cinsiyet)}
+            {DOMPurify.sanitize(String(patient?.yas || ''))} yaşında, {DOMPurify.sanitize(patient?.cinsiyet || '')}
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default function PatientCard({ patient, onEdit, onDelete, onView }) {
         </button>
         <button
           className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
-          onClick={e => { e.stopPropagation(); onDelete(patient.tc_kimlik_no); }}
+          onClick={e => { e.stopPropagation(); onDelete(patient?.tc_kimlik_no); }}
         >
           Sil
         </button>

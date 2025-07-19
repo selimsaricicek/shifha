@@ -19,10 +19,10 @@ import Calendar from '../components/Calendar';
 
 
 // DashboardPage'in ana mantığı (GÜNCELLENMİŞ HALİ)
-function DashboardPageInner() {
+function DashboardPageInner({ patients: propPatients, setPatients: propSetPatients, onSelectPatient, onLogout, searchTerm: propSearchTerm, setSearchTerm: propSetSearchTerm, showToast, user }) {
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [patients, setPatients] = useState([]);
+    const [searchTerm, setSearchTerm] = useState(propSearchTerm || '');
+    const [patients, setPatients] = useState(propPatients || []);
     const [loading, setLoading] = useState(false);
     const [editPatient, setEditPatient] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -34,16 +34,22 @@ function DashboardPageInner() {
     const fetchPatients = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/patients');
+            const res = await fetch('http://localhost:3001/api/patients');
             if (!res.ok) throw new Error('Hasta listesi sunucudan alınamadı.');
             const data = await res.json();
-            setPatients(Array.isArray(data?.data) ? data.data : []);
+            const patientData = Array.isArray(data?.data) ? data.data : [];
+            setPatients(patientData);
+            if (propSetPatients) {
+                propSetPatients(patientData);
+            }
+            console.log('✅ Hasta listesi başarıyla yüklendi:', patientData.length, 'hasta');
         } catch (e) {
             console.error("Hasta listesi alınırken hata:", e);
+            toast.error('Hasta listesi yüklenemedi: ' + e.message);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [propSetPatients]);
 
     // İlk açılışta hasta listesini çek
     useEffect(() => {
@@ -51,16 +57,21 @@ function DashboardPageInner() {
     }, [fetchPatients]);
 
     const filteredPatients = useMemo(() => patients.filter(p => {
-        const name = p.ad_soyad || '';
-        const tc = p.tc_kimlik_no || '';
+        const name = (p?.ad_soyad || '').toString();
+        const tc = (p?.tc_kimlik_no || '').toString();
+        const searchLower = (searchTerm || '').toLowerCase();
         // TC Kimlik No olmayan hastaları listeleme
-        return (name.toLowerCase().includes(searchTerm.toLowerCase()) || tc.includes(searchTerm)) && tc;
+        return (name.toLowerCase().includes(searchLower) || tc.includes(searchTerm)) && tc;
     }), [searchTerm, patients]);
 
     const viewPatientDetails = (patient) => {
-        const tc = patient.tc_kimlik_no;
-        if (tc) navigate(`/dashboard/patient/${tc}`);
-        else alert('Bu hastanın TC Kimlik Numarası yok!');
+        if (onSelectPatient) {
+            onSelectPatient(patient);
+        } else {
+            const tc = patient.tc_kimlik_no;
+            if (tc) navigate(`/dashboard/patient/${tc}`);
+            else alert('Bu hastanın TC Kimlik Numarası yok!');
+        }
     };
 
     // PDF yükleme ve hasta listesini güncelleme (GERÇEK FONKSİYON)
@@ -239,14 +250,29 @@ function DashboardPageInner() {
                     <img src="/logo-text.jpg" alt="SHIFHA" className="h-8" />
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-700">Dr. Ahmet Çelik</span>
-                    <button
-                        onClick={() => window.location.href = '/'}
-                        className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-sm"
-                        title="Çıkış Yap ve Ana Sayfaya Dön"
-                    >
-                        Çıkış Yap
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            <User className="text-cyan-600" size={20} />
+                            <div className="text-right">
+                                <span className="text-gray-700 font-semibold">
+                                    {user?.profile?.name || user?.user_metadata?.name || 'Kullanıcı'}
+                                </span>
+                                <div className="text-xs text-gray-500">
+                                    {user?.isDoctor ? 'Doktor' : 'Hasta'}
+                                    {user?.doctorProfile && (
+                                        <span className="ml-1">• {user.doctorProfile.specialization || 'Uzman'}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onLogout}
+                            className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-sm"
+                            title="Çıkış Yap ve Ana Sayfaya Dön"
+                        >
+                            Çıkış Yap
+                        </button>
+                    </div>
                 </div>
             </header>
             <main className="p-8 max-w-7xl mx-auto">
@@ -370,7 +396,13 @@ function DashboardPageInner() {
                             type="text"
                             placeholder="Hasta adı veya T.C. Kimlik No ile arayın..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSearchTerm(value);
+                                if (propSetSearchTerm) {
+                                    propSetSearchTerm(value);
+                                }
+                            }}
                             className="w-full border border-gray-300 rounded-lg p-3 pl-12 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-shadow"
                         />
                     </div>
@@ -815,12 +847,34 @@ function PatientDetailPageRemote() {
 }
 
 // Ana Rota Yapısı
-function DashboardPage() {
+function DashboardPage({ patients, setPatients, onSelectPatient, onLogout, searchTerm, setSearchTerm, showToast, user }) {
     return (
         <Routes>
-            <Route path="/dashboard/*" element={<DashboardPageInner />} />
+            <Route path="/dashboard/*" element={
+                <DashboardPageInner 
+                    patients={patients}
+                    setPatients={setPatients}
+                    onSelectPatient={onSelectPatient}
+                    onLogout={onLogout}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    showToast={showToast}
+                    user={user}
+                />
+            } />
             <Route path="/dashboard/patient/:tc" element={<PatientDetailPageRemote />} />
-            <Route path="*" element={<DashboardPageInner />} />
+            <Route path="*" element={
+                <DashboardPageInner 
+                    patients={patients}
+                    setPatients={setPatients}
+                    onSelectPatient={onSelectPatient}
+                    onLogout={onLogout}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    showToast={showToast}
+                    user={user}
+                />
+            } />
         </Routes>
     );
 }
