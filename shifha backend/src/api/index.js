@@ -9,6 +9,10 @@ router.use('/auth', authRoutes);
 const patientRoutes = require('../routes/patient.routes');
 router.use('/patients', patientRoutes);
 
+// PDF rotalarını ekle
+const pdfRoutes = require('../routes/pdf.routes');
+router.use('/pdf', pdfRoutes);
+
 // Diğer API route'ları da buraya eklenebilir
 
 module.exports = router;

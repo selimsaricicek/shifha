@@ -18,7 +18,7 @@ export async function uploadPdfAndParsePatient(file) {
         return { details: `Sunucu ${response.status} koduyla yanıt verdi.` };
       });
       // Teknik detayı konsola yaz, kullanıcıya sade mesaj göster
-      console.error('PDF yükleme API hata detayı:', errorData.details || errorData);
+      console.error('PDF yükleme API hata detayı:', errorData?.details || errorData);
       throw new Error('PDF yüklenemedi, lütfen tekrar deneyin.');
     }
   
