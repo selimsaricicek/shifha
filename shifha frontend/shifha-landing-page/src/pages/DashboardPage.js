@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User, Bookmark, QrCode } from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
 import { toast } from 'react-toastify';
@@ -19,7 +19,7 @@ import Calendar from '../components/Calendar';
 
 
 // DashboardPage'in ana mantığı (GÜNCELLENMİŞ HALİ)
-function DashboardPageInner({ patients: propPatients, setPatients: propSetPatients, onSelectPatient, onLogout, searchTerm: propSearchTerm, setSearchTerm: propSetSearchTerm, showToast, user }) {
+function DashboardPageInner({ patients: propPatients, setPatients: propSetPatients, onSelectPatient, onLogout, searchTerm: propSearchTerm, setSearchTerm: propSetSearchTerm, showToast, user, currentPatient, setCurrentPatient }) {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState(propSearchTerm || '');
     const [patients, setPatients] = useState(propPatients || []);
@@ -29,6 +29,46 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+    const [savedPatients, setSavedPatients] = useState([]);
+    const [showSwitchModal, setShowSwitchModal] = useState(false);
+    const [nextPatient, setNextPatient] = useState(null);
+    const [pendingPdfFile, setPendingPdfFile] = useState(null);
+    // Pop-up ve currentPatient ile ilgili state'leri kaldır
+    // const [currentPatient, setCurrentPatient] = useState(null);
+    // const [showSwitchModal, setShowSwitchModal] = useState(false);
+    // const [nextPatient, setNextPatient] = useState(null);
+    // const [pendingPdfFile, setPendingPdfFile] = useState(null);
+    // const [pendingPdfPatient, setPendingPdfPatient] = useState(null);
+
+    const doPdfUpload = async (file) => {
+        setLoading(true);
+        try {
+            const newOrUpdatedPatient = await uploadPdfAndParsePatient(file);
+            setPatients(prev => {
+                const tc = newOrUpdatedPatient.tc_kimlik_no;
+                const exists = prev.some(p => p.tc_kimlik_no === tc);
+                if (exists) {
+                    return prev.map(p => p.tc_kimlik_no === tc ? newOrUpdatedPatient : p);
+                } else {
+                    return [newOrUpdatedPatient, ...prev];
+                }
+            });
+            toast.success('PDF başarıyla işlendi ve hasta listesi güncellendi.', {
+              icon: '✅',
+              hideIcon: true,
+              style: { borderRadius: '1.5rem', background: '#e0f2fe', color: '#222' }
+            });
+        } catch (err) {
+            console.error("PDF Yükleme ve İşleme Hatası:", err);
+            toast.error(`HATA: ${err.message}`, {
+              icon: '❌',
+              hideIcon: true,
+              style: { borderRadius: '1.5rem', background: '#fee2e2', color: '#222' }
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Hasta listesini çeken fonksiyon
     const fetchPatients = useCallback(async () => {
@@ -64,7 +104,28 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         return (name.toLowerCase().includes(searchLower) || tc.includes(searchTerm)) && tc;
     }), [searchTerm, patients]);
 
+    // Hasta kaydetme fonksiyonu
+    const handleSavePatient = (patient) => {
+        setSavedPatients(prev => {
+            const isAlreadySaved = prev.some(p => p.tc_kimlik_no === patient.tc_kimlik_no);
+            if (isAlreadySaved) {
+                showToast && showToast(`${patient.ad_soyad} kaydedilenlerden çıkarıldı.`);
+                return prev.filter(p => p.tc_kimlik_no !== patient.tc_kimlik_no);
+            } else {
+                showToast && showToast(`${patient.ad_soyad} kaydedildi.`);
+                return [...prev, patient];
+            }
+        });
+    };
+
+    // viewPatientDetails fonksiyonunu sadeleştir
     const viewPatientDetails = (patient) => {
+        if (currentPatient && currentPatient.tc_kimlik_no !== patient.tc_kimlik_no && !savedPatients.some(p => p.tc_kimlik_no === currentPatient.tc_kimlik_no)) {
+            setNextPatient(patient);
+            setShowSwitchModal(true);
+            return;
+        }
+        setCurrentPatient(patient);
         if (onSelectPatient) {
             onSelectPatient(patient);
         } else {
@@ -74,24 +135,79 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         }
     };
 
-    // PDF yükleme ve hasta listesini güncelleme (GERÇEK FONKSİYON)
+    // Modal aksiyonları
+    const handleSaveAndSwitch = async () => {
+        if (currentPatient) handleSavePatient(currentPatient);
+        setShowSwitchModal(false);
+        if (pendingPdfFile) {
+            await doPdfUpload(pendingPdfFile);
+            setPendingPdfFile(null);
+        } else if (nextPatient) {
+            setCurrentPatient(nextPatient);
+            if (onSelectPatient) {
+                onSelectPatient(nextPatient);
+            } else {
+                const tc = nextPatient.tc_kimlik_no;
+                if (tc) navigate(`/dashboard/patient/${tc}`);
+            }
+        }
+    };
+    const handleSwitchWithoutSaving = async () => {
+        setShowSwitchModal(false);
+        if (pendingPdfFile) {
+            await doPdfUpload(pendingPdfFile);
+            setPendingPdfFile(null);
+        } else if (nextPatient) {
+            setCurrentPatient(nextPatient);
+            if (onSelectPatient) {
+                onSelectPatient(nextPatient);
+            } else {
+                const tc = nextPatient.tc_kimlik_no;
+                if (tc) navigate(`/dashboard/patient/${tc}`);
+            }
+        }
+    };
+    const handleReferCurrentPatient = () => {
+        setShowSwitchModal(false);
+        if (pendingPdfFile) {
+            setPendingPdfFile(null);
+            if (currentPatient) {
+                setCurrentPatient(currentPatient);
+                if (onSelectPatient) {
+                    onSelectPatient({ ...currentPatient, openTab: 'referral' });
+                } else {
+                    const tc = currentPatient.tc_kimlik_no;
+                    if (tc) navigate(`/dashboard/patient/${tc}?tab=referral`);
+                }
+            }
+        } else if (currentPatient) {
+            setCurrentPatient(currentPatient);
+            if (onSelectPatient) {
+                onSelectPatient({ ...currentPatient, openTab: 'referral' });
+            } else {
+                const tc = currentPatient.tc_kimlik_no;
+                if (tc) navigate(`/dashboard/patient/${tc}?tab=referral`);
+            }
+        }
+    };
+
+    // handlePdfUpload fonksiyonunu sadeleştir
     const handlePdfUpload = async (file) => {
+        if (currentPatient && !savedPatients.some(p => p.tc_kimlik_no === currentPatient.tc_kimlik_no)) {
+            setPendingPdfFile(file);
+            setNextPatient(null);
+            setShowSwitchModal(true);
+            return;
+        }
         setLoading(true);
-        console.log("handlePdfUpload fonksiyonu başlatıldı.");
         try {
-            // 1. Adım: API isteğini yap
             const newOrUpdatedPatient = await uploadPdfAndParsePatient(file);
-            console.log("Backend'den cevap alındı:", newOrUpdatedPatient);
-            
-            // 2. Adım: Frontend listesini güncelle
             setPatients(prev => {
                 const tc = newOrUpdatedPatient.tc_kimlik_no;
                 const exists = prev.some(p => p.tc_kimlik_no === tc);
                 if (exists) {
-                    console.log(`Hasta (${tc}) güncelleniyor.`);
                     return prev.map(p => p.tc_kimlik_no === tc ? newOrUpdatedPatient : p);
                 } else {
-                    console.log(`Yeni hasta (${tc}) listeye ekleniyor.`);
                     return [newOrUpdatedPatient, ...prev];
                 }
             });
@@ -241,6 +357,24 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         [patients, selectedDateString, demoAppointments]
     );
 
+    // Dashboard açıldığında currentPatient null ise localStorage'dan yükle
+    useEffect(() => {
+        if (!currentPatient) {
+            const lastPatient = localStorage.getItem('currentPatient');
+            if (lastPatient) {
+                try {
+                    setCurrentPatient(JSON.parse(lastPatient));
+                } catch {}
+            }
+        }
+    }, []);
+    // currentPatient değiştiğinde localStorage'a kaydet
+    useEffect(() => {
+        if (currentPatient) {
+            localStorage.setItem('currentPatient', JSON.stringify(currentPatient));
+        }
+    }, [currentPatient]);
+
     return (
         <div className="bg-gradient-to-b from-blue-50 via-cyan-50 to-gray-50 min-h-screen animate-fadeInDash">
             <header className="bg-white/90 shadow-md p-4 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
@@ -351,41 +485,46 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                 </div>
 
                 {/* PDF Yükleme Alanı (modern dropzone) */}
-                <div
-                    className="border-2 border-dashed border-gray-400 rounded-xl p-6 text-center transition-colors mb-8 flex flex-col items-center justify-center relative"
-                    onDrop={e => {
-                        e.preventDefault();
-                        if (loading) return;
-                        const file = e.dataTransfer.files[0];
-                        if (file && file.type === 'application/pdf') handlePdfUpload(file);
-                    }}
-                    onDragOver={e => e.preventDefault()}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
-                    onClick={() => {
-                        if (loading) return;
-                        document.getElementById('pdf-upload-input')?.click();
-                    }}
-                >
-                    <FileUp className="h-12 w-12 text-gray-500 mb-2 pointer-events-none" />
-                    <p className="text-gray-600 font-semibold pointer-events-none">
-                        Yeni Hasta Eklemek İçin Tahlil/Epikriz PDF'ini Buraya Sürükleyin
-                    </p>
-                    <p className="text-sm text-gray-500 pointer-events-none">
-                        PDF sürükleyip bırakarak ekleyin ve hasta akışına ekleyin (simülasyon).
-                    </p>
-                    <input
-                        id="pdf-upload-input"
-                        type="file"
-                        accept="application/pdf"
-                        className="hidden"
-                        disabled={loading}
-                        onChange={e => {
-                            const file = e.target.files[0];
-                            if (file && file.type === 'application/pdf') handlePdfUpload(file);
-                            e.target.value = '';
-                        }}
-                    />
-                    {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-lg font-bold text-cyan-600">Yükleniyor...</div>}
+                <div className="flex flex-col md:flex-row gap-4 mb-8">
+                    <div className="flex-1">
+                        {/* PDF yükleme alanı */}
+                        <div
+                            className="border-2 border-dashed border-gray-400 rounded-xl p-6 text-center transition-colors mb-8 flex flex-col items-center justify-center relative"
+                            onDrop={e => {
+                                e.preventDefault();
+                                if (loading) return;
+                                const file = e.dataTransfer.files[0];
+                                if (file && file.type === 'application/pdf') handlePdfUpload(file);
+                            }}
+                            onDragOver={e => e.preventDefault()}
+                            style={{ cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
+                            onClick={() => {
+                                if (loading) return;
+                                document.getElementById('pdf-upload-input')?.click();
+                            }}
+                        >
+                            <FileUp className="h-12 w-12 text-gray-500 mb-2 pointer-events-none" />
+                            <p className="text-gray-600 font-semibold pointer-events-none">
+                                Yeni Hasta Eklemek İçin Tahlil/Epikriz PDF'ini Buraya Sürükleyin
+                            </p>
+                            <p className="text-sm text-gray-500 pointer-events-none">
+                                PDF sürükleyip bırakarak ekleyin ve hasta akışına ekleyin (simülasyon).
+                            </p>
+                            <input
+                                id="pdf-upload-input"
+                                type="file"
+                                accept="application/pdf"
+                                className="hidden"
+                                disabled={loading}
+                                onChange={e => {
+                                    const file = e.target.files[0];
+                                    if (file && file.type === 'application/pdf') handlePdfUpload(file);
+                                    e.target.value = '';
+                                }}
+                            />
+                            {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-lg font-bold text-cyan-600">Yükleniyor...</div>}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Arama Kutusu */}
@@ -409,50 +548,94 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                 </div>
 
                 {/* Hasta Kartları */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+  <h3 className="text-xl font-bold text-cyan-700 mb-4 flex items-center">
+    <Bookmark className="mr-2" /> Kaydedilen Hastalar
+  </h3>
+  {savedPatients.length === 0 ? (
+    <p className="text-gray-400">Henüz kaydedilen hasta yok.</p>
+  ) : (
+    <div className="flex flex-wrap gap-4">
+      {savedPatients.map(p => (
+        <div
+          key={p.tc_kimlik_no}
+          className="bg-cyan-50 rounded-lg px-4 py-2 flex items-center justify-between min-w-[220px] cursor-pointer hover:bg-cyan-100 transition relative"
+          onClick={() => viewPatientDetails(p)}
+        >
+          <div>
+            <span className="font-semibold text-cyan-800 block">{p.ad_soyad}</span>
+            <span className="text-xs text-cyan-600 block">T.C. {p.tc_kimlik_no}</span>
+          </div>
+          <button
+            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1 rounded-full"
+            onClick={e => {
+              e.stopPropagation();
+              setSavedPatients(savedPatients.filter(sp => String(sp.tc_kimlik_no) !== String(p.tc_kimlik_no)));
+            }}
+            title="Kaydedilenlerden çıkar"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredPatients.map((patient) => (
-                        <div
-                            key={patient.tc_kimlik_no}
-                            className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                            onClick={() => viewPatientDetails(patient)}
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
-                                    style={{ background: "#E0E7FF", color: "#4F46E5" }}>
-                                    {(patient.ad_soyad || '') 
-                                        .split(' ')
-                                        .map((s) => s[0])
-                                        .join('')
-                                        .toUpperCase()}
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900">{patient.ad_soyad}</h3>
-                                    <p className="text-sm text-gray-500">T.C. {patient.tc_kimlik_no}</p>
-                                    <p className="text-sm text-gray-500">
-                                        {patient.yas} yaşında, {patient.cinsiyet}
-                                    </p>
-                                </div>
-                            </div>
-                            {patient.tibbi_gecmis?.allerjiler?.length > 0 &&
-                                patient.tibbi_gecmis.allerjiler[0] !== 'Bilinmiyor' && (
-                                    <div className="mt-2">
-                                        <p className="text-xs text-red-600 font-semibold">
-                                            Alerji: {patient.tibbi_gecmis.allerjiler.join(', ')}
-                                        </p>
-                                    </div>
-                                )}
-                            <div className="flex gap-2 mt-2">
-                                <button
-                                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs"
-                                    onClick={e => { e.stopPropagation(); handleEditPatient(patient); }}
-                                >Düzenle</button>
-                                <button
-                                    className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
-                                    onClick={e => { e.stopPropagation(); handleDeletePatient(patient.tc_kimlik_no); }}
-                                >Sil</button>
-                            </div>
-                        </div>
-                    ))}
+                    {filteredPatients.map((patient) => {
+  const isSaved = savedPatients.some(p => String(p.tc_kimlik_no) === String(patient.tc_kimlik_no));
+  return (
+    <div
+      key={patient.tc_kimlik_no}
+      className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      onClick={() => viewPatientDetails(patient)}
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
+          style={{ background: "#E0E7FF", color: "#4F46E5" }}>
+          {(patient.ad_soyad || '')
+            .split(' ')
+            .map((s) => s[0])
+            .join('')
+            .toUpperCase()}
+        </div>
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">{patient.ad_soyad}</h3>
+          <p className="text-sm text-gray-500">T.C. {patient.tc_kimlik_no}</p>
+          <p className="text-sm text-gray-500">
+            {patient.yas} yaşında, {patient.cinsiyet}
+          </p>
+        </div>
+      </div>
+      {patient.tibbi_gecmis?.allerjiler?.length > 0 &&
+        patient.tibbi_gecmis.allerjiler[0] !== 'Bilinmiyor' && (
+          <div className="mt-2">
+            <p className="text-xs text-red-600 font-semibold">
+              Alerji: {patient.tibbi_gecmis.allerjiler.join(', ')}
+            </p>
+          </div>
+        )}
+      <div className="flex gap-2 mt-2">
+        <button
+          className={`px-3 py-1 rounded text-xs flex items-center gap-1 ${isSaved ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-500 hover:bg-cyan-100 hover:text-cyan-700'}`}
+          onClick={e => { e.stopPropagation(); handleSavePatient(patient); }}
+          title={isSaved ? 'Kaydedilenlerden çıkar' : 'Hastayı kaydet'}
+        >
+          <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
+          {isSaved ? 'Kaydedildi' : 'Kaydet'}
+        </button>
+        <button
+          className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs"
+          onClick={e => { e.stopPropagation(); handleEditPatient(patient); }}
+        >Düzenle</button>
+        <button
+          className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
+          onClick={e => { e.stopPropagation(); handleDeletePatient(patient.tc_kimlik_no); }}
+        >Sil</button>
+      </div>
+    </div>
+  );
+})}
                 </div>
                 {/* Hasta Düzenle Modalı */}
                 {showEditModal && (
@@ -560,6 +743,38 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                     </div>
                 )}
             </main>
+            {/* Hasta değiştirirken uyarı modalı */}
+            {/* Pop-up modal JSX'ini tamamen kaldır */}
+            {/* {showSwitchModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-2xl p-8 m-4 max-w-lg w-full">
+                        <div className="flex items-start">
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-cyan-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <Bookmark className="h-6 w-6 text-cyan-600" />
+                            </div>
+                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                <h3 className="text-lg leading-6 font-bold text-gray-900">Yeni Hasta Seçiliyor</h3>
+                                <div className="mt-2">
+                                    <p className="text-sm text-gray-600">
+                                        Mevcut hasta kaydedilmedi. Ne yapmak istersiniz?
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row-reverse gap-3">
+                            <button onClick={handleSaveAndSwitch} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-cyan-600 text-base font-medium text-white hover:bg-cyan-700 focus:outline-none sm:text-sm">
+                                <Bookmark size={18} className="mr-2"/> Kaydet ve Geç
+                            </button>
+                            <button onClick={handleReferCurrentPatient} className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:text-sm">
+                               <ArrowLeft size={18} className="mr-2"/> Mevcut Hastayı Sevk Et
+                            </button>
+                            <button onClick={handleSwitchWithoutSaving} className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200 focus:outline-none sm:mt-0 sm:text-sm">
+                                Kaydetmeden Geç
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )} */}
         </div>
     );
 }
@@ -860,6 +1075,8 @@ function DashboardPage({ patients, setPatients, onSelectPatient, onLogout, searc
                     setSearchTerm={setSearchTerm}
                     showToast={showToast}
                     user={user}
+                    currentPatient={null} // Bu prop'u burada null olarak bırakıyoruz, çünkü App.js'den gelmekte
+                    setCurrentPatient={() => {}} // Bu prop'u burada boş fonksiyon olarak bırakıyoruz
                 />
             } />
             <Route path="/dashboard/patient/:tc" element={<PatientDetailPageRemote />} />
@@ -873,6 +1090,8 @@ function DashboardPage({ patients, setPatients, onSelectPatient, onLogout, searc
                     setSearchTerm={setSearchTerm}
                     showToast={showToast}
                     user={user}
+                    currentPatient={null} // Bu prop'u burada null olarak bırakıyoruz, çünkü App.js'den gelmekte
+                    setCurrentPatient={() => {}} // Bu prop'u burada boş fonksiyon olarak bırakıyoruz
                 />
             } />
         </Routes>

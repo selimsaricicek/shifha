@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, Dna, CheckCircle,
-    Edit, Save, BrainCircuit
+    Edit, Save, BrainCircuit, Bookmark, ArrowLeft
 } from 'lucide-react';
 
 // ===================================================================================
@@ -211,10 +211,16 @@ const ReferralTab = ({ referrals }) => (
 // ANA BİLEŞEN: Tüm parçaları birleştiren ve sayfayı oluşturan kısım
 // ===================================================================================
 
-const PatientDetailPage = () => {
+const PatientDetailPage = ({ currentPatient, setCurrentPatient, savedPatients, setSavedPatients }) => {
   const { patientId } = useParams();
+  const navigate = useNavigate();
+  const location = window.location;
   // All hooks must be called here, unconditionally, before any return
-  const [activeTab, setActiveTab] = useState('summary');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (location && location.search && location.search.includes('tab=referral')) return 'referral';
+    if (currentPatient && currentPatient.openTab === 'referral') return 'referral';
+    return 'summary';
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [patientData, setPatientData] = useState(null);
@@ -222,6 +228,8 @@ const PatientDetailPage = () => {
   const [notes, setNotes] = useState([]);
   const [consultations, setConsultations] = useState([]);
   const [referrals, setReferrals] = useState([]);
+  const [showSwitchModal, setShowSwitchModal] = useState(false);
+  const [pendingDashboardNav, setPendingDashboardNav] = useState(false);
 
   // TC'yi hash'ten çöz
   const decodeTcFromHash = (hash) => {
@@ -271,6 +279,14 @@ const PatientDetailPage = () => {
     // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
   }, [patientId]);
 
+  // Hasta verisi yüklendiğinde, currentPatient'i güncelle kodunu kaldır
+  // useEffect(() => {
+  //   if (patientData && setCurrentPatient) {
+  //     setCurrentPatient(patientData);
+  //     localStorage.setItem('currentPatient', JSON.stringify(patientData));
+  //   }
+  // }, [patientData, setCurrentPatient]);
+
   if (!patientId || patientId === 'undefined') {
     return <div className="p-8 text-center text-red-600 font-bold text-xl">Geçersiz hasta adresi. Lütfen listeden bir hasta seçin.</div>;
   }
@@ -294,6 +310,26 @@ const PatientDetailPage = () => {
     e.target.reset();
   };
 
+  // Kaydet, kaydetmeden geç, sevk et fonksiyonları
+  const handleSaveAndGoDashboard = () => {
+    const isSaved = savedPatients.some(
+      p => String(p.tc_kimlik_no || p.id) === String(patientData.tc_kimlik_no || patientData.id)
+    );
+    if (patientData && !isSaved) {
+      setSavedPatients(prev => [...prev, patientData]);
+    }
+    setShowSwitchModal(false);
+    navigate('/dashboard');
+  };
+  const handleGoDashboardWithoutSaving = () => {
+    setShowSwitchModal(false);
+    navigate('/dashboard');
+  };
+  const handleReferAndGoDashboard = () => {
+    setShowSwitchModal(false);
+    setActiveTab('referral'); // Sevk sekmesini aç
+  };
+
   return (
     <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -302,10 +338,45 @@ const PatientDetailPage = () => {
             <h1 className="text-3xl font-bold text-gray-900">{patientData.ad_soyad || patientData.name}</h1>
             <p className="text-gray-500">T.C. {patientData.tc_kimlik_no || patientData.id} - {patientData.yas || patientData.age} yaşında, {patientData.cinsiyet || patientData.gender}</p>
           </div>
-          <button onClick={() => window.history.back()} className="flex items-center text-cyan-600 font-semibold hover:underline">
-            <ArrowRightCircle size={20} className="mr-2"/> Dashboard'a Geri Dön
+          <button onClick={() => {
+  setShowSwitchModal(true);
+  setPendingDashboardNav(true);
+}} className="flex items-center text-cyan-600 font-semibold hover:underline">
+            <ArrowLeft size={20} className="mr-2"/> Dashboard'a Dön
           </button>
         </header>
+        {showSwitchModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-2xl p-8 m-4 max-w-lg w-full">
+      <div className="flex items-start">
+        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-cyan-100 sm:mx-0 sm:h-10 sm:w-10">
+          <Bookmark className="h-6 w-6 text-cyan-600" />
+        </div>
+        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+          <h3 className="text-lg leading-6 font-bold text-gray-900">Dashboard'a Dönmeden Önce</h3>
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">
+              Mevcut hasta kaydedilmedi. Ne yapmak istersiniz?
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row-reverse gap-3">
+        <button onClick={handleSaveAndGoDashboard} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-cyan-600 text-base font-medium text-white hover:bg-cyan-700 focus:outline-none sm:text-sm">
+          <Bookmark size={18} className="mr-2"/> Kaydet ve Dön
+        </button>
+        <button onClick={handleReferAndGoDashboard} className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:text-sm">
+          <ArrowLeft size={18} className="mr-2"/> Mevcut Hastayı Sevk Et
+        </button>
+        <button onClick={handleGoDashboardWithoutSaving} className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200 focus:outline-none sm:mt-0 sm:text-sm">
+          Kaydetmeden Dön
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+        {/* Pop-up modal JSX */}
+        {/* showSwitchModal ve pop-up JSX'ini tamamen kaldır */}
         {/* Kritik bulgular ve üst özet alanı burada olabilir */}
         <div className="border-b border-gray-200 mt-6">
           <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">

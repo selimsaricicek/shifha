@@ -36,6 +36,15 @@ function App() {
     const [searchTerm, setSearchTerm] = useState('');
     const [toast, setToast] = useState(null);
     const [user, setUser] = useState(null);
+    const [currentPatient, setCurrentPatient] = useState(null); // GLOBAL STATE
+    const [savedPatients, setSavedPatients] = useState(() => {
+      const local = localStorage.getItem('savedPatients');
+      return local ? JSON.parse(local) : [];
+    });
+    // savedPatients değiştiğinde localStorage'a yaz
+    useEffect(() => {
+      localStorage.setItem('savedPatients', JSON.stringify(savedPatients));
+    }, [savedPatients]);
     // useNavigate hook'u, fonksiyonlar içinden sayfa değiştirmemizi sağlar
     const navigate = useNavigate();
 
@@ -126,7 +135,7 @@ function App() {
                             patients={filteredPatients}
                             setPatients={setPatients}
                             onSelectPatient={(patient) => {
-                              // TC'yi hash'le (güvenlik için)
+                              setCurrentPatient(patient); // GÜNCELLE
                               const hashedTc = btoa(patient?.tc_kimlik_no || '');
                               navigate(`/dashboard/patient/${hashedTc}`);
                             }}
@@ -138,13 +147,17 @@ function App() {
                             setSearchTerm={setSearchTerm}
                             showToast={showToast}
                             user={user}
+                            currentPatient={currentPatient}
+                            setCurrentPatient={setCurrentPatient}
+                            savedPatients={savedPatients}
+                            setSavedPatients={setSavedPatients}
                         />
                     }
                 />
                 {/* Dinamik Rota: Her hasta için kendi ID'si ile özel bir sayfa oluşturur */}
                 <Route
                     path="/dashboard/patient/:patientId"
-                    element={<PatientDetailWrapper />}
+                    element={<PatientDetailPage currentPatient={currentPatient} setCurrentPatient={setCurrentPatient} savedPatients={savedPatients} setSavedPatients={setSavedPatients} />}
                 />
             </Routes>
 
