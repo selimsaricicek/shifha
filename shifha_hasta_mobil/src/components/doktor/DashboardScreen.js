@@ -7,6 +7,26 @@ import Card from './Card';
 import { useZxing } from 'react-zxing';
 import { AlertTriangle, QrCode } from 'lucide-react';
 
+// QR kod okuma sonrası doğrulama fonksiyonu
+async function verifyQrLogin(loginAttemptId, doctorId, setFeedback) {
+  try {
+    const res = await fetch('http://localhost:3001/api/auth/verify-qr-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loginAttemptId, doctorId })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      setFeedback({ type: 'success', message: 'Başarılı! Web paneline yönlendiriliyorsunuz.' });
+      // Haptic feedback veya yönlendirme burada eklenebilir
+    } else {
+      setFeedback({ type: 'error', message: data.message || 'Giriş başarısız.' });
+    }
+  } catch (err) {
+    setFeedback({ type: 'error', message: 'Sunucuya ulaşılamadı.' });
+  }
+}
+
 export default function DashboardScreen({ onSelectPatient, onLogout }) {
   const [view, setView] = useState('qr');
   // ## DEĞİŞİKLİK 2: 'qrScan' state'inin başlangıç değerini boş string yaptım.
@@ -15,6 +35,7 @@ export default function DashboardScreen({ onSelectPatient, onLogout }) {
   const [currentDate, setCurrentDate] = useState(new Date('2025-07-12'));
   const [selectedDate, setSelectedDate] = useState(new Date('2025-07-12'));
   const today = new Date();
+  const [feedback, setFeedback] = useState(null);
 
   // ## DEĞİŞİKLİK 3: Yeni QR okuyucu hook'unu burada tanımlıyoruz.
   const { ref } = useZxing({
@@ -116,6 +137,9 @@ export default function DashboardScreen({ onSelectPatient, onLogout }) {
         >
           Randevu Listesine Git
         </button>
+        {feedback && (
+          <div className={`mt-4 p-3 rounded-lg text-center ${feedback.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{feedback.message}</div>
+        )}
       </div>
     );
   }

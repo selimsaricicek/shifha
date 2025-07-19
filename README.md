@@ -480,6 +480,268 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 </details>
 
 ---
+
+<details>
+  <summary><h1>Sprint 2</h1></summary>
+
+---
+<details>
+  <summary><h2>Mobile App Screenshots</h2></summary>
+
+### Hasta Mobil Uygulaması
+![Hasta1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta1.jpg)
+![Hasta2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta2.jpg)
+![Hasta3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta3.jpg)
+![Hasta4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta4.jpg)
+![Hasta5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta5.jpg)
+![Hasta6](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta6.jpg)
+![Hasta7](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta7.jpg)
+![Hasta8](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta8.jpg)
+![Hasta9](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta9.jpg)
+![Hasta10](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta10.jpg)
+![Hasta11](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta11.jpg)
+![Hasta12](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta12.jpg)
+![Hasta13](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta13.jpg)
+![Hasta14](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta14.jpg)
+
+---
+### Mobil Uygulama Genel
+![Mobil1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil1.jpg)
+![Mobil2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil2.jpg)
+![Mobil3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil3.jpg)
+![Mobil4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil4.jpg)
+![Mobil5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil5.jpg)
+
+---
+### Doktor Paneli
+![Doktor1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor1.jpg)
+![Doktor2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor2.jpg)
+![Doktor3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor3.jpg)
+![Doktor4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor4.jpg)
+![Doktor5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor5.jpg)
+
+</details>
+
+---
+<details>
+  <summary><h2>Project Management S2</h2></summary>
+
+### Jira Board 1
+![Jira1](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/1.png)
+
+---
+### Jira Board 2
+![Jira2](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/2.png)
+
+---
+### Jira Board 3
+![Jira3](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/3.png)
+
+---
+### Jira Board 4
+![Jira4](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/4.png)
+
+---
+### Jira Board 5
+![Jira5](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/5.png)
+
+---
+### Jira Board 6
+![Jira6](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/6.png)
+
+---
+### Jira Board 7
+![Jira7](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/7.png)
+
+---
+### Jira Board 8
+![Jira8](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/8.png)
+
+---
+### Jira Board 9
+![Jira9](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/9.png)
+
+---
+### Jira Board 10
+![Jira10](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS2/10.png)
+
+</details>
+
+---
+<details>
+  <summary><h2>Daily Scrum S2</h2></summary>
+
+### 07.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum07.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.1.png) | ![dailyScrum07.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.2.png) | ![dailyScrum07.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/07.07.2025/dailyScrum07.3.png) |
+
+### 08.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum08.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.1.png) | ![dailyScrum08.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.2.png) | ![dailyScrum08.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/08.07.2025/dailyScrum08.3.png) |
+
+### 09.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum09.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.1.png) | ![dailyScrum09.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.2.png) | ![dailyScrum09.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/09.07.2025/dailyScrum09.3.png) |
+
+### 10.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum10.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.1.png) | ![dailyScrum10.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.2.png) | ![dailyScrum10.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/10.07.2025/dailyScrum10.3.png) |
+
+### 11.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum11.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.1.png) | ![dailyScrum11.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.2.png) | ![dailyScrum11.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/11.07.2025/dailyScrum11.3.png) |
+
+### 12.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum12.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.1.png) | ![dailyScrum12.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.2.png) | ![dailyScrum12.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/12.07.2025/dailyScrum12.3.png) |
+
+### 13.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum13.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.1.png) | ![dailyScrum13.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.2.png) | ![dailyScrum13.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/13.07.2025/dailyScrum13.3.png) |
+
+### 14.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum14.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.1.png) | ![dailyScrum14.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.2.png) | ![dailyScrum14.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/14.07.2025/dailyScrum14.3.png) |
+
+### 15.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum15.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.1.png) | ![dailyScrum15.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.2.png) | ![dailyScrum15.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/15.07.2025/dailyScrum15.3.png) |
+
+### 16.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum16.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.1.png) | ![dailyScrum16.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.2.png) | ![dailyScrum16.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/16.07.2025/dailyScrum16.3.png) |
+
+### 17.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum17.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.1.png) | ![dailyScrum17.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.2.png) | ![dailyScrum17.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/17.07.2025/dailyScrum17.3.png) |
+
+### 18.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum18.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.1.png) | ![dailyScrum18.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.2.png) | ![dailyScrum18.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/18.07.2025/dailyScrum18.3.png) |
+
+### 19.07.2025
+|  |  |  |
+|--|--|--|
+| ![dailyScrum19.1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.1.png) | ![dailyScrum19.2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.2.png) | ![dailyScrum19.3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS2/19.07.2025/dailyScrum19.3.png) |
+
+</details>
+
+
+
+<summary><strong>🟦 Sprint 2 Özeti (Türkçe)</strong></summary>
+
+### Sprint Notları
+- [x] _'React Native'_ ile mobil uygulama geliştirme
+- [x] _'Expo'_ framework kullanımı
+- [x] _'Expo Router'_ ile navigation sistemi
+- [x] _'QR Kod'_ tarama özelliği
+- [x] _'WebSocket'_ ile real-time iletişim
+- [x] _'Redis'_ ile session yönetimi
+- [x] _'Socket.io'_ ile backend WebSocket sunucusu
+- [x] _'Mobil UI/UX'_ tasarımı ve implementasyonu
+- [x] _'Hasta Paneli'_ ve _'Doktor Paneli'_ ayrımı
+- [x] _'Bildirim Sistemi'_ implementasyonu
+- [x] _'Güvenli API'_ entegrasyonu
+- [x] _'Cross-platform'_ mobil uygulama geliştirme
+
+### Ürün Backlog'u
+- **Ürün Backlog'u:** [Jira Board Linki](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
+
+### Beklenen Puan
+_'500'_ Puan
+
+### Puan Tamamlama Mantığı
+Sprint 2'de mobil uygulama geliştirme ve API entegrasyonuna odaklanıldığı için _'500'_ puan hedeflendi. Bu sprintte React Native ile cross-platform mobil uygulama, QR kod tarama, WebSocket iletişimi ve güvenli API entegrasyonu tamamlandı.
+
+### Sprint Değerlendirmesi
+- React Native mobil uygulama geliştirildi
+- Expo Router ile navigation sistemi kuruldu
+- QR kod tarama ve manuel giriş özellikleri eklendi
+- WebSocket ile real-time iletişim altyapısı kuruldu
+- Redis ile session yönetimi implementasyonu yapıldı
+- Hasta ve doktor panelleri ayrı ayrı tasarlandı
+- Mobil UI/UX tasarımı tamamlandı
+- Güvenli API entegrasyonu sağlandı
+
+### Sprint 2 Retrospektifi
+- Mobil uygulama geliştirme sürecinde Expo Router kullanımına karar verildi
+- QR kod tarama özelliği için hem kamera hem manuel giriş seçenekleri eklendi
+- WebSocket ile real-time iletişim için backend altyapısı kuruldu
+- Redis ile session yönetimi için güvenli sistem tasarlandı
+- Hasta ve doktor panelleri için ayrı UI/UX tasarımları yapıldı
+- Cross-platform geliştirme için React Native tercih edildi
+- Mobil uygulama test süreçleri planlandı
+- API güvenliği ve authentication sistemi güçlendirildi
+
+### Katılımcılar
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+
+
+<details>
+<summary><strong>🟩 Sprint 2 Summary (English)</strong></summary>
+
+### Sprint Notes
+- [x] Mobile application development with _'React Native'_
+- [x] _'Expo'_ framework usage
+- [x] Navigation system with _'Expo Router'_
+- [x] _'QR Code'_ scanning feature
+- [x] Real-time communication with _'WebSocket'_
+- [x] Session management with _'Redis'_
+- [x] Backend WebSocket server with _'Socket.io'_
+- [x] Mobile UI/UX design and implementation
+- [x] _'Patient Panel'_ and _'Doctor Panel'_ separation
+- [x] _'Notification System'_ implementation
+- [x] _'Secure API'_ integration
+- [x] _'Cross-platform'_ mobile application development
+
+### Product Backlog
+- **Product Backlog:** [Jira Board Link](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
+
+### Expected Points
+_'500'_ Points
+
+### Point Completion Logic
+In Sprint 2, _'500'_ points were targeted as the focus was on mobile application development and API integration. This sprint completed React Native cross-platform mobile app, QR code scanning, WebSocket communication, and secure API integration.
+
+### Sprint Review
+- React Native mobile application developed
+- Navigation system established with Expo Router
+- QR code scanning and manual input features added
+- Real-time communication infrastructure established with WebSocket
+- Session management implementation with Redis
+- Patient and doctor panels designed separately
+- Mobile UI/UX design completed
+- Secure API integration achieved
+
+### Sprint 2 Retrospective
+- It was decided to use Expo Router in the mobile application development process
+- Both camera and manual input options were added for QR code scanning feature
+- Backend infrastructure was established for real-time communication with WebSocket
+- Secure system was designed for session management with Redis
+- Separate UI/UX designs were made for patient and doctor panels
+- React Native was preferred for cross-platform development
+- Mobile application testing processes were planned
+- API security and authentication system were strengthened
+
+### Participants
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+</details>
+
+---
 ## Endnotes
 
 - Contributions are welcome! 
