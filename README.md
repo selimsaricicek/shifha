@@ -573,6 +573,19 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ---
 <details>
+  <summary><h2>Burndown Chart S2</h2></summary>
+
+### Burndown Chart 1
+![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS2/burndownChartS2chart.jpg)
+
+---
+### Burndown Graph 2
+![Burndown Chart 2](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS2/burndownChartS2Graph.jpg)
+
+</details>
+
+---
+<details>
   <summary><h2>Daily Scrum S2</h2></summary>
 
 ### 07.07.2025
