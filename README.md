@@ -493,36 +493,36 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
   <summary><h2>Mobile App Screenshots</h2></summary>
 
 ### Hasta Mobil Uygulaması
-![Hasta1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta1.jpg)
-![Hasta2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta2.jpg)
-![Hasta3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta3.jpg)
-![Hasta4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta4.jpg)
-![Hasta5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta5.jpg)
-![Hasta6](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta6.jpg)
-![Hasta7](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta7.jpg)
-![Hasta8](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta8.jpg)
-![Hasta9](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta9.jpg)
-![Hasta10](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta10.jpg)
-![Hasta11](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta11.jpg)
-![Hasta12](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta12.jpg)
-![Hasta13](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta13.jpg)
-![Hasta14](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta14.jpg)
+![Hasta1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta1.png)
+![Hasta2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta2.png)
+![Hasta3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta3.png)
+![Hasta4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta4.png)
+![Hasta5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta5.png)
+![Hasta6](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta6.png)
+![Hasta7](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta7.png)
+![Hasta8](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta8.png)
+![Hasta9](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta9.png)
+![Hasta10](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta10.png)
+![Hasta11](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta11.png)
+![Hasta12](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta12.png)
+![Hasta13](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta13.png)
+![Hasta14](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/hasta14.png)
 
 ---
 ### Mobil Register ve Login
-![Mobil1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil1.jpg)
-![Mobil2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil2.jpg)
-![Mobil3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil3.jpg)
-![Mobil4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil4.jpg)
-![Mobil5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil5.jpg)
+![Mobil1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil1.png)
+![Mobil2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil2.png)
+![Mobil3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil3.png)
+![Mobil4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil4.png)
+![Mobil5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/mobil5.png)
 
 ---
 ### Doktor Paneli
-![Doktor1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor1.jpg)
-![Doktor2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor2.jpg)
-![Doktor3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor3.jpg)
-![Doktor4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor4.jpg)
-![Doktor5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor5.jpg)
+![Doktor1](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor1.png)
+![Doktor2](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor2.png)
+![Doktor3](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor3.png)
+![Doktor4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor4.png)
+![Doktor5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor5.png)
 
 </details>
 
