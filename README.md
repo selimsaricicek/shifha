@@ -524,6 +524,15 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ![Doktor4](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor4.png)
 ![Doktor5](https://github.com/selimsaricicek/shifha/blob/main/NewMobileS2/doktor5.png)
 
+---
+### Admin Paneli
+![Admin1](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin1S2.jpg)
+![Admin2](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin2S2.jpg)
+![Admin3](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin3S2.jpg)
+![Admin4](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin4S2.jpg)
+![Admin5](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin5S2.jpg)
+![Admin6](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS2/Admin6S2.jpg)
+
 </details>
 
 ---
