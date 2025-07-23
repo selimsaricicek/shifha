@@ -13,6 +13,8 @@ router.use('/patients', patientRoutes);
 const pdfRoutes = require('../routes/pdf.routes');
 router.use('/pdf', pdfRoutes);
 
-// Diğer API route'ları da buraya eklenebilir
+// Gemini AI endpointini ekle
+const geminiRoutes = require('../routes/api');
+router.use('/gemini', geminiRoutes);
 
 module.exports = router;

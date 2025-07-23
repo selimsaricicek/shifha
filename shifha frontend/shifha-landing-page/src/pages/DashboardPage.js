@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User } from 'lucide-react';
+import ChatBot from '../components/ChatBot';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
 import { toast } from 'react-toastify';
@@ -29,6 +30,8 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [selectedPatients, setSelectedPatients] = useState([]);
 
     // Hasta listesini çeken fonksiyon
     const fetchPatients = useCallback(async () => {
@@ -410,13 +413,20 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
 
                 {/* Hasta Kartları */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredPatients.map((patient) => (
-                        <div
-                            key={patient.tc_kimlik_no}
-                            className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                            onClick={() => viewPatientDetails(patient)}
-                        >
-                            <div className="flex items-center gap-4">
+                  {filteredPatients.map((patient) => (
+                    <div
+                      key={patient.tc_kimlik_no}
+                      className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                      draggable
+                      onDragStart={e => {
+                        e.dataTransfer.setData('application/json', JSON.stringify(patient));
+                      }}
+                      onClick={() => {
+                        setSelectedPatient(patient);
+                        viewPatientDetails(patient);
+                      }}
+                    >
+                      <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
                                     style={{ background: "#E0E7FF", color: "#4F46E5" }}>
                                     {(patient.ad_soyad || '') 
@@ -451,8 +461,8 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                                     onClick={e => { e.stopPropagation(); handleDeletePatient(patient.tc_kimlik_no); }}
                                 >Sil</button>
                             </div>
-                        </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
                 {/* Hasta Düzenle Modalı */}
                 {showEditModal && (
@@ -560,6 +570,24 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                     </div>
                 )}
             </main>
+            {/* ChatBot'u sabit sağ alt köşeye ekle, sürükle-bırak ile hasta verisi iletecek şekilde */}
+            <div
+              className="fixed bottom-6 right-6 z-50"
+              onDragOver={e => e.preventDefault()}
+              onDrop={e => {
+                e.preventDefault();
+                try {
+                  const data = e.dataTransfer.getData('application/json');
+                  if (data) {
+                    const patient = JSON.parse(data);
+                    setSelectedPatient(patient);
+                    setSelectedPatients(prev => [...prev, patient]);
+                  }
+                } catch {}
+              }}
+            >
+                <ChatBot patientData={selectedPatient} />
+            </div>
         </div>
     );
 }
