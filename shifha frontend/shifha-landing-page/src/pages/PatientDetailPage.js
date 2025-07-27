@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, Dna, CheckCircle,
-    Edit, Save, BrainCircuit
+    Edit, Save, BrainCircuit, PhoneCall, ArrowLeft, Bookmark
 } from 'lucide-react';
+import VitalsCard from '../components/VitalsCard';
+import DecisionPanel from '../components/DecisionPanel';
+import { DischargeModal, HospitalizeModal, ReferralDecisionModal } from '../components/DecisionModals';
+import CallRelativesModal from '../components/CallRelativesModal';
+import { mockBedData, mockPatientsData } from '../data/mockData';
 
 // ===================================================================================
 // YARDIMCI FONKSİYONLAR VE BİLEŞENLER (Sizin Kodunuz)
@@ -21,7 +26,7 @@ const getTodayDateString = () => {
 // TodaysCriticalResults fonksiyonu kaldırıldı
 
 const TabButton = ({ title, icon, isActive, onClick }) => (
-    <button onClick={onClick} className={`${ isActive ? 'border-cyan-500 text-cyan-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors`}>
+    <button onClick={onClick} className={`${ isActive ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors`}>
         {icon && React.cloneElement(icon, { className: 'mr-2' })}{title}
     </button>
 );
@@ -33,11 +38,11 @@ const SummaryTab = ({ patient }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="bg-rose-50 border-l-4 border-rose-500 text-rose-700 p-4 rounded-r-lg">
         <h4 className="font-bold">Alerjiler</h4>
-        <p>{(patient.allerjiler || patient.patient_data?.allerjiler || '').toString() || 'Raporlanmadı'}</p>
+        <p>{(patient.allergies || patient.allerjiler || patient.patient_data?.allerjiler || []).join(', ') || 'Raporlanmadı'}</p>
       </div>
       <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg">
         <h4 className="font-bold">Kronik Hastalıklar</h4>
-        <p>{(patient.kronik_hastaliklar || patient.patient_data?.kronikHastaliklar || '').toString() || 'Raporlanmadı'}</p>
+        <p>{(patient.chronicDiseases || patient.kronik_hastaliklar || patient.patient_data?.kronikHastaliklar || []).join(', ') || 'Raporlanmadı'}</p>
       </div>
     </div>
   </div>
@@ -213,6 +218,7 @@ const ReferralTab = ({ referrals }) => (
 
 const PatientDetailPage = () => {
   const { patientId } = useParams();
+  const navigate = useNavigate();
   // All hooks must be called here, unconditionally, before any return
   const [activeTab, setActiveTab] = useState('summary');
   const [isEditing, setIsEditing] = useState(false);
@@ -222,6 +228,8 @@ const PatientDetailPage = () => {
   const [notes, setNotes] = useState([]);
   const [consultations, setConsultations] = useState([]);
   const [referrals, setReferrals] = useState([]);
+  const [showDecisionModal, setShowDecisionModal] = useState(null);
+  const [showCallRelativesModal, setShowCallRelativesModal] = useState(false);
 
   // TC'yi hash'ten çöz
   const decodeTcFromHash = (hash) => {
@@ -237,8 +245,8 @@ const PatientDetailPage = () => {
   useEffect(() => {
     if (!patientId || patientId === 'undefined') return;
     
-    const tc = decodeTcFromHash(patientId);
-    if (!tc) {
+    const decodedId = decodeTcFromHash(patientId);
+    if (!decodedId) {
       setLoading(false);
       setPatientData(null);
       return;
@@ -246,8 +254,16 @@ const PatientDetailPage = () => {
 
     setLoading(true);
     
-    // Backend'den hasta verilerini çek
-    fetch(`http://localhost:3001/api/patients/${tc}`)
+    // Önce mock verilerden hasta bulmaya çalış
+    const mockPatient = mockPatientsData.find(p => p.id === decodedId);
+    if (mockPatient) {
+      setPatientData(mockPatient);
+      setLoading(false);
+      return;
+    }
+    
+    // Mock verilerde bulunamazsa backend'den çek
+    fetch(`http://localhost:3001/api/patients/${decodedId}`)
       .then(res => res.json())
       .then(data => {
         console.log("API'den dönen data:", data);
@@ -266,9 +282,9 @@ const PatientDetailPage = () => {
       .finally(() => setLoading(false));
       
     // Notlar, konsültasyonlar ve sevkler için ayrı istekler (opsiyonel)
-    // fetch(`http://localhost:3001/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
-    // fetch(`http://localhost:3001/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
-    // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
+    // fetch(`http://localhost:3001/api/patients/${decodedId}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
+    // fetch(`http://localhost:3001/api/patients/${decodedId}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
+    // fetch(`http://localhost:3001/api/patients/${decodedId}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
   }, [patientId]);
 
   if (!patientId || patientId === 'undefined') {
@@ -294,24 +310,123 @@ const PatientDetailPage = () => {
     e.target.reset();
   };
 
+  const handleDecisionClick = (decisionType) => {
+    setShowDecisionModal(decisionType);
+  };
+
+  const handleDecisionConfirm = (decisionData) => {
+    if (patientData) {
+      const updatedPatient = { ...patientData };
+      if (decisionData.prescription) {
+        updatedPatient.prescription = decisionData.prescription;
+        updatedPatient.followUp = decisionData.followUp;
+        if (updatedPatient.emergencyCase) {
+          updatedPatient.emergencyCase.status = 'Taburcu Edildi';
+        }
+      } else if (decisionData.department) {
+        updatedPatient.hospitalizedTo = decisionData.department;
+        updatedPatient.hospitalizationNotes = decisionData.notes;
+        if (updatedPatient.emergencyCase) {
+          updatedPatient.emergencyCase.status = 'Servise Yatırıldı';
+        }
+      } else if (decisionData.destination) {
+        updatedPatient.referredTo = decisionData.destination;
+        updatedPatient.referralReason = decisionData.reason;
+        if (updatedPatient.emergencyCase) {
+          updatedPatient.emergencyCase.status = 'Sevk Edildi';
+        }
+      }
+      setPatientData(updatedPatient);
+      setToastMessage('Hasta durumu güncellendi.');
+    }
+    setShowDecisionModal(null);
+  };
+
+  const handleCallRelatives = () => {
+    setShowCallRelativesModal(true);
+  };
+
+  const handleBackToPanel = () => {
+    // Kullanıcının hangi panelde olduğunu localStorage'dan al
+    const userRole = localStorage.getItem('userRole') || 'emergency';
+    navigate('/dashboard');
+  };
+
   return (
-    <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <header className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{patientData.ad_soyad || patientData.name}</h1>
-            <p className="text-gray-500">T.C. {patientData.tc_kimlik_no || patientData.id} - {patientData.yas || patientData.age} yaşında, {patientData.cinsiyet || patientData.gender}</p>
+        {/* Üst Navigasyon Çubuğu */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+          <div className="flex justify-between items-center">
+            <button 
+              onClick={handleBackToPanel} 
+              className="flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+            >
+              <ArrowLeft size={20} className="mr-2" />
+              Panele Dön
+            </button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-gray-700 font-medium">Dr. Ahmet Çelik</p>
+                <ArrowRightCircle size={16} className="text-gray-400" />
+              </div>
+              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Bookmark size={20} />
+              </button>
+            </div>
           </div>
-          <button onClick={() => window.history.back()} className="flex items-center text-cyan-600 font-semibold hover:underline">
-            <ArrowRightCircle size={20} className="mr-2"/> Dashboard'a Geri Dön
-          </button>
         </header>
-        {/* Kritik bulgular ve üst özet alanı burada olabilir */}
-        <div className="border-b border-gray-200 mt-6">
-          <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
-            <TabButton title="Özet" icon={<HeartPulse />} isActive={activeTab === 'summary'} onClick={() => setActiveTab('summary')} />
-            <TabButton title="Hasta Bilgileri" icon={<User />} isActive={activeTab === 'info'} onClick={() => setActiveTab('info')} />
+
+        {/* Hasta Başlık Bölümü */}
+        <div className="bg-white rounded-lg shadow-sm mx-6 mt-6 p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-6">
+              <img
+                src={patientData.profileImageUrl || `https://avatar.iran.liara.run/public/girl?username=${patientData.name?.replace(/\s/g, '')}`}
+                alt={patientData.name || patientData.ad_soyad}
+                className="w-20 h-20 rounded-full object-cover border-4 border-blue-100"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  {patientData.name || patientData.ad_soyad}
+                </h1>
+                <div className="space-y-1 text-gray-600">
+                  <p>T.C. Kimlik No: {patientData.id || patientData.tc_kimlik_no}</p>
+                  <p>Yaş: {patientData.age || patientData.yas}</p>
+                  <p>Cinsiyet: {patientData.gender || patientData.cinsiyet}</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {patientData.relatives && patientData.relatives.length > 0 && (
+                <button
+                  onClick={handleCallRelatives}
+                  className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
+                >
+                  <PhoneCall size={18} className="mr-2" /> Yakınlarını Ara
+                </button>
+              )}
+              <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                <Bookmark size={20} />
+              </button>
+            </div>
+          </div>
+          {patientData.emergencyCase && (
+            <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+              <h3 className="text-red-800 font-bold mb-2">Acil Durum Bilgisi</h3>
+              <p className="text-red-700">
+                Geliş: {patientData.emergencyCase.arrivalTime} - Şikayet: {patientData.emergencyCase.chiefComplaint}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Sekme Navigasyonu */}
+        <div className="border-b border-gray-200 mt-6 mx-6">
+          <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+            <TabButton title="Tıbbi Özet" icon={<HeartPulse />} isActive={activeTab === 'summary'} onClick={() => setActiveTab('summary')} />
             <TabButton title="Tahliller" icon={<FileJson />} isActive={activeTab === 'labs'} onClick={() => setActiveTab('labs')} />
+            <TabButton title="Hasta Bilgileri" icon={<User />} isActive={activeTab === 'info'} onClick={() => setActiveTab('info')} />
             <TabButton title="Radyoloji" icon={<ImageIcon />} isActive={activeTab === 'radiology'} onClick={() => setActiveTab('radiology')} />
             <TabButton title="Doktor Notları" icon={<FileText />} isActive={activeTab === 'notes'} onClick={() => setActiveTab('notes')} />
             <TabButton title="Konsültasyon" icon={<Users />} isActive={activeTab === 'consultation'} onClick={() => setActiveTab('consultation')} />
@@ -320,22 +435,102 @@ const PatientDetailPage = () => {
             <TabButton title="Patoloji" icon={<FileJson />} isActive={activeTab === 'pathology'} onClick={() => setActiveTab('pathology')} />
           </nav>
         </div>
-        <main className="mt-8 bg-white p-6 rounded-xl shadow-sm">
-          {activeTab === 'summary' && <SummaryTab patient={patientData} />}
-          {activeTab === 'info' && <InfoTab patient={patientData} isEditing={isEditing} onChange={handleInfoChange} onSave={handleSave} onToggleEdit={() => setIsEditing(!isEditing)} />}
-          {activeTab === 'labs' && <LabResultsTab labResults={patientData.labResults || patientData.laboratuvar || []} />}
-          {activeTab === 'radiology' && <RadiologyTab reports={patientData.radyoloji || []} />}
-          {activeTab === 'notes' && <DoctorNotesTab notes={notes} onAddNote={handleAddNote} />}
-          {activeTab === 'consultation' && <ConsultationTab consultations={consultations} />}
-          {activeTab === 'referral' && <ReferralTab referrals={referrals} />}
-          {activeTab === 'epikriz' && <EpikrizTab report={patientData.epikriz} />}
-          {activeTab === 'pathology' && <PathologyTab reports={patientData.patoloji || []} />}
+
+        {/* Ana İçerik */}
+        <main className="mx-6 mt-6">
+          {activeTab === 'summary' && (
+            <div className="space-y-6">
+              {/* Kritik Tıbbi Özet */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <SummaryTab patient={patientData} />
+              </div>
+              
+              {/* Vital Bulgular */}
+              {patientData.emergencyCase && patientData.emergencyCase.vitals && (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <VitalsCard vitals={patientData.emergencyCase.vitals} />
+                </div>
+              )}
+              
+              {/* Karar Aşaması */}
+              {patientData.emergencyCase && (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <DecisionPanel onDecisionClick={handleDecisionClick} />
+                </div>
+              )}
+            </div>
+          )}
+          {activeTab === 'info' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <InfoTab patient={patientData} isEditing={isEditing} onChange={handleInfoChange} onSave={handleSave} onToggleEdit={() => setIsEditing(!isEditing)} />
+            </div>
+          )}
+          {activeTab === 'labs' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <LabResultsTab labResults={patientData.labResults || patientData.laboratuvar || []} />
+            </div>
+          )}
+          {activeTab === 'radiology' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <RadiologyTab reports={patientData.radyoloji || []} />
+            </div>
+          )}
+          {activeTab === 'notes' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <DoctorNotesTab notes={notes} onAddNote={handleAddNote} />
+            </div>
+          )}
+          {activeTab === 'consultation' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <ConsultationTab consultations={consultations} />
+            </div>
+          )}
+          {activeTab === 'referral' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <ReferralTab referrals={referrals} />
+            </div>
+          )}
+          {activeTab === 'epikriz' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <EpikrizTab report={patientData.epikriz} />
+            </div>
+          )}
+          {activeTab === 'pathology' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <PathologyTab reports={patientData.patoloji || []} />
+            </div>
+          )}
         </main>
         {toastMessage && (
-          <div className="fixed bottom-10 right-10 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn">
+          <div className="fixed bottom-10 right-10 bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg flex items-center animate-fadeIn z-50">
             <CheckCircle className="mr-2" /> {toastMessage}
           </div>
         )}
+
+        <DischargeModal
+          isOpen={showDecisionModal === 'discharge'}
+          onClose={() => setShowDecisionModal(null)}
+          onConfirm={handleDecisionConfirm}
+        />
+
+        <HospitalizeModal
+          isOpen={showDecisionModal === 'hospitalize'}
+          onClose={() => setShowDecisionModal(null)}
+          onConfirm={handleDecisionConfirm}
+          bedData={mockBedData}
+        />
+
+        <ReferralDecisionModal
+          isOpen={showDecisionModal === 'referral'}
+          onClose={() => setShowDecisionModal(null)}
+          onConfirm={handleDecisionConfirm}
+        />
+
+        <CallRelativesModal
+          isOpen={showCallRelativesModal}
+          onClose={() => setShowCallRelativesModal(false)}
+          relatives={patientData?.relatives || []}
+        />
       </div>
     </div>
   );

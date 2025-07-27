@@ -1,52 +1,50 @@
 import React from 'react';
-import { Pencil } from 'lucide-react';
-import DOMPurify from 'dompurify';
+import { Bookmark } from 'lucide-react';
 
-export default function PatientCard({ patient, onEdit, onDelete, onView }) {
-  return (
-    <div
-      className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-      onClick={() => onView(patient)}
+const PatientCard = ({ patient, onSelectPatient, onSavePatient, isSaved }) => (
+  <div 
+    onClick={() => onSelectPatient(patient)} 
+    className="bg-white rounded-xl shadow-lg p-5 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative"
+  >
+    <button 
+      onClick={(e) => { 
+        e.stopPropagation(); 
+        onSavePatient(patient); 
+      }} 
+      className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
+        isSaved 
+          ? 'bg-cyan-100 text-cyan-600' 
+          : 'bg-gray-100 text-gray-500 hover:bg-cyan-100 hover:text-cyan-600'
+      }`}
+      title={isSaved ? "Kaydedilenlerden çıkar" : "Hastayı kaydet"}
     >
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
-          style={{ background: "#E0E7FF", color: "#4F46E5" }}>
-          {(patient?.ad_soyad || '')
-            .split(' ')
-            .map((s) => s[0])
-            .join('')
-            .toUpperCase()}
-        </div>
-        <div>
-          <h3 className="text-lg font-bold text-gray-900" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(patient?.ad_soyad || '')}} />
-          <p className="text-sm text-gray-500">T.C. {DOMPurify.sanitize(patient?.tc_kimlik_no || '')}</p>
-          <p className="text-sm text-gray-500">
-            {DOMPurify.sanitize(String(patient?.yas || ''))} yaşında, {DOMPurify.sanitize(patient?.cinsiyet || '')}
-          </p>
-        </div>
-      </div>
-      {patient.tibbi_gecmis?.allerjiler?.length > 0 &&
-        patient.tibbi_gecmis.allerjiler[0] !== 'Bilinmiyor' && (
-          <div className="mt-2">
-            <p className="text-xs text-red-600 font-semibold">
-              Alerji: {DOMPurify.sanitize(patient.tibbi_gecmis.allerjiler.join(', '))}
-            </p>
-          </div>
-        )}
-      <div className="flex gap-2 mt-2">
-        <button
-          className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs flex items-center gap-1"
-          onClick={e => { e.stopPropagation(); onEdit(patient); }}
-        >
-          <Pencil size={14} /> Düzenle
-        </button>
-        <button
-          className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
-          onClick={e => { e.stopPropagation(); onDelete(patient?.tc_kimlik_no); }}
-        >
-          Sil
-        </button>
+      <Bookmark size={18} fill={isSaved ? 'currentColor' : 'none'} />
+    </button>
+    
+    <div className="flex items-center">
+      <img 
+        src={patient.profileImageUrl || `https://avatar.iran.liara.run/public/boy?username=${patient.name?.replace(/\s/g, '')}`} 
+        alt={patient.name} 
+        className="w-16 h-16 rounded-full mr-4 bg-gray-200" 
+      />
+      <div>
+        <h3 className="text-lg font-bold text-gray-900">{patient.name || patient.ad_soyad}</h3>
+        <p className="text-sm text-gray-500">T.C. {patient.id || patient.tc_kimlik_no}</p>
+        <p className="text-sm text-gray-500">
+          {patient.age || patient.yas} yaşında, {patient.gender || patient.cinsiyet || 'Belirtilmemiş'}
+        </p>
       </div>
     </div>
-  );
-} 
+    
+    {(patient.allergies?.length > 0 || patient.tibbi_gecmis?.allerjiler?.length > 0) && 
+     (patient.allergies?.[0] !== 'Bilinmiyor' || patient.tibbi_gecmis?.allerjiler?.[0] !== 'Bilinmiyor') && (
+      <div className="mt-4 pt-3 border-t border-gray-100">
+        <p className="text-xs text-rose-600 font-semibold">
+          Alerjiler: {(patient.allergies || patient.tibbi_gecmis?.allerjiler || []).join(', ')}
+        </p>
+      </div>
+    )}
+  </div>
+);
+
+export default PatientCard; 

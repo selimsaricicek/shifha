@@ -11,18 +11,14 @@ import PatientDetailPage from './pages/PatientDetailPage';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import mockPatientsData, { mockBedData } from './data/mockData';
 
 // ===================================================================================
 // ÖNEMLİ: Bu kısımları kendi kodunuzdaki gibi dolu tutun.
 // Ben sadece yer tutucu olarak bırakıyorum.
 // ===================================================================================
 const getTodayDateString = () => new Date().toISOString().split('T')[0];
-const mockPatientsData = [
-  /* KENDİ HASTA VERİLERİNİZ BURADA YER ALACAK */
-  { id: '12345678901', name: 'Ayşe Yılmaz', age: 45, /* ...diğer veriler... */ },
-  { id: '98765432109', name: 'Mehmet Öztürk', age: 58, /* ...diğer veriler... */ },
-  { id: '24681357902', name: 'Zeynep Kaya', age: 34, /* ...diğer veriler... */ }
-];
+// Mock veriler artık ayrı dosyadan import ediliyor
 const Toast = ({ message, type, onDismiss }) => { /* ... KENDİ TOAST BİLEŞENİNİZ ... */ return null;};
 const DoctorChatbot = () => { /* ... KENDİ CHATBOT BİLEŞENİNİZ ... */ return null;};
 
@@ -126,9 +122,9 @@ function App() {
                             patients={filteredPatients}
                             setPatients={setPatients}
                             onSelectPatient={(patient) => {
-                              // TC'yi hash'le (güvenlik için)
-                              const hashedTc = btoa(patient?.tc_kimlik_no || '');
-                              navigate(`/dashboard/patient/${hashedTc}`);
+                              // Hasta ID'sini hash'le (güvenlik için)
+                              const hashedId = btoa(patient?.id || patient?.tc_kimlik_no || '');
+                              navigate(`/dashboard/patient/${hashedId}`);
                             }}
                             onLogout={() => {
                                 setUser(null);
