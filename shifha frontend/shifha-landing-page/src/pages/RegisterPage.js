@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { register } from '../api/authService';
 import { toast } from 'react-toastify';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const newLogoUrl = '/logo-symbol.png';
 const newTextUrl = '/logo-text.png';
@@ -218,13 +219,17 @@ export default function RegisterPage({ onRegisterSuccess, onBackToLogin }) {
 
                     <div className="flex flex-col space-y-3">
                         <button
-                            className={`bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline transition-colors duration-300 ${
+                            className={`bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline transition-colors duration-300 flex items-center justify-center ${
                                 loading ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                             type="submit"
                             disabled={loading}
                         >
-                            {loading ? 'Kayıt Oluşturuluyor...' : 'Kayıt Ol'}
+                            {loading ? (
+                                <LoadingSpinner size="sm" text="Kayıt oluşturuluyor..." />
+                            ) : (
+                                'Kayıt Ol'
+                            )}
                         </button>
                         
                         <button
@@ -239,4 +244,4 @@ export default function RegisterPage({ onRegisterSuccess, onBackToLogin }) {
             </div>
         </div>
     );
-} 
+}

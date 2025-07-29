@@ -117,10 +117,41 @@ const deletePatient = async (req, res, next) => {
   }
 };
 
+/**
+ * Hastanın kan tahlili sonuçlarını getirir
+ * @route GET /api/patients/:tc/blood-test-results
+ * @returns {Object} 200 - { success, data } | 404 - { success: false, error }
+ */
+const getBloodTestResults = async (req, res, next) => {
+  try {
+    let { tc } = req.params;
+    tc = String(tc).trim();
+    console.log(`getBloodTestResults isteği alındı: TC=${tc}`);
+
+    const { data, error } = await supabase
+      .from('blood_test_results')
+      .select('*')
+      .eq('patient_tc', tc)
+      .order('test_date', { ascending: false }); // En yeni sonuçlar en üstte
+
+    if (error) {
+      console.error('Supabase kan tahlili hatası:', error);
+      throw error;
+    }
+
+    console.log(`${tc} için ${data?.length || 0} kan tahlili sonucu bulundu`);
+    res.status(200).json({ success: true, data: data || [] });
+  } catch (err) {
+    console.error('Kan tahlili getirme hatası:', err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAllPatients,
   getPatientByTC,
   addPatient,
   updatePatient,
   deletePatient,
+  getBloodTestResults,
 };

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import QRCode from 'react-qr-code';
 import { io } from 'socket.io-client';
 import { useEffect, useRef } from 'react';
-
+import LoadingSpinner from '../components/LoadingSpinner';
 const newLogoUrl = '/logo-symbol.png';
 const newTextUrl = '/logo-text.png';
 
@@ -73,35 +73,23 @@ export default function LoginPage({ onLogin, onRegisterClick }) {
       let ws;
 
       const fetchQr = async () => {
-        setQrLoading(true);
-        setQrError('');
         try {
+          setQrLoading(true);
           const res = await fetch('http://localhost:3001/api/auth/qr-session');
-          if (!res.ok) throw new Error('QR kod alınamadı.');
           const data = await res.json();
           setQrId(data.loginAttemptId);
-          setQrExpires(Date.now() + 60000);
           setQrCountdown(60);
-          // WebSocket bağlantısı kur
-          if (socketRef.current) socketRef.current.disconnect();
-          ws = io('http://localhost:3001', { transports: ['websocket'] });
-          socketRef.current = ws;
-          ws.on('connect', () => {
-            // loginAttemptId'yi backend'e gönder
-            ws.emit('registerQrSession', { loginAttemptId: data.loginAttemptId });
-          });
-          ws.on('loginSuccess', (payload) => {
-            if (onLogin) onLogin({ user: { email: 'qr-user@saglik.gov.tr' }, token: payload.token });
-          });
-        } catch (err) {
-          setQrError('QR kod alınamadı.');
+        } catch (error) {
+          console.error('QR fetch error:', error);
         } finally {
           setQrLoading(false);
         }
       };
 
+      // İlk QR kodu yükle
       fetchQr();
 
+      // QR kod yenileme timer'ı
       timer = setInterval(() => {
         setQrCountdown((prev) => {
           if (prev <= 1) {
@@ -116,7 +104,7 @@ export default function LoginPage({ onLogin, onRegisterClick }) {
         clearInterval(timer);
         if (socketRef.current) socketRef.current.disconnect();
       };
-    }, [onLogin]);
+    }, []); // onLogin bağımlılığını kaldırdık
 
     return (
         <div className="bg-gray-100 min-h-screen flex items-center justify-center font-sans">
@@ -187,16 +175,18 @@ export default function LoginPage({ onLogin, onRegisterClick }) {
                 <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 rounded-xl shadow-inner p-6 min-w-[260px]">
                     <h3 className="text-lg font-bold text-cyan-700 mb-2">QR ile Hızlı Giriş</h3>
                     {qrLoading ? (
-                        <div className="text-gray-500">Yükleniyor...</div>
+                        <LoadingSpinner size="lg" text="QR kod yükleniyor..." />
                     ) : qrError ? (
                         <div className="text-red-500">{qrError}</div>
-                    ) : (
+                    ) : qrId ? (
                         <>
                             <QRCode value={qrId || ''} size={180} style={{ height: "auto", maxWidth: "100%", width: "100%" }} />
                             <div className="mt-4 text-gray-700 text-center text-sm">Telefonunuzdaki Shifha uygulamasından bu kodu okutun.</div>
                             <div className="mt-2 text-xs text-gray-500">Kalan süre: <span className="font-semibold">{qrCountdown}s</span></div>
                             <button onClick={() => setQrCountdown(1)} className="mt-2 text-cyan-600 text-xs underline">QR Kodunu Yenile</button>
                         </>
+                    ) : (
+                        <LoadingSpinner size="lg" text="QR kod hazırlanıyor..." />
                     )}
                 </div>
             </div>

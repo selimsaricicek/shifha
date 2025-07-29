@@ -497,6 +497,133 @@ AND table_name = 'doctor_profiles'
 ORDER BY ordinal_position;
 
 -- =====================================================
+-- 14. DETAYLI KAN TAHLİLİ TABLOSU
+-- =====================================================
+
+-- Kan tahlili sonuçları için detaylı tablo
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'blood_test_results'
+    ) THEN
+        CREATE TABLE public.blood_test_results (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            patient_tc VARCHAR(11) NOT NULL,
+            test_date DATE NOT NULL DEFAULT CURRENT_DATE,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            
+            -- Hemogram Değerleri
+            hemoglobin DECIMAL(5,2), -- g/dL (12.0-15.5 K, 13.5-17.5 E)
+            hematokrit DECIMAL(5,2), -- % (36-46 K, 41-53 E)
+            eritrosit DECIMAL(5,2), -- milyon/μL (4.2-5.4 K, 4.7-6.1 E)
+            lökosit DECIMAL(6,2), -- bin/μL (4.5-11.0)
+            trombosit INTEGER, -- bin/μL (150-450)
+            mcv DECIMAL(5,2), -- fL (80-100)
+            mch DECIMAL(5,2), -- pg (27-32)
+            mchc DECIMAL(5,2), -- g/dL (32-36)
+            rdw DECIMAL(5,2), -- % (11.5-14.5)
+            
+            -- Biyokimya Değerleri
+            glukoz DECIMAL(6,2), -- mg/dL (70-100 açlık)
+            üre DECIMAL(6,2), -- mg/dL (17-43)
+            kreatinin DECIMAL(5,2), -- mg/dL (0.7-1.2 E, 0.6-1.1 K)
+            ürik_asit DECIMAL(5,2), -- mg/dL (3.5-7.2 E, 2.6-6.0 K)
+            total_kolesterol DECIMAL(6,2), -- mg/dL (<200)
+            hdl_kolesterol DECIMAL(6,2), -- mg/dL (>40 E, >50 K)
+            ldl_kolesterol DECIMAL(6,2), -- mg/dL (<100)
+            trigliserit DECIMAL(6,2), -- mg/dL (<150)
+            
+            -- Karaciğer Fonksiyonları
+            alt_sgpt DECIMAL(6,2), -- U/L (7-56)
+            ast_sgot DECIMAL(6,2), -- U/L (10-40)
+            alp DECIMAL(6,2), -- U/L (44-147)
+            ggt DECIMAL(6,2), -- U/L (9-48 E, 9-32 K)
+            total_bilirubin DECIMAL(5,2), -- mg/dL (0.3-1.2)
+            direkt_bilirubin DECIMAL(5,2), -- mg/dL (0.0-0.3)
+            
+            -- Protein Değerleri
+            total_protein DECIMAL(5,2), -- g/dL (6.3-8.2)
+            albumin DECIMAL(5,2), -- g/dL (3.5-5.2)
+            
+            -- Elektrolit Değerleri
+            sodyum DECIMAL(6,2), -- mEq/L (136-145)
+            potasyum DECIMAL(5,2), -- mEq/L (3.5-5.1)
+            klor DECIMAL(6,2), -- mEq/L (98-107)
+            kalsiyum DECIMAL(5,2), -- mg/dL (8.5-10.5)
+            fosfor DECIMAL(5,2), -- mg/dL (2.5-4.5)
+            magnezyum DECIMAL(5,2), -- mg/dL (1.7-2.2)
+            
+            -- Tiroid Fonksiyonları
+            tsh DECIMAL(6,3), -- mIU/L (0.27-4.2)
+            t3 DECIMAL(5,2), -- pg/mL (2.0-4.4)
+            t4 DECIMAL(5,2), -- ng/dL (5.1-14.1)
+            
+            -- Vitamin Değerleri
+            vitamin_b12 DECIMAL(6,2), -- pg/mL (197-771)
+            vitamin_d DECIMAL(5,2), -- ng/mL (30-100)
+            folik_asit DECIMAL(5,2), -- ng/mL (4.6-18.7)
+            
+            -- İnflamasyon Belirteçleri
+            crp DECIMAL(6,2), -- mg/L (<3.0)
+            sedimentasyon INTEGER, -- mm/saat (0-20 E, 0-30 K)
+            
+            -- Demir Metabolizması
+            demir DECIMAL(6,2), -- μg/dL (60-170 E, 37-145 K)
+            tibc DECIMAL(6,2), -- μg/dL (250-450)
+            ferritin DECIMAL(6,2), -- ng/mL (12-300 E, 12-150 K)
+            
+            -- Hormon Değerleri
+            insulin DECIMAL(6,2), -- μIU/mL (2.6-24.9)
+            hba1c DECIMAL(5,2), -- % (<5.7)
+            
+            -- Kardiyak Belirteçler
+            troponin_i DECIMAL(8,3), -- ng/mL (<0.04)
+            ck_mb DECIMAL(6,2), -- ng/mL (<6.3)
+            
+            -- İdrar Değerleri
+            idrar_protein VARCHAR(20), -- negatif/pozitif
+            idrar_glukoz VARCHAR(20), -- negatif/pozitif
+            idrar_keton VARCHAR(20), -- negatif/pozitif
+            idrar_lökosit VARCHAR(20), -- /hpf
+            idrar_eritrosit VARCHAR(20), -- /hpf
+            
+            -- Ek Notlar
+            notes TEXT,
+            
+            CONSTRAINT fk_blood_test_patient 
+                FOREIGN KEY (patient_tc) 
+                REFERENCES patients(tc_kimlik_no) 
+                ON DELETE CASCADE
+        );
+        
+        -- İndeksler
+        CREATE INDEX idx_blood_test_patient_tc ON public.blood_test_results(patient_tc);
+        CREATE INDEX idx_blood_test_date ON public.blood_test_results(test_date);
+        CREATE INDEX idx_blood_test_created ON public.blood_test_results(created_at);
+        
+        -- RLS Politikaları
+        ALTER TABLE public.blood_test_results ENABLE ROW LEVEL SECURITY;
+        
+        CREATE POLICY "Blood test results are viewable by authenticated users" 
+            ON public.blood_test_results
+            FOR SELECT TO authenticated 
+            USING (true);
+            
+        CREATE POLICY "Blood test results can be managed by authenticated users" 
+            ON public.blood_test_results
+            FOR ALL TO authenticated 
+            USING (true) WITH CHECK (true);
+        
+        RAISE NOTICE '✅ Blood test results tablosu oluşturuldu';
+    ELSE
+        RAISE NOTICE 'Blood test results tablosu zaten mevcut';
+    END IF;
+END $$;
+
+-- =====================================================
 -- BAŞARI MESAJI
 -- =====================================================
 
@@ -515,7 +642,8 @@ BEGIN
     RAISE NOTICE '✅ Patient_profiles tablosu hazır';
     RAISE NOTICE '✅ Appointments tablosu hazır';
     RAISE NOTICE '✅ BloodTestAnalysis tablosu hazır (snake_case)';
+    RAISE NOTICE '✅ Blood test results tablosu hazır';
     RAISE NOTICE '✅ RLS policies aktif';
     RAISE NOTICE '✅ Kayıt sistemi için hazır';
     RAISE NOTICE '========================================';
-END $$; 
+END $$;

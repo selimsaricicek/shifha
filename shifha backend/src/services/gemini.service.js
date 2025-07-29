@@ -2,12 +2,17 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function getStructuredDataFromText(text) {
-  try {
-    const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-1.5-flash-latest" });
+async function getStructuredDataFromText(text, maxRetries = 3, retryDelay = 2000) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Gemini API çağrısı - Deneme ${attempt}/${maxRetries}`);
+      
+      const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-1.5-flash-latest" });
 
-    // ----> YENİ VE DAHA AKILLI TALİMAT (PROMPT) <----
-    const prompt = `
+      // ----> YENİ VE DAHA AKILLI TALİMAT (PROMPT) <----
+      const prompt = `
 ## GÖREV TANIMI ##
 
 [ROL VE KİMLİK]
@@ -112,29 +117,50 @@ ${text}
 `;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const responseText = response.text();
-    
-    // Gelen yanıtın temiz bir JSON olduğundan emin oluyoruz.
-    const jsonString = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const structuredData = JSON.parse(jsonString);
+      const response = await result.response;
+      const responseText = response.text();
+      
+      // Gelen yanıtın temiz bir JSON olduğundan emin oluyoruz.
+      const jsonString = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const structuredData = JSON.parse(jsonString);
 
-    console.log("Gemini'den başarıyla ve daha detaylı yapılandırılmış veri alındı.");
-    
-    // Kodun geri kalanının doğru çalışması için, anahtar alanları kök düzeye kopyalıyoruz.
-    const rootData = {
-        ad_soyad: structuredData.kimlikBilgileri?.adSoyad || '',
-        tc_kimlik_no: structuredData.kimlikBilgileri?.tcKimlikNo || '',
-        ...structuredData // Geri kalan tüm zengin veriyi de ekliyoruz
-    };
+      console.log("Gemini'den başarıyla ve daha detaylı yapılandırılmış veri alındı.");
+      
+      // Kodun geri kalanının doğru çalışması için, anahtar alanları kök düzeye kopyalıyoruz.
+      const rootData = {
+          ad_soyad: structuredData.kimlikBilgileri?.adSoyad || '',
+          tc_kimlik_no: structuredData.kimlikBilgileri?.tcKimlikNo || '',
+          ...structuredData // Geri kalan tüm zengin veriyi de ekliyoruz
+      };
 
-    return rootData;
+      return rootData;
 
-  } catch (error) {
-    console.error("Gemini Servis Hatası:", error);
-    throw new Error("Yapay zeka veriyi işlerken bir hata oluştu.");
+    } catch (error) {
+      lastError = error;
+      console.error(`Gemini Servis Hatası (Deneme ${attempt}/${maxRetries}):`, error.message);
+      
+      // 503 Service Unavailable veya rate limit hatalarında retry yap
+      if (error.status === 503 || error.status === 429 || error.message.includes('overloaded')) {
+        if (attempt < maxRetries) {
+          console.log(`${retryDelay}ms bekleyip tekrar deneniyor...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          retryDelay *= 2; // Exponential backoff
+          continue;
+        }
+      }
+      
+      // Diğer hatalar için hemen çık
+      if (attempt === maxRetries || (error.status !== 503 && error.status !== 429 && !error.message.includes('overloaded'))) {
+        break;
+      }
+    }
   }
+  
+  // Tüm denemeler başarısız oldu
+  console.error("Tüm Gemini API denemeleri başarısız oldu:", lastError?.message);
+  throw new Error(`Yapay zeka servisi şu anda aşırı yüklü. Lütfen birkaç dakika sonra tekrar deneyin. (${lastError?.message})`);
 }
+
 
 // Yardımcı: Desteklenen modelleri listele
 async function listAvailableModels() {

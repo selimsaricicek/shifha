@@ -5,6 +5,7 @@ import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
 import { toast } from 'react-toastify';
 import Calendar from '../components/Calendar';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 // BİLEŞENLERİNİZDE HİÇBİR DEĞİŞİKLİK YAPILMADI
 // PatientCard, TabButton, SummaryTab vb. tüm bileşenleriniz olduğu gibi kalıyor.
@@ -388,7 +389,11 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                             e.target.value = '';
                         }}
                     />
-                    {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center text-lg font-bold text-cyan-600">Yükleniyor...</div>}
+                    {loading && (
+                        <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                            <LoadingSpinner size="lg" text="PDF işleniyor..." />
+                        </div>
+                    )}
                 </div>
 
                 {/* Arama Kutusu */}
@@ -804,7 +809,11 @@ function PatientDetailPageRemote() {
     if (tc) fetchPatient();
   }, [tc]);
 
-  if (loading) return <div>Yükleniyor...</div>;
+  if (loading) return (
+    <div className="p-8 flex justify-center items-center min-h-screen">
+      <LoadingSpinner size="xl" text="Hasta bilgileri yükleniyor..." />
+    </div>
+  );
   if (error) return <div>Hata: {error}</div>;
   if (!patient) return <div>Hasta bulunamadı.</div>;
 

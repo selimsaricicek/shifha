@@ -1,6 +1,6 @@
-const pdfParse = require('pdf-parse');
 const supabase = require('./supabaseClient');
 const { getStructuredDataFromText } = require('./gemini.service');
+const pdfParse = require('pdf-parse');
 
 /**
  * PDF dosyasından hasta verisi çıkarır ve Supabase'e kaydeder
@@ -114,7 +114,156 @@ async function parsePatientPdf(buffer) {
     }
 
     console.log("Nihai ve temiz veri başarıyla kaydedildi:", patient.id);
+    
+    // 5. ADIM: Kan tahlili verilerini çıkar ve kaydet
+    await extractAndSaveBloodTestResults(text, tc);
+    
     return patient;
+}
+
+/**
+ * PDF'ten kan tahlili değerlerini çıkarır ve blood_test_results tablosuna kaydeder
+ * @param {string} text - PDF'ten çıkarılan ham metin
+ * @param {string} patientTc - Hasta TC kimlik numarası
+ */
+async function extractAndSaveBloodTestResults(text, patientTc) {
+    try {
+        // Kan tahlili değerlerini çıkarmak için regex pattern'ları
+        const bloodTestPatterns = {
+            // Hemogram
+            hemoglobin: /(?:hemoglobin|hgb|hb)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:g\/dl|mg\/dl)?/i,
+            hematokrit: /(?:hematokrit|hct|htc)\s*:?\s*([0-9]+\.?[0-9]*)\s*%?/i,
+            eritrosit: /(?:eritrosit|rbc|alyuvar)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:milyon|m)?/i,
+            lökosit: /(?:lökosit|wbc|akyuvar|beyaz)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:bin|k)?/i,
+            trombosit: /(?:trombosit|plt|platelet)\s*:?\s*([0-9]+)\s*(?:bin|k)?/i,
+            mcv: /(?:mcv)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:fl)?/i,
+            mch: /(?:mch)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:pg)?/i,
+            mchc: /(?:mchc)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:g\/dl)?/i,
+            rdw: /(?:rdw)\s*:?\s*([0-9]+\.?[0-9]*)\s*%?/i,
+            
+            // Biyokimya - Karaciğer Fonksiyonları
+            alanin_aminotransferaz: /(?:alanin\s*aminotransferaz|alt|sgpt)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:u\/l|iu\/l)?/i,
+            aspartat_aminotransferaz: /(?:aspartat\s*aminotransferaz|ast|sgot)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:u\/l|iu\/l)?/i,
+            alkalen_fosfataz: /(?:alkalen\s*fosfataz|alp)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:u\/l|iu\/l)?/i,
+            gama_glutamil: /(?:gama\s*glutamil|gamma\s*glutamil|ggt)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:u\/l|iu\/l)?/i,
+            total_bilirubin: /(?:total\s*bilirubin|toplam\s*bilirubin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            
+            // Biyokimya - Böbrek Fonksiyonları
+            kan_üre_azotu: /(?:kan\s*üre\s*azotu|bun|blood\s*urea\s*nitrogen)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            kreatinin: /(?:kreatinin|creatinine)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            tahmini_glomerüler: /(?:tahmini\s*glomerüler|egfr|estimated\s*gfr)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ml\/dk|ml\/min)?/i,
+            
+            // Biyokimya - Genel
+            glukoz: /(?:glukoz|glucose|şeker)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            üre: /(?:üre|urea|ure)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            ürik_asit: /(?:ürik\s*asit|uric\s*acid)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            
+            // Lipid Profili
+            total_kolesterol: /(?:total\s*kolesterol|toplam\s*kolesterol|cholesterol)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            ldl_kolesterol: /(?:ldl\s*kolesterol|ldl|kötü\s*kolesterol)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            hdl_kolesterol: /(?:hdl\s*kolesterol|hdl|iyi\s*kolesterol)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            trigliserit: /(?:trigliserit|triglyceride)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            
+            // Elektrolit Paneli
+            sodyum: /(?:sodyum|sodium|na)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:meq\/l|mmol\/l)?/i,
+            potasyum: /(?:potasyum|potassium|k)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:meq\/l|mmol\/l)?/i,
+            klor: /(?:klor|chloride|cl)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:meq\/l|mmol\/l)?/i,
+            bikarbonat: /(?:bikarbonat|bicarbonate|hco3)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:meq\/l|mmol\/l)?/i,
+            kalsiyum: /(?:kalsiyum|calcium|ca)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            fosfor: /(?:fosfor|phosphorus|p)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            magnezyum: /(?:magnezyum|magnesium|mg)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/dl)?/i,
+            
+            // Protein
+            total_protein: /(?:total\s*protein|toplam\s*protein)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:g\/dl)?/i,
+            albumin: /(?:albumin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:g\/dl)?/i,
+            
+            // Tiroid
+            tsh: /(?:tsh)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:miu\/l|μiu\/ml)?/i,
+            t3: /(?:t3)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:pg\/ml|ng\/dl)?/i,
+            t4: /(?:t4)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/dl|μg\/dl)?/i,
+            
+            // Vitamin
+            vitamin_b12: /(?:vitamin\s*b12|b12|cobalamin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:pg\/ml|pmol\/l)?/i,
+            vitamin_d: /(?:vitamin\s*d|25\s*oh\s*d)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/ml|nmol\/l)?/i,
+            folik_asit: /(?:folik\s*asit|folic\s*acid|folate)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/ml|nmol\/l)?/i,
+            
+            // İnflamasyon
+            crp: /(?:crp|c\s*reaktif\s*protein)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:mg\/l|mg\/dl)?/i,
+            sedimentasyon: /(?:sedimentasyon|esr|sed)\s*:?\s*([0-9]+)\s*(?:mm\/saat|mm\/h)?/i,
+            
+            // Demir
+            demir: /(?:demir|iron|fe)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:μg\/dl|mcg\/dl)?/i,
+            tibc: /(?:tibc|total\s*iron)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:μg\/dl|mcg\/dl)?/i,
+            ferritin: /(?:ferritin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/ml|μg\/l)?/i,
+            
+            // Hormon
+            insulin: /(?:insulin|insülin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:μiu\/ml|miu\/l)?/i,
+            hba1c: /(?:hba1c|hemoglobin\s*a1c)\s*:?\s*([0-9]+\.?[0-9]*)\s*%?/i,
+            
+            // Kardiyak
+            troponin_i: /(?:troponin\s*i|trop\s*i)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/ml|μg\/l)?/i,
+            ck_mb: /(?:ck\s*mb|ck-mb)\s*:?\s*([0-9]+\.?[0-9]*)\s*(?:ng\/ml|u\/l)?/i
+        };
+        
+        // Değerleri çıkar
+        const bloodTestData = {
+            patient_tc: patientTc,
+            test_date: new Date().toISOString().split('T')[0], // Bugünün tarihi
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        // Her pattern için değer çıkar
+        Object.keys(bloodTestPatterns).forEach(key => {
+            const match = text.match(bloodTestPatterns[key]);
+            if (match && match[1]) {
+                const value = parseFloat(match[1].replace(',', '.'));
+                if (!isNaN(value)) {
+                    bloodTestData[key] = value;
+                }
+            }
+        });
+        
+        // İdrar değerleri için özel pattern'lar
+        const urinePatterns = {
+            idrar_protein: /(?:idrar\s*protein|urine\s*protein)\s*:?\s*(negatif|pozitif|\+|\-|trace)/i,
+            idrar_glukoz: /(?:idrar\s*glukoz|urine\s*glucose)\s*:?\s*(negatif|pozitif|\+|\-|trace)/i,
+            idrar_keton: /(?:idrar\s*keton|urine\s*ketone)\s*:?\s*(negatif|pozitif|\+|\-|trace)/i,
+            idrar_lökosit: /(?:idrar\s*lökosit|urine\s*wbc)\s*:?\s*([0-9]+\-?[0-9]*\s*\/hpf)/i,
+            idrar_eritrosit: /(?:idrar\s*eritrosit|urine\s*rbc)\s*:?\s*([0-9]+\-?[0-9]*\s*\/hpf)/i
+        };
+        
+        Object.keys(urinePatterns).forEach(key => {
+            const match = text.match(urinePatterns[key]);
+            if (match && match[1]) {
+                bloodTestData[key] = match[1].trim();
+            }
+        });
+        
+        // Eğer hiç kan tahlili değeri bulunamadıysa kaydetme
+        const hasBloodTestData = Object.keys(bloodTestData).some(key => 
+            key !== 'patient_tc' && key !== 'test_date' && key !== 'created_at' && key !== 'updated_at'
+        );
+        
+        if (hasBloodTestData) {
+            const { data, error } = await supabase
+                .from('blood_test_results')
+                .insert(bloodTestData)
+                .select()
+                .single();
+                
+            if (error) {
+                console.error('Kan tahlili kaydı hatası:', error);
+            } else {
+                console.log('Kan tahlili başarıyla kaydedildi:', data.id);
+            }
+        } else {
+            console.log('PDF\'te kan tahlili değeri bulunamadı');
+        }
+        
+    } catch (error) {
+        console.error('Kan tahlili çıkarma hatası:', error);
+    }
 }
 
 module.exports = { parsePatientPdf };

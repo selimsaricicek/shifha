@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "jspdf": "^3.0.1",
     "multer": "^2.0.1",
     "pdf-parse": "^1.1.1",
     "qrcode.react": "^4.2.0",

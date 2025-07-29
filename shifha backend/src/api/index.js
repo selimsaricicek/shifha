@@ -17,4 +17,8 @@ router.use('/pdf', pdfRoutes);
 const geminiRoutes = require('../routes/api');
 router.use('/gemini', geminiRoutes);
 
+// Tıbbi analiz rotalarını ekle
+const medicalAnalysisRoutes = require('../routes/medicalAnalysis.routes');
+router.use('/medical-analysis', medicalAnalysisRoutes);
+
 module.exports = router;

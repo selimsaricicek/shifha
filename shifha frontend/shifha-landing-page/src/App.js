@@ -36,8 +36,24 @@ function App() {
     const [searchTerm, setSearchTerm] = useState('');
     const [toast, setToast] = useState(null);
     const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     // useNavigate hook'u, fonksiyonlar içinden sayfa değiştirmemizi sağlar
     const navigate = useNavigate();
+
+    // Sayfa yüklendiğinde localStorage'dan kullanıcı bilgilerini kontrol et
+    useEffect(() => {
+        const savedUser = localStorage.getItem('shifha_user');
+        if (savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                setUser(userData);
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error('Kullanıcı verisi parse edilemedi:', error);
+                localStorage.removeItem('shifha_user');
+            }
+        }
+    }, []);
 
     const showToast = (message, type = 'success') => {
         setToast({ message, type, key: Date.now() });
@@ -45,6 +61,10 @@ function App() {
 
     const handleLogin = (userData) => {
         setUser(userData.user);
+        setIsAuthenticated(true);
+        // Kullanıcı bilgilerini localStorage'a kaydet
+        localStorage.setItem('shifha_user', JSON.stringify(userData.user));
+        
         // Check if user is a doctor based on email
         const isDoctor = userData.user.email.toLowerCase().endsWith('@saglik.gov.tr');
         if (isDoctor) {
@@ -122,29 +142,63 @@ function App() {
                 <Route
                     path="/dashboard/*"
                     element={
-                        <DashboardPage
-                            patients={filteredPatients}
-                            setPatients={setPatients}
-                            onSelectPatient={(patient) => {
-                              // TC'yi hash'le (güvenlik için)
-                              const hashedTc = btoa(patient?.tc_kimlik_no || '');
-                              navigate(`/dashboard/patient/${hashedTc}`);
-                            }}
-                            onLogout={() => {
-                                setUser(null);
-                                navigate('/');
-                            }}
-                            searchTerm={searchTerm}
-                            setSearchTerm={setSearchTerm}
-                            showToast={showToast}
-                            user={user}
-                        />
+                        isAuthenticated ? (
+                            <DashboardPage
+                                patients={filteredPatients}
+                                setPatients={setPatients}
+                                onSelectPatient={(patient) => {
+                                  // TC'yi hash'le (güvenlik için)
+                                  const hashedTc = btoa(patient?.tc_kimlik_no || '');
+                                  navigate(`/dashboard/patient/${hashedTc}`);
+                                }}
+                                onLogout={() => {
+                                    setUser(null);
+                                    setIsAuthenticated(false);
+                                    localStorage.removeItem('shifha_user');
+                                    navigate('/');
+                                }}
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                showToast={showToast}
+                                user={user}
+                            />
+                        ) : (
+                            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Erişim Reddedildi</h2>
+                                    <p className="text-gray-600 mb-6">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Giriş Yap
+                                    </button>
+                                </div>
+                            </div>
+                        )
                     }
                 />
                 {/* Dinamik Rota: Her hasta için kendi ID'si ile özel bir sayfa oluşturur */}
                 <Route
                     path="/dashboard/patient/:patientId"
-                    element={<PatientDetailWrapper />}
+                    element={
+                        isAuthenticated ? (
+                            <PatientDetailWrapper />
+                        ) : (
+                            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Erişim Reddedildi</h2>
+                                    <p className="text-gray-600 mb-6">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Giriş Yap
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    }
                 />
             </Routes>
 
