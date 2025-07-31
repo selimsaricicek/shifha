@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { addFont } from 'jspdf'; // Bu satırı ekleyin
 import autoTable from 'jspdf-autotable';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, CheckCircle,
-    Edit, Save, BrainCircuit, Activity, Upload
+    Edit, Save, BrainCircuit, Activity, Upload, AlertTriangle
 } from 'lucide-react';
 import { XCircle } from 'lucide-react';
 // ===================================================================================
@@ -1169,6 +1169,7 @@ const PdfUploadTab = ({ onFileUpload, uploadLoading, dragActive, onDrag, onDrop,
 
 const PatientDetailPage = () => {
   const { patientId } = useParams();
+  const navigate = useNavigate();
   // All hooks must be called here, unconditionally, before any return
   const [activeTab, setActiveTab] = useState('summary');
 
@@ -1400,6 +1401,14 @@ const PatientDetailPage = () => {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [showSaveAndReferButton, setShowSaveAndReferButton] = useState(false);
+  const [referralForm, setReferralForm] = useState({
+    department: '',
+    reason: '',
+    urgency: 'normal',
+    notes: ''
+  });
 
   const formatTestName = (name) => {
     const spaced = name.replace(/([A-Z])/g, ' $1');
@@ -1668,6 +1677,95 @@ const PatientDetailPage = () => {
     e.target.reset();
   };
 
+  // Sevk modal fonksiyonları
+  const handleBackToDashboard = () => {
+    setShowSaveAndReferButton(true);
+  };
+
+  const handleSaveAndRefer = () => {
+    // Mevcut hastayı kaydedilen hastalar listesine ekle
+    const currentPatient = patientData;
+    if (currentPatient && currentPatient.tc_kimlik_no) {
+      const savedPatients = JSON.parse(localStorage.getItem('savedPatients') || '[]');
+      const alreadySaved = savedPatients.some(saved => saved.tc_kimlik_no === currentPatient.tc_kimlik_no);
+      
+      if (!alreadySaved) {
+        savedPatients.push(currentPatient);
+        localStorage.setItem('savedPatients', JSON.stringify(savedPatients));
+      }
+    }
+    
+    setShowReferralModal(true);
+    setShowSaveAndReferButton(false);
+  };
+
+  const handleJustSave = () => {
+    // Mevcut hastayı kaydedilen hastalar listesine ekle
+    const currentPatient = patientData;
+    if (currentPatient && currentPatient.tc_kimlik_no) {
+      const savedPatients = JSON.parse(localStorage.getItem('savedPatients') || '[]');
+      const alreadySaved = savedPatients.some(saved => saved.tc_kimlik_no === currentPatient.tc_kimlik_no);
+      
+      if (!alreadySaved) {
+        savedPatients.push(currentPatient);
+        localStorage.setItem('savedPatients', JSON.stringify(savedPatients));
+      }
+    }
+    
+    setShowSaveAndReferButton(false);
+    navigate('/dashboard');
+  };
+
+  const handleReferralSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Sevk bilgilerini kaydet
+    const newReferral = {
+      ...referralForm,
+      patientId: patientData.tc_kimlik_no || patientData.id,
+      patientName: patientData.ad_soyad || patientData.name,
+      date: new Date().toISOString(),
+      doctorId: 'current-doctor-id', // Gerçek uygulamada doktor ID'si alınacak
+      status: 'pending'
+    };
+
+    try {
+      // Backend'e sevk bilgilerini gönder
+      const response = await fetch('http://localhost:3001/api/referrals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReferral)
+      });
+
+      if (response.ok) {
+        setToastInfo({ message: 'Sevk başarıyla oluşturuldu.', type: 'success' });
+        setReferrals(prev => [...prev, newReferral]);
+      } else {
+        setToastInfo({ message: 'Sevk oluşturulurken hata oluştu.', type: 'error' });
+      }
+    } catch (error) {
+      console.error('Sevk oluşturma hatası:', error);
+      setToastInfo({ message: 'Sevk oluşturulurken hata oluştu.', type: 'error' });
+    }
+
+    // Modal'ı kapat ve dashboard'a dön
+    setShowReferralModal(false);
+    setReferralForm({ department: '', reason: '', urgency: 'normal', notes: '' });
+    navigate('/dashboard');
+  };
+
+  const handleSkipReferral = () => {
+    setShowReferralModal(false);
+    setReferralForm({ department: '', reason: '', urgency: 'normal', notes: '' });
+    navigate('/dashboard');
+  };
+
+  const handleReferralFormChange = (field, value) => {
+    setReferralForm(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -1680,10 +1778,10 @@ const PatientDetailPage = () => {
               onClick={handleExportPdf}
               disabled={pdfLoading}
             >
-              {pdfLoading ? 'PDF Oluşturuluyor...' : 'PDF’e Aktar'}
+              {pdfLoading ? 'PDF Oluşturuluyor...' : 'PDF\'e Aktar'}
             </button>
           </div>
-          <button onClick={() => window.history.back()} className="flex items-center text-cyan-600 font-semibold hover:underline">
+          <button onClick={handleBackToDashboard} className="flex items-center text-cyan-600 font-semibold hover:underline">
             <ArrowRightCircle size={20} className="mr-2"/> Dashboard'a Geri Dön
           </button>
         </header>
@@ -1737,6 +1835,140 @@ const PatientDetailPage = () => {
           <div className={`fixed bottom-10 right-10 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn ${toastInfo.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
             {toastInfo.type === 'success' ? <CheckCircle className="mr-2" /> : <XCircle className="mr-2" />}
             {toastInfo.message}
+          </div>
+        )}
+
+        {/* Kaydet ve Sevk Et Modal */}
+        {showSaveAndReferButton && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4">
+              <div className="flex items-center mb-6">
+                <AlertTriangle className="text-yellow-500 mr-3" size={24} />
+                <h2 className="text-xl font-bold text-gray-900">Hasta Bilgilerini Kaydet</h2>
+              </div>
+              
+              <p className="text-gray-600 mb-6">
+                <strong>{patientData.ad_soyad || patientData.name}</strong> adlı hastanın bilgilerini kaydetmek ve sevk işlemi yapmak istiyor musunuz?
+              </p>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleJustSave}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                >
+                  Sadece Kaydet
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveAndRefer}
+                  className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium"
+                >
+                  Kaydet ve Sevk Et
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sevk Modal */}
+        {showReferralModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4">
+              <div className="flex items-center mb-6">
+                <AlertTriangle className="text-yellow-500 mr-3" size={24} />
+                <h2 className="text-xl font-bold text-gray-900">Hasta Sevk İşlemi</h2>
+              </div>
+              
+              <p className="text-gray-600 mb-6">
+                <strong>{patientData.ad_soyad || patientData.name}</strong> adlı hastayı sevk etmek istiyor musunuz?
+              </p>
+
+              <form onSubmit={handleReferralSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sevk Edilecek Bölüm
+                  </label>
+                  <select
+                    value={referralForm.department}
+                    onChange={(e) => handleReferralFormChange('department', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
+                  >
+                    <option value="">Bölüm seçiniz</option>
+                    <option value="kardiyoloji">Kardiyoloji</option>
+                    <option value="nöroloji">Nöroloji</option>
+                    <option value="ortopedi">Ortopedi</option>
+                    <option value="genel-cerrahi">Genel Cerrahi</option>
+                    <option value="iç-hastalıkları">İç Hastalıkları</option>
+                    <option value="göz-hastalıkları">Göz Hastalıkları</option>
+                    <option value="kulak-burun-boğaz">Kulak Burun Boğaz</option>
+                    <option value="dermatoloji">Dermatoloji</option>
+                    <option value="psikiyatri">Psikiyatri</option>
+                    <option value="radyoloji">Radyoloji</option>
+                    <option value="laboratuvar">Laboratuvar</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sevk Nedeni
+                  </label>
+                  <textarea
+                    value={referralForm.reason}
+                    onChange={(e) => handleReferralFormChange('reason', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    rows="3"
+                    placeholder="Sevk nedenini açıklayınız..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Aciliyet Durumu
+                  </label>
+                  <select
+                    value={referralForm.urgency}
+                    onChange={(e) => handleReferralFormChange('urgency', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="acil">Acil</option>
+                    <option value="çok-acil">Çok Acil</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ek Notlar (Opsiyonel)
+                  </label>
+                  <textarea
+                    value={referralForm.notes}
+                    onChange={(e) => handleReferralFormChange('notes', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    rows="2"
+                    placeholder="Ek notlarınız..."
+                  />
+                </div>
+
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleSkipReferral}
+                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  >
+                    Sevk Etme
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium"
+                  >
+                    Sevk Et
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>

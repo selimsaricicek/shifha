@@ -34,6 +34,11 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const [showAppointmentModal, setShowAppointmentModal] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [selectedPatients, setSelectedPatients] = useState([]);
+    const [savedPatients, setSavedPatients] = useState(() => {
+        // localStorage'dan kaydedilen hastaları yükle
+        const saved = localStorage.getItem('savedPatients');
+        return saved ? JSON.parse(saved) : [];
+    });
 
     // Hasta listesini çeken fonksiyon
     const fetchPatients = useCallback(async () => {
@@ -61,13 +66,23 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         fetchPatients();
     }, [fetchPatients]);
 
+    // savedPatients değiştiğinde localStorage'a kaydet
+    useEffect(() => {
+        localStorage.setItem('savedPatients', JSON.stringify(savedPatients));
+    }, [savedPatients]);
+
     const filteredPatients = useMemo(() => patients.filter(p => {
         const name = (p?.ad_soyad || '').toString();
         const tc = (p?.tc_kimlik_no || '').toString();
         const searchLower = (searchTerm || '').toLowerCase();
+        
+        // Kaydedilen hastaları ana listeden çıkar
+        const isSaved = savedPatients.some(saved => saved.tc_kimlik_no === p.tc_kimlik_no);
+        if (isSaved) return false;
+        
         // TC Kimlik No olmayan hastaları listeleme
         return (name.toLowerCase().includes(searchLower) || tc.includes(searchTerm)) && tc;
-    }), [searchTerm, patients]);
+    }), [searchTerm, patients, savedPatients]);
 
     const viewPatientDetails = (patient) => {
         if (onSelectPatient) {
@@ -141,6 +156,48 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const handleEditPatient = (patient) => {
         setEditPatient(patient);
         setShowEditModal(true);
+    };
+    const handleSavePatient = async (patient) => {
+        setLoading(true);
+        try {
+            // Hasta verilerini kaydetme işlemi
+            console.log("Hasta kaydetme işlemi:", patient);
+            // Burada gerçek API çağrısı yapılabilir
+            // await savePatient(patient);
+            
+            // Kaydedilen hastayı savedPatients listesine ekle
+            setSavedPatients(prev => {
+                // Eğer hasta zaten kaydedilmişse ekleme
+                const alreadySaved = prev.some(saved => saved.tc_kimlik_no === patient.tc_kimlik_no);
+                if (alreadySaved) {
+                    return prev;
+                }
+                return [...prev, patient];
+            });
+            
+            toast.success('Hasta başarıyla kaydedildi.', {
+              icon: '✅',
+              hideIcon: true,
+              style: { borderRadius: '1.5rem', background: '#e0f2fe', color: '#222' }
+            });
+        } catch (err) {
+            toast.error('Kaydetme başarısız: ' + err.message, {
+              icon: '❌',
+              hideIcon: true,
+              style: { borderRadius: '1.5rem', background: '#fee2e2', color: '#222' }
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRemoveFromSaved = (patient) => {
+        setSavedPatients(prev => prev.filter(saved => saved.tc_kimlik_no !== patient.tc_kimlik_no));
+        toast.success('Hasta kaydedilenler listesinden çıkarıldı.', {
+          icon: '✅',
+          hideIcon: true,
+          style: { borderRadius: '1.5rem', background: '#e0f2fe', color: '#222' }
+        });
     };
     const handleUpdatePatient = async (updated) => {
         setLoading(true);
@@ -466,6 +523,10 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                                     onClick={e => { e.stopPropagation(); handleEditPatient(patient); }}
                                 >Düzenle</button>
                                 <button
+                                    className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs"
+                                    onClick={e => { e.stopPropagation(); handleSavePatient(patient); }}
+                                >Kaydet</button>
+                                <button
                                     className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
                                     onClick={e => { e.stopPropagation(); handleDeletePatient(patient.tc_kimlik_no); }}
                                 >Sil</button>
@@ -473,6 +534,78 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                     </div>
                   ))}
                 </div>
+
+                {/* Kaydedilen Hastalar Bölümü */}
+                {savedPatients.length > 0 && (
+                    <div className="mt-12">
+                        <div className="flex items-center mb-6">
+                            <div className="w-1 h-8 bg-green-500 rounded-full mr-4"></div>
+                            <h2 className="text-2xl font-bold text-gray-800">Kaydedilen Hastalar</h2>
+                            <span className="ml-3 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                {savedPatients.length} hasta
+                            </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {savedPatients.map((patient) => (
+                                <div
+                                    key={patient.tc_kimlik_no}
+                                    className="bg-green-50 border-2 border-green-200 rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                                    draggable
+                                    onDragStart={e => {
+                                        e.dataTransfer.setData('application/json', JSON.stringify(patient));
+                                    }}
+                                    onClick={() => {
+                                        setSelectedPatient(patient);
+                                        viewPatientDetails(patient);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
+                                            style={{ background: "#D1FAE5", color: "#059669" }}>
+                                            {(patient.ad_soyad || '') 
+                                                .split(' ')
+                                                .map((s) => s[0])
+                                                .join('')
+                                                .toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-gray-900">{patient.ad_soyad}</h3>
+                                            <p className="text-sm text-gray-500">T.C. {patient.tc_kimlik_no}</p>
+                                            <p className="text-sm text-gray-500">
+                                                {patient.yas} yaşında, {patient.cinsiyet}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {patient.tibbi_gecmis?.allerjiler?.length > 0 &&
+                                        patient.tibbi_gecmis.allerjiler[0] !== 'Bilinmiyor' && (
+                                            <div className="mt-2">
+                                                <p className="text-xs text-red-600 font-semibold">
+                                                    Alerji: {patient.tibbi_gecmis.allerjiler.join(', ')}
+                                                </p>
+                                            </div>
+                                        )}
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs"
+                                            onClick={e => { e.stopPropagation(); handleEditPatient(patient); }}
+                                        >Düzenle</button>
+                                        <button
+                                            className="px-3 py-1 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 text-xs"
+                                            onClick={e => { e.stopPropagation(); handleRemoveFromSaved(patient); }}
+                                        >Kaydedilenlerden Çıkar</button>
+                                    </div>
+                                    <div className="mt-2">
+                                        <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                            ✓ Kaydedildi
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Hasta Düzenle Modalı */}
                 {showEditModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

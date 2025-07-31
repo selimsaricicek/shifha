@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Save } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
-export default function PatientCard({ patient, onEdit, onDelete, onView }) {
+export default function PatientCard({ patient, onEdit, onDelete, onView, onSave }) {
   return (
     <div
       className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
@@ -39,6 +39,12 @@ export default function PatientCard({ patient, onEdit, onDelete, onView }) {
           onClick={e => { e.stopPropagation(); onEdit(patient); }}
         >
           <Pencil size={14} /> Düzenle
+        </button>
+        <button
+          className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs flex items-center gap-1"
+          onClick={e => { e.stopPropagation(); onSave(patient); }}
+        >
+          <Save size={14} /> Kaydet
         </button>
         <button
           className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
