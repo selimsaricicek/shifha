@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { Search, Bell, ChevronDown, Users, Stethoscope, BarChart2, Settings, LogOut, Activity, Cpu, Shield, MapPin, CheckCircle, XCircle, Building, ArrowRightLeft, Plus, Edit, Trash2, Calendar, TrendingUp, AlertTriangle, UserPlus, X } from 'lucide-react';
+import { Search, Bell, ChevronDown, Users, Stethoscope, BarChart2, Settings, LogOut, Activity, Cpu, Shield, MapPin, CheckCircle, XCircle, Building, ArrowRightLeft, Plus, Edit, Trash2, Calendar, TrendingUp, AlertTriangle, UserPlus, X, Heart, Clock, Zap, Phone, AlertCircle, User, FileText, Eye } from 'lucide-react';
 
 // API Base URL
 const API_BASE_URL = 'http://localhost:3002/api';
@@ -68,6 +68,8 @@ const recentActivities = [
   { icon: <Building size={18} className="text-blue-500" />, text: 'Antalya Eğitim ve Araştırma Hastanesi sisteme eklendi.', time: '2 saat önce' },
   { icon: <UserPlus size={18} className="text-green-500" />, text: 'Dr. Sema Güler Antalya hastanesine atandı.', time: '4 saat önce' },
 ];
+
+
 
 // --- COMPONENTS ---
 const StatCard = ({ title, value, icon, color }) => (
@@ -1258,6 +1260,17 @@ const AddCityModal = ({ isOpen, onClose, onAddCity }) => {
     </div>
   );
 };
+
+
+
+
+
+
+};
+
+
+
+
 
 const AddDistrictModal = ({ isOpen, onClose, onAddDistrict, cities }) => {
   const [formData, setFormData] = useState({

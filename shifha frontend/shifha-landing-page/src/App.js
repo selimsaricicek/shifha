@@ -8,6 +8,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PatientDetailPage from './pages/PatientDetailPage';
+import PanelSelectionPage from './pages/PanelSelectionPage';
+import EmergencyPanelPage from './pages/EmergencyPanelPage';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -75,7 +77,7 @@ function App() {
         setUser(user);
         setIsAuthenticated(true);
         localStorage.setItem('shifha_user', JSON.stringify(essentialUserData));
-        navigate('/dashboard');
+        navigate('/panel-selection');
     };
 
     const handleRegisterSuccess = (userData, role) => {
@@ -144,6 +146,35 @@ function App() {
                     } 
                 />
                 <Route
+                    path="/panel-selection"
+                    element={
+                        isAuthenticated ? (
+                            <PanelSelectionPage
+                                user={user}
+                                onLogout={() => {
+                                    setUser(null);
+                                    setIsAuthenticated(false);
+                                    localStorage.removeItem('shifha_user');
+                                    navigate('/');
+                                }}
+                            />
+                        ) : (
+                            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Erişim Reddedildi</h2>
+                                    <p className="text-gray-600 mb-6">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Giriş Yap
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    }
+                />
+                <Route
                     path="/dashboard/*"
                     element={
                         isAuthenticated ? (
@@ -166,6 +197,35 @@ function App() {
                                 setSearchTerm={setSearchTerm}
                                 showToast={showToast}
                                 user={user}
+                            />
+                        ) : (
+                            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Erişim Reddedildi</h2>
+                                    <p className="text-gray-600 mb-6">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Giriş Yap
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    }
+                />
+                <Route
+                    path="/emergency"
+                    element={
+                        isAuthenticated ? (
+                            <EmergencyPanelPage
+                                user={user}
+                                onLogout={() => {
+                                    setUser(null);
+                                    setIsAuthenticated(false);
+                                    localStorage.removeItem('shifha_user');
+                                    navigate('/');
+                                }}
                             />
                         ) : (
                             <div className="min-h-screen flex items-center justify-center bg-gray-50">
