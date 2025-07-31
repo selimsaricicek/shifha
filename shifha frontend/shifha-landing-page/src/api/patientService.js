@@ -5,7 +5,7 @@ export async function uploadPdfAndParsePatient(file) {
     formData.append('file', file);
   
     // Backend'e API isteğini gönderiyoruz
-    const response = await fetch('/api/pdf/parse', {
+    const response = await fetch('http://localhost:3001/api/upload-pdf', {
       method: 'POST',
       body: formData,
     });
@@ -19,16 +19,17 @@ export async function uploadPdfAndParsePatient(file) {
       });
       // Teknik detayı konsola yaz, kullanıcıya sade mesaj göster
       console.error('PDF yükleme API hata detayı:', errorData?.details || errorData);
-      throw new Error('PDF yüklenemedi, lütfen tekrar deneyin.');
+      throw new Error(errorData?.error || errorData?.message || 'PDF yüklenemedi, lütfen tekrar deneyin.');
     }
   
     // İstek başarılıysa, gelen JSON verisini (yani hasta objesini) döndürüyoruz
-    return response.json();
-  }
+    const result = await response.json();
+    return result.data || result; // Backend'den gelen data field'ını kullan
+}
   
   // Yeni hasta ekle
   export async function addPatient(patientData) {
-    const response = await fetch('/api/patients', {
+    const response = await fetch('http://localhost:3001/api/patients', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patientData),
@@ -42,7 +43,7 @@ export async function uploadPdfAndParsePatient(file) {
 
   // Hasta güncelle
   export async function updatePatient(tc, patientData) {
-    const response = await fetch(`/api/patients/${tc}`, {
+    const response = await fetch(`http://localhost:3001/api/patients/${tc}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patientData),
@@ -56,7 +57,7 @@ export async function uploadPdfAndParsePatient(file) {
 
   // Hasta sil
   export async function deletePatient(tc) {
-    const response = await fetch(`/api/patients/${tc}`, {
+    const response = await fetch(`http://localhost:3001/api/patients/${tc}`, {
       method: 'DELETE' });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

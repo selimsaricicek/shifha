@@ -60,18 +60,22 @@ function App() {
     };
 
     const handleLogin = (userData) => {
-        setUser(userData.user);
-        setIsAuthenticated(true);
-        // Kullanıcı bilgilerini localStorage'a kaydet
-        localStorage.setItem('shifha_user', JSON.stringify(userData.user));
+        const { user } = userData;
         
-        // Check if user is a doctor based on email
-        const isDoctor = userData.user.email.toLowerCase().endsWith('@saglik.gov.tr');
-        if (isDoctor) {
-            navigate('/dashboard');
-        } else {
-            navigate('/dashboard');
-        }
+        // Backend'de zaten rol kontrolü yapılıyor, burada sadece kullanıcıyı kaydet
+        const essentialUserData = {
+            id: user.id,
+            email: user.email,
+            user_metadata: user.user_metadata,
+            profile: user.profile,
+            doctorProfile: user.doctorProfile,
+            isDoctor: user.isDoctor
+        };
+    
+        setUser(user);
+        setIsAuthenticated(true);
+        localStorage.setItem('shifha_user', JSON.stringify(essentialUserData));
+        navigate('/dashboard');
     };
 
     const handleRegisterSuccess = (userData, role) => {
@@ -154,6 +158,7 @@ function App() {
                                 onLogout={() => {
                                     setUser(null);
                                     setIsAuthenticated(false);
+                                    // localStorage'daki kullanıcı verisini temizle
                                     localStorage.removeItem('shifha_user');
                                     navigate('/');
                                 }}

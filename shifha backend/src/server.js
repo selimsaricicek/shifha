@@ -9,7 +9,7 @@ dotenv.config();
 // CORS yapılandırması: Geliştirme ve production ortamı için güvenli ayar
 const allowedOrigins = process.env.PRODUCTION_ORIGINS
   ? process.env.PRODUCTION_ORIGINS.split(',')
-  : ["http://localhost:3000", "http://localhost:3002"];
+  : ["http://localhost:3000", "http://localhost:3002", "http://localhost"];
 
 const errorMiddleware = require('./middleware/error.middleware');
 const http = require('http');
@@ -61,7 +61,15 @@ app.use(helmet());
 
 // CORS yapılandırması: Geliştirme ve production ortamı için güvenli ayar
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 

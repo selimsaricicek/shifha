@@ -40,4 +40,33 @@ router.post('/parse', pdfRateLimiter, upload.single('file'), async (req, res, ne
   }
 });
 
+// POST /api/upload-pdf (eski frontend uyumluluğu için)
+router.post('/upload-pdf', pdfRateLimiter, upload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw new Error('PDF dosyası yüklenmedi.');
+    }
+    
+    const { patientId } = req.body;
+    console.log('PDF yükleme isteği alındı. PatientId:', patientId);
+    console.log('Dosya bilgisi:', req.file ? `${req.file.originalname} (${req.file.size} bytes)` : 'Dosya yok');
+    
+    // PatientId varsa mevcut hastayı güncelle, yoksa yeni hasta oluştur
+    const result = await parsePatientPdf(req.file.buffer, patientId || null);
+    
+    res.status(201).json({ 
+      success: true, 
+      message: patientId ? 'Kan tahlili başarıyla güncellendi.' : 'Yeni hasta başarıyla oluşturuldu.',
+      data: result 
+    });
+  } catch (err) {
+    console.error('PDF yükleme hatası:', err);
+    // Multer veya fileFilter hatası için özel mesaj
+    if (err instanceof multer.MulterError || err.message.includes('PDF')) {
+      return res.status(400).json({ success: false, error: err.message });
+    }
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

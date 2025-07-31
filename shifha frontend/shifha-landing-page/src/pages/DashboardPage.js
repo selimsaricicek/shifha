@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
 import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
 import { toast } from 'react-toastify';
 import Calendar from '../components/Calendar';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-// BİLEŞENLERİNİZDE HİÇBİR DEĞİŞİKLİK YAPILMADI
+// BİLEŞENLERİNİZDE HİÇBİR DEĞİŞİLİK YAPILMADI
 // PatientCard, TabButton, SummaryTab vb. tüm bileşenleriniz olduğu gibi kalıyor.
 // Bu yüzden okunabilirliği artırmak için onları buraya tekrar eklemiyorum,
 // ama siz kendi dosyanızda SİLMEDEN koruyun.
@@ -15,13 +15,14 @@ import LoadingSpinner from '../components/LoadingSpinner';
 // ... Sizin tüm Tab, Card, Page vb. bileşenleriniz burada yer alıyor ...
 // ...
 
-// ----> ASIL DEĞİŞİKLİKLERİN OLDUĞU YER <----
+// ----> ASIL DEĞİŞİLİKLERİN OLDUĞU YER <----
 
 // Hasta Detaylarını Backend'den çeken bileşen (URL düzeltmesiyle)
 
 
 // DashboardPage'in ana mantığı (GÜNCELLENMİŞ HALİ)
 function DashboardPageInner({ patients: propPatients, setPatients: propSetPatients, onSelectPatient, onLogout, searchTerm: propSearchTerm, setSearchTerm: propSetSearchTerm, showToast, user }) {
+
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState(propSearchTerm || '');
     const [patients, setPatients] = useState(propPatients || []);
@@ -249,10 +250,10 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         <div className="bg-gradient-to-b from-blue-50 via-cyan-50 to-gray-50 min-h-screen animate-fadeInDash">
             <header className="bg-white/90 shadow-md p-4 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
                 {/* LOGO ve YAZI */}
-                <div className="flex items-center space-x-2">
+                <Link to="/" className="flex items-center space-x-2">
                     <img src="/logo-symbol.jpg" alt="Shifha Logo" className="h-10 w-10" />
                     <img src="/logo-text.jpg" alt="SHIFHA" className="h-8" />
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
@@ -270,7 +271,10 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                             </div>
                         </div>
                         <button
-                            onClick={onLogout}
+                            onClick={() => {
+                                if(onLogout) onLogout();
+                                navigate('/');
+                            }}
                             className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-sm"
                             title="Çıkış Yap ve Ana Sayfaya Dön"
                         >

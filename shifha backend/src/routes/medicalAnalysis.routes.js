@@ -79,12 +79,7 @@ ${bloodTestText}
     try {
       console.log('AI analiz sonucu başarıyla oluşturuldu:', aiAnalysis?.patient_data?.hastaVeriAnaliziOzeti);
       
-      // Geçici olarak veritabanı kaydetme devre dışı - sadece console'a yazdır
-      console.log('=== AI ANALIZ SONUCU ===');
-      console.log('Hasta:', patient_tc);
-      console.log('Analiz Özeti:', aiAnalysis?.patient_data?.hastaVeriAnaliziOzeti);
-      console.log('Potansiyel Tanılar:', aiAnalysis?.patient_data?.potansiyelTanilar);
-      console.log('========================');
+      // Veritabanı kaydetme ve diğer işlemler burada yapılabilir.
       
       // const { data: analysisRecord, error: analysisError } = await supabase
       //   .from('blood_test_analysis')

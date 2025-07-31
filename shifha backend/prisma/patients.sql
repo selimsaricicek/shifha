@@ -31,3 +31,11 @@ CREATE TABLE patients (
   created_at timestamp default now(),
   updated_at timestamp default now()
 );
+
+CREATE TABLE doctor_notes (
+  id serial PRIMARY KEY,
+  patient_tc varchar(20) NOT NULL REFERENCES patients(tc_kimlik_no) ON DELETE CASCADE,
+  doctor_id uuid NOT NULL, -- Supabase auth.users.id'ye referans
+  note text NOT NULL,
+  created_at timestamp with time zone DEFAULT now() NOT NULL
+);

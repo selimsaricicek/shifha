@@ -6,10 +6,10 @@ import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
-    Users, ArrowRightCircle, FileText, Dna, CheckCircle,
+    Users, ArrowRightCircle, FileText, CheckCircle,
     Edit, Save, BrainCircuit, Activity, Upload
 } from 'lucide-react';
-
+import { XCircle } from 'lucide-react';
 // ===================================================================================
 // YARDIMCI FONKSİYONLAR VE BİLEŞENLER (Sizin Kodunuz)
 // ===================================================================================
@@ -208,14 +208,14 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
                   </div>
                   <div className="flex-1">
                     <h5 className="text-lg font-semibold text-gray-800 mb-2">Genel Değerlendirme</h5>
-                    <p className="text-gray-700 leading-relaxed">{medicalAnalysis.genel_durum}</p>
+                    <p className="text-gray-700 leading-relaxed">{medicalAnalysis.patient_data?.hastaVeriAnaliziOzeti}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Kritik Uyarılar */}
-            {medicalAnalysis.kritik_uyarilar && medicalAnalysis.kritik_uyarilar.length > 0 && (
+            {medicalAnalysis.patient_data?.potansiyelTanilar && medicalAnalysis.patient_data?.potansiyelTanilar.length > 0 && (
               <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-4">
                 <div className="flex items-center mb-3">
                   <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,20 +224,33 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
                   <h5 className="font-semibold text-red-800">Kritik Uyarılar</h5>
                 </div>
                 <ul className="space-y-2">
-                  {medicalAnalysis.kritik_uyarilar.map((alert, index) => (
+                  {medicalAnalysis.patient_data.potansiyelTanilar.filter(t => t.olasilikSkoru > 50).map((alert, index) => (
                     <li key={index} className="text-red-700 font-medium flex items-start">
                       <span className="text-red-500 mr-2">•</span>
-                      {alert}
+                      {`${alert.hastalikAdi} (${alert.olasilikSkoru}%): ${alert.destekleyiciKanitlar.join(', ')}`}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
+            {/* Hasta Veri Analizi Özeti */}
+            {medicalAnalysis.patient_data?.hastaVeriAnaliziOzeti && (
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center mb-4">
+                  <div className="bg-indigo-100 p-2 rounded-lg mr-3">
+                    <FileText className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <h5 className="font-semibold text-gray-800">AI Notu</h5>
+                </div>
+                <p className="text-sm text-gray-700 leading-relaxed">{medicalAnalysis.patient_data.hastaVeriAnaliziOzeti}</p>
+              </div>
+            )}
+
             {/* Potansiyel Teşhisler ve Anormal Bulgular Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Potansiyel Teşhisler */}
-              {medicalAnalysis.potansiyel_teshisler && medicalAnalysis.potansiyel_teshisler.length > 0 && (
+              {medicalAnalysis.patient_data?.potansiyelTanilar && medicalAnalysis.patient_data?.potansiyelTanilar.length > 0 && (
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                   <div className="flex items-center mb-4">
                     <div className="bg-purple-100 p-2 rounded-lg mr-3">
@@ -248,24 +261,24 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
                     <h5 className="font-semibold text-gray-800">AI Teşhis ve Dayanakları</h5>
                   </div>
                   <div className="space-y-4">
-                    {medicalAnalysis.potansiyel_teshisler.map((diagnosis, index) => (
+                    {medicalAnalysis.patient_data.potansiyelTanilar.map((diagnosis, index) => (
                       <div key={index} className="border border-purple-100 rounded-lg p-4 bg-purple-50">
                         <div className="flex justify-between items-start mb-2">
-                          <span className="font-medium text-purple-800">{diagnosis.teshis}</span>
+                          <span className="font-medium text-purple-800">{diagnosis.hastalikAdi}</span>
                           {diagnosis.olasilik && (
                             <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">
-                              {diagnosis.olasilik} olasılık
+                              {diagnosis.olasilikSkoru}% olasılık
                             </span>
                           )}
                         </div>
                         {diagnosis.aciklama && (
-                          <p className="text-sm text-purple-700 mb-3">{diagnosis.aciklama}</p>
+                          <p className="text-sm text-purple-700 mb-3">{/* Açıklama alanı AI yanıtında yok, gerekirse eklenebilir */}</p>
                         )}
                         {diagnosis.destekleyen_bulgular && diagnosis.destekleyen_bulgular.length > 0 && (
                           <div className="bg-white rounded-md p-3 mb-2">
                             <div className="text-xs font-medium text-purple-800 mb-1">Destekleyen Bulgular:</div>
                             <div className="text-xs text-purple-600">
-                              {diagnosis.destekleyen_bulgular.join(', ')}
+                              {diagnosis.destekleyiciKanitlar.join(', ')}
                             </div>
                           </div>
                         )}
@@ -395,6 +408,23 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
               </div>
             )}
 
+            {/* Hasta Veri Analizi Özeti */}
+            {patient.patient_data && patient.patient_data.hastaVeriAnaliziOzeti && (
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6 mb-6">
+                <div className="flex items-start">
+                  <div className="bg-purple-100 p-2 rounded-lg mr-4 mt-1">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="font-semibold text-purple-800 mb-2">Hasta Veri Analizi Özeti</h5>
+                    <p className="text-purple-700 leading-relaxed">{patient.patient_data.hastaVeriAnaliziOzeti}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Genel Özet */}
             {medicalAnalysis.ozet && (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
@@ -414,7 +444,7 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
 
             {/* Footer */}
             <div className="flex justify-between items-center text-xs text-gray-500 pt-4 border-t border-gray-200">
-              <span>Analiz tarihi: {new Date(medicalAnalysis.analiz_tarihi || medicalAnalysis.created_at).toLocaleString('tr-TR')}</span>
+              <span>Analiz tarihi: {new Date(medicalAnalysis.analiz_tarihi || medicalAnalysis.created_at || new Date()).toLocaleString('tr-TR')}</span>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
@@ -490,31 +520,73 @@ const EditableInfoItem = ({ label, value, name, type = 'text', onChange }) => (
   </div>
 );
 
-const InfoTab = ({ patient, isEditing, onChange, onSave, onToggleEdit }) => {
+const PatientInfo = ({ patient, onUpdate }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editablePatientData, setEditablePatientData] = useState(patient);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditablePatientData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/patients/${patient.tc_kimlik_no}`,
+       {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(editablePatientData),
+      });
+      const result = await response.json();
+      if (result.success) {
+        onUpdate(editablePatientData);
+        setIsEditing(false);
+        // toast success
+      } else {
+        // toast error
+      }
+    } catch (error) {
+      // toast error
+    }
+  };
+
+  const InfoItem = ({ label, value }) => (
+    <div className="grid grid-cols-3 gap-4 py-2">
+      <dt className="font-medium text-gray-500">{label}</dt>
+      <dd className="text-gray-700 col-span-2">{value}</dd>
+    </div>
+  );
+
+  const EditableInfoItem = ({ label, value, name, type = 'text' }) => (
+    <div className="grid grid-cols-3 gap-4 items-center py-1">
+      <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
+      <input type={type} id={name} name={name} value={value || ''} onChange={handleInputChange} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
+    </div>
+  );
+
   return (
     <div className="animate-fadeIn">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold text-gray-800">Detaylı Hasta Bilgileri</h3>
-        <button onClick={isEditing ? onSave : onToggleEdit} className={`flex items-center font-bold py-2 px-4 rounded-lg transition-colors ${isEditing ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+        <button onClick={() => isEditing ? handleSave() : setIsEditing(true)} className={`flex items-center font-bold py-2 px-4 rounded-lg transition-colors ${isEditing ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
           {isEditing ? <><Save size={18} className="mr-2"/> Kaydet</> : <><Edit size={18} className="mr-2"/> Bilgileri Güncelle</>}
         </button>
       </div>
-      <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 p-4 rounded-lg ${isEditing ? 'bg-gray-50' : ''}`}> 
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 p-4 rounded-lg ${isEditing ? 'bg-gray-50' : ''}`}>
         <div className="divide-y divide-gray-200">
-          {isEditing ? <EditableInfoItem label="Ad Soyad" name="ad_soyad" value={patient.ad_soyad || ''} onChange={onChange} /> : <InfoItem label="Ad Soyad" value={patient.ad_soyad || ''} />}
-          {isEditing ? <EditableInfoItem label="T.C. Kimlik No" name="tc_kimlik_no" value={patient.tc_kimlik_no || ''} onChange={onChange} /> : <InfoItem label="T.C. Kimlik No" value={patient.tc_kimlik_no || ''} />}
-          {isEditing ? <EditableInfoItem label="Doğum Tarihi" name="dogum_tarihi" value={patient.dogum_tarihi || ''} onChange={onChange} /> : <InfoItem label="Doğum Tarihi" value={patient.dogum_tarihi || ''} />}
-          {isEditing ? <EditableInfoItem label="Yaş" name="yas" value={patient.yas || ''} type="number" onChange={onChange}/> : <InfoItem label="Yaş" value={patient.yas || ''} />}
-          {isEditing ? <EditableInfoItem label="Cinsiyet" name="cinsiyet" value={patient.cinsiyet || ''} onChange={onChange} /> : <InfoItem label="Cinsiyet" value={patient.cinsiyet || ''} />}
-          {isEditing ? <EditableInfoItem label="Boy (cm)" name="boy" value={patient.boy || ''} type="number" onChange={onChange}/> : <InfoItem label="Boy (cm)" value={patient.boy || ''} />}
-          {isEditing ? <EditableInfoItem label="Kilo (kg)" name="kilo" value={patient.kilo || ''} type="number" onChange={onChange}/> : <InfoItem label="Kilo (kg)" value={patient.kilo || ''} />}
-          {isEditing ? <EditableInfoItem label="Kan Grubu" name="kan_grubu" value={patient.kan_grubu || ''} onChange={onChange} /> : <InfoItem label="Kan Grubu" value={patient.kan_grubu || ''} />}
+          {isEditing ? <EditableInfoItem label="Ad Soyad" name="ad_soyad" value={editablePatientData.ad_soyad} /> : <InfoItem label="Ad Soyad" value={patient.ad_soyad} />}
+          {isEditing ? <EditableInfoItem label="T.C. Kimlik No" name="tc_kimlik_no" value={editablePatientData.tc_kimlik_no} /> : <InfoItem label="T.C. Kimlik No" value={patient.tc_kimlik_no} />}
+          {isEditing ? <EditableInfoItem label="Doğum Tarihi" name="dogum_tarihi" value={editablePatientData.dogum_tarihi} /> : <InfoItem label="Doğum Tarihi" value={patient.dogum_tarihi} />}
+          {isEditing ? <EditableInfoItem label="Yaş" name="yas" value={editablePatientData.yas} type="number"/> : <InfoItem label="Yaş" value={patient.yas} />}
+          {isEditing ? <EditableInfoItem label="Cinsiyet" name="cinsiyet" value={editablePatientData.cinsiyet} /> : <InfoItem label="Cinsiyet" value={patient.cinsiyet} />}
         </div>
         <div className="divide-y divide-gray-200">
-          {isEditing ? <EditableInfoItem label="Kronik Hastalıklar" name="kronik_hastaliklar" value={patient.kronik_hastaliklar || ''} onChange={onChange} /> : <InfoItem label="Kronik Hastalıklar" value={patient.kronik_hastaliklar || ''} />}
-          {isEditing ? <EditableInfoItem label="Alerjiler" name="allerjiler" value={patient.allerjiler || ''} onChange={onChange} /> : <InfoItem label="Alerjiler" value={patient.allerjiler || ''} />}
-          {isEditing ? <EditableInfoItem label="Ameliyatlar" name="ameliyatlar" value={patient.ameliyatlar || ''} onChange={onChange} /> : <InfoItem label="Ameliyatlar" value={patient.ameliyatlar || ''} />}
-          {/* Diğer alanlar ve patient_data içindeki özel alanlar buraya eklenebilir */}
+          {isEditing ? <EditableInfoItem label="Kronik Hastalıklar" name="kronik_hastaliklar" value={editablePatientData.kronik_hastaliklar} /> : <InfoItem label="Kronik Hastalıklar" value={patient.kronik_hastaliklar} />}
+          {isEditing ? <EditableInfoItem label="Alerjiler" name="allerjiler" value={editablePatientData.allerjiler} /> : <InfoItem label="Alerjiler" value={patient.allerjiler} />}
+          {isEditing ? <EditableInfoItem label="Ameliyatlar" name="ameliyatlar" value={editablePatientData.ameliyatlar} /> : <InfoItem label="Ameliyatlar" value={patient.ameliyatlar} />}
         </div>
       </div>
     </div>
@@ -892,7 +964,68 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
 // Diğer Tab bileşenleri... (Radiology, Pathology, Epikriz, DoctorNotes, Consultation)
 const RadiologyTab = ({ reports = [] }) => (<div className="animate-fadeIn">Radyoloji raporu bulunamadı.</div>);
 const PathologyTab = ({ reports = [] }) => (<div className="animate-fadeIn">Patoloji raporu bulunamadı.</div>);
-const EpikrizTab = ({ report = "" }) => (<div className="animate-fadeIn">Epikriz raporu bulunamadı.</div>);
+
+const DoctorNotes = ({ patientTc }) => {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/patients/${patientTc}/notes`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          setNotes(data.notes);
+        }
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
+    };
+    fetchNotes();
+  }, [patientTc]);
+
+  const handleAddNote = async (e) => {
+    e.preventDefault();
+    if (!newNote.trim()) return;
+    try {
+      const response = await fetch(`http://localhost:3001/api/patients/${patientTc}/notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ note: newNote }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setNotes(prev => [...prev, data.note]);
+        setNewNote('');
+      }
+    } catch (error) {
+      console.error('Error adding note:', error);
+    }
+  };
+
+  return (
+    <div className="animate-fadeIn">
+      <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
+      <ul className="mb-4">
+        {notes && notes.length > 0 ? notes.map((n) => (
+          <li key={n.id} className="mb-2 p-2 bg-gray-50 rounded">{n.note} <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span></li>
+        )) : <li>Not bulunamadı.</li>}
+      </ul>
+      <form onSubmit={handleAddNote} className="flex gap-2">
+        <input value={newNote} onChange={(e) => setNewNote(e.target.value)} className="border rounded px-2 py-1 flex-1" placeholder="Yeni not..." />
+        <button type="submit" className="bg-cyan-600 text-white px-4 py-1 rounded">Ekle</button>
+      </form>
+    </div>
+  );
+};
+
 const DoctorNotesTab = ({ notes, onAddNote }) => (
   <div className="animate-fadeIn">
     <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
@@ -1040,294 +1173,222 @@ const PatientDetailPage = () => {
   const [activeTab, setActiveTab] = useState('summary');
 
   const [pdfLoading, setPdfLoading] = useState(false);
-  // PDF oluşturma fonksiyonu - Geliştirilmiş versiyon
   const handleExportPdf = () => {
     if (!patientData) return;
     setPdfLoading(true);
-    
-    // Türkçe karakter desteği için encoding belirterek jsPDF başlatma
+
     const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      putOnlyUsedFonts: true,
-      floatPrecision: 16,
-      hotfixes: ["px_scaling"], // Türkçe karakter desteği için eklendi
-      compress: true
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        putOnlyUsedFonts: true,
+        floatPrecision: 16,
+        hotfixes: ["px_scaling"],
+        compress: true
     });
-    
-    // Varsayılan font'u Helvetica olarak ayarla (Türkçe karakterleri daha iyi destekler)
+
     doc.setFont('helvetica');
-    
-    // Sayfa boyutları ve marjinler
+
     const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
-    const margin = 20;
+    const margin = 15;
     let currentY = margin;
-  
-    // Header - Hastane Bilgileri ve Logo
+
+    // Helper function for drawing styled boxes
+    const drawBox = (startY, endY) => {
+        doc.setDrawColor(224, 224, 224); // Light grey border
+        doc.setFillColor(250, 250, 250); // Very light grey background
+        doc.roundedRect(margin, startY, pageWidth - 2 * margin, endY - startY, 3, 3, 'FD');
+    };
+
+    // Helper for section titles
+    const addSectionTitle = (title) => {
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(40, 55, 71);
+        doc.text(title, margin + 5, currentY + 10);
+        currentY += 18;
+    };
+
+    // -- 1. HEADER --
     const addHeader = () => {
-      // Logo (sol üst) - Tam logo (sembol ve yazı)
-      const logoImg = new Image();
-      logoImg.src = '/logo-text.png'; // logo-text.png dosyasını kullan
-      
-      // Logo yükleme sorununu çözmek için onload yerine doğrudan ekleme
-      doc.addImage('/logo-text.png', 'PNG', margin, currentY, 50, 25); // Logoyu biraz küçülttüm
-      
-      // Hastane Bilgileri (sağ üst)
-      doc.setFontSize(9);
-      doc.setFont('helvetica');
-      doc.setTextColor('#666666');
-      doc.text('T.C. SAGLIK BAKANLIGI', pageWidth - margin - 10, currentY, { align: 'right' }); // Ğ → G, İ → I
-      doc.text('SHIFHA AKILLI SAGLIK SISTEMI', pageWidth - margin - 10, currentY + 6, { align: 'right' }); // Ğ → G, İ → I, Ş → S
-      doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}`, pageWidth - margin - 10, currentY + 12, { align: 'right' });
-      doc.text(`Rapor Saati: ${new Date().toLocaleTimeString('tr-TR')}`, pageWidth - margin - 10, currentY + 18, { align: 'right' });
-  
-      currentY += 50; // Başlık için daha fazla boşluk
-  
-      // Başlık
-      doc.setFontSize(16);
-      doc.setTextColor('#1e293b');
-      doc.setFont(undefined, 'bold');
-      doc.text('EPIKRIZ RAPORU', pageWidth / 2, currentY, { align: 'center' });
-      
-      currentY += 15;
-  
-      // Çizgi
-      doc.setDrawColor('#e2e8f0');
-      doc.line(margin, currentY, pageWidth - margin, currentY);
-      currentY += 10;
+        const logoImg = new Image();
+        logoImg.src = '/logo-text.png';
+        doc.addImage(logoImg, 'PNG', margin, currentY, 45, 22);
+
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text('T.C. SAGLIK BAKANLIGI', pageWidth - margin, currentY, { align: 'right' });
+        doc.text('SHIFHA AKILLI SAGLIK SISTEMI', pageWidth - margin, currentY + 5, { align: 'right' });
+        doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}`, pageWidth - margin, currentY + 10, { align: 'right' });
+        currentY += 30;
+
+        doc.setFontSize(18);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(20, 30, 40);
+        doc.text('HASTA TIBBI RAPORU', pageWidth / 2, currentY, { align: 'center' });
+        currentY += 10;
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, currentY, pageWidth - margin, currentY);
+        currentY += 10;
     };
-  
-    // Hasta Kimlik Bilgileri Bölümü
+
+    // -- 2. PATIENT INFO --
     const addPatientInfo = () => {
-      doc.setFontSize(12);
-      doc.setTextColor('#1e293b');
-      doc.setFont(undefined, 'bold');
-      doc.text('HASTA KIMLIK BOLUMLERI', margin, currentY); // İ → I
-      currentY += 8;
-  
-      doc.setFont(undefined, 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor('#374151');
-  
-      const patientInfo = [
-        ['Ad Soyad:', patientData.ad_soyad || '-'],
-        ['T.C. Kimlik No:', patientData.tc_kimlik_no || '-'],
-        ['Dogum Tarihi:', patientData.dogum_tarihi || '-'], // ğ → g
-        ['Yas:', `${patientData.yas || '-'} yas`], // ş → s
-        ['Cinsiyet:', patientData.cinsiyet || '-'],
-        ['Kan Grubu:', patientData.kan_grubu || '-'],
-        ['Boy:', `${patientData.boy || '-'} cm`],
-        ['Kilo:', `${patientData.kilo || '-'} kg`],
-        ['VKI:', patientData.vki || '-'] // İ → I
-      ];
-  
-      // İki sütunlu düzen
-      const colWidth = (pageWidth - 2 * margin) / 2;
-      patientInfo.forEach((info, index) => {
-        const col = index % 2;
-        const row = Math.floor(index / 2);
-        const x = margin + col * colWidth;
-        const y = currentY + row * 10; // 7'den 10'a çıkardım - daha fazla satır aralığı
+        const startY = currentY;
+        addSectionTitle('Hasta Kimlik Bilgileri');
         
-        doc.setFont(undefined, 'bold');
-        doc.text(info[0], x, y);
-        doc.setFont(undefined, 'normal');
-        doc.text(info[1], x + 40, y);
-      });
-  
-      currentY += Math.ceil(patientInfo.length / 2) * 10 + 10; // Satır aralığını artırdım
-    };
-  
-    // Tıbbi Geçmiş Bölümü
-    const addMedicalHistory = () => {
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.setTextColor('#1e293b');
-      doc.text('TIBBI GECMIS', margin, currentY); // İ → I, Ş → S
-      currentY += 8;
-  
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
-      doc.setTextColor('#374151');
-  
-      const medicalData = [
-        ['Kronik Hastaliklar:', patientData.kronik_hastaliklar || 'Bildirilmemis'], // ı → i, ş → s
-        ['Alerjiler:', patientData.allerjiler || 'Bildirilmemis'], // ş → s
-        ['Gecirilmis Ameliyatlar:', patientData.ameliyatlar || 'Bildirilmemis'], // ş → s
-        ['Aile Oykusu:', patientData.aile_oykusu || 'Bildirilmemis'], // Ö → O, ü → u, ş → s
-        ['Duzenli Ilac Kullanimi:', patientData.ilac_duzenli || 'Bildirilmemis'] // ü → u, İ → I, ı → i, ş → s
-      ];
-  
-      medicalData.forEach(([label, value]) => {
-        doc.setFont('helvetica', 'bold');
-        doc.text(label, margin, currentY);
-        doc.setFont('helvetica', 'normal');
-        
-        // Uzun metinleri satır sonuna kadar yazdır - Daha fazla boşluk bırakıldı
-        const lines = doc.splitTextToSize(value, pageWidth - margin - 80); // Genişliği daha da azalttım
-        doc.text(lines, margin + 65, currentY); // Etiket ve değer arasındaki boşluğu biraz daha artırdım
-        currentY += lines.length * 10 + 8; // Satır aralığını daha da artırdım
-      });
-  
-      currentY += 20; // Bölümler arası boşluğu daha da artırdım
-    };
-  
-    // Laboratuvar Sonuçları Bölümü
-    const addLabResults = () => {
-      if (!patientData.labResults || patientData.labResults.length === 0) return;
-  
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.setTextColor('#1e293b');
-      doc.text('LABORATUVAR SONUÇLARI', margin, currentY);
-      currentY += 10;
-  
-      patientData.labResults.forEach((test, idx) => {
-        // Test adı
-        doc.setFontSize(11);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor('#059669');
-        doc.text(`${idx + 1}. ${test.testName || 'Test'}`, margin, currentY);
-        currentY += 8;
-  
-        // Tablo oluştur
-        if (test.results && test.results.length > 0) {
-          autoTable(doc, {
+        const patientInfo = [
+            ['Ad Soyad:', patientData.ad_soyad || '-'],
+            ['T.C. Kimlik No:', patientData.tc_kimlik_no || '-'],
+            ['Doğum Tarihi:', patientData.dogum_tarihi || '-'],
+            ['Yas:', `${patientData.yas || '-'} yas`],
+            ['Cinsiyet:', patientData.cinsiyet || '-'],
+            ['Kan Grubu:', patientData.kan_grubu || '-'],
+        ];
+
+        autoTable(doc, {
             startY: currentY,
-            head: [['Parametre', 'Sonuç', 'Birim', 'Normal Aralık', 'Durum']],
-            body: test.results.map(res => [
-              res.parameter || '-',
-              res.value || '-',
-              res.unit || '-',
-              res.normal || '-',
-              res.status || 'Normal'
-            ]),
-            theme: 'striped',
-            styles: { 
-              fontSize: 9,
-              cellPadding: 3,
-              textColor: '#374151'
+            body: patientInfo,
+            theme: 'plain',
+            styles: { fontSize: 10, cellPadding: 2 },
+            columnStyles: { 0: { fontStyle: 'bold' } },
+            margin: { left: margin + 5 }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 5;
+        drawBox(startY, currentY);
+        currentY += 10;
+    };
+
+    // -- 3. MEDICAL HISTORY --
+    const addMedicalHistory = () => {
+        if (!patientData) return;
+
+        const startY = currentY;
+        addSectionTitle('Tıbbi Geçmiş');
+
+        const medicalData = [
+            ['Kronik Hastalıklar:', patientData.kronik_hastaliklar || 'Bildirilmemis'],
+            ['Alerjiler:', patientData.allerjiler || 'Bildirilmemis'],
+            ['Geçirilmiş Ameliyatlar:', patientData.ameliyatlar || 'Bildirilmemis'],
+            ['Aile Oykusu:', patientData.aile_oykusu || 'Bildirilmemis'],
+            ['Düzenli Ilac Kullanimi:', patientData.ilac_duzenli || 'Bildirilmemis']
+        ];
+
+        autoTable(doc, {
+            startY: currentY,
+            body: medicalData,
+            theme: 'plain',
+            styles: { fontSize: 10, cellPadding: 2 },
+            columnStyles: { 
+                0: { fontStyle: 'bold', cellWidth: 50 },
+                1: { cellWidth: 'auto' }
             },
-            headStyles: { 
-              fillColor: [6, 150, 105],
-              textColor: '#ffffff',
-              fontStyle: 'bold'
-            },
-            alternateRowStyles: {
-              fillColor: [249, 250, 251]
-            },
-            columnStyles: {
-              0: { cellWidth: 40 },
-              1: { cellWidth: 25, halign: 'center' },
-              2: { cellWidth: 20, halign: 'center' },
-              3: { cellWidth: 35, halign: 'center' },
-              4: { cellWidth: 25, halign: 'center' }
+            margin: { left: margin + 5 }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 5;
+        drawBox(startY, currentY);
+        currentY += 10;
+    };
+
+    // -- 4. LAB RESULTS --
+    const addLabResults = () => {
+        if (!bloodTestResults || bloodTestResults.length === 0) return;
+        const latestTest = bloodTestResults[0]; // Assuming the first is the latest
+        if (!latestTest) return;
+
+        const startY = currentY;
+        addSectionTitle('Son Kan Tahlili Sonuclari');
+
+        const body = Object.keys(bloodTestReferenceRanges).map(key => {
+            const value = latestTest[key];
+            const range = bloodTestReferenceRanges[key];
+            const status = (value < range.min || value > range.max) ? 'Anormal' : 'Normal';
+            return [formatTestName(key), value ?? '-', range.unit, `${range.min} - ${range.max}`, { content: status, styles: { textColor: status === 'Anormal' ? [255, 0, 0] : [0, 128, 0] } }];
+        });
+
+        autoTable(doc, {
+            startY: currentY,
+            head: [['Parametre', 'Sonuc', 'Birim', 'Normal Aralik', 'Durum']],
+            body: body,
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+            margin: { left: margin + 5, right: margin + 5 },
+            didDrawPage: function (data) {
+                // Add header to each page
+                if (data.pageNumber > 1) {
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Son Kan Tahlili Sonuçlari (devam)', data.settings.margin.left, 20);
+                }
             }
-          });
-  
-          currentY = doc.lastAutoTable.finalY + 10;
-        }
-      });
+        });
+
+        currentY = doc.lastAutoTable.finalY + 5;
+        drawBox(startY, currentY);
+        currentY += 10;
     };
-  
-    // AI Analiz Bölümü
+
+    // -- 4. AI ANALYSIS --
     const addAIAnalysis = () => {
-      let aiComment = '';
-      if (patientData.labResults && patientData.labResults.length > 0) {
-        aiComment = patientData.labResults
-          .map(l => l.aiAnalysis)
-          .filter(Boolean)
-          .join('\n\n');
-      }
-  
-      if (!aiComment) return;
-  
-      // Yeni sayfa kontrolü
-      if (currentY > pageHeight - 60) {
-        doc.addPage();
-        currentY = margin;
-      }
-  
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.setTextColor('#7c3aed');
-      doc.text('SHIFHA YAPAY ZEKA ANALİZİ', margin, currentY);
-      currentY += 8;
-  
-      // AI analiz kutusu
-      doc.setDrawColor('#e5e7eb');
-      doc.setFillColor('#f8fafc');
-      doc.rect(margin, currentY, pageWidth - 2 * margin, 40, 'FD');
-  
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
-      doc.setTextColor('#374151');
-      
-      const aiLines = doc.splitTextToSize(aiComment, pageWidth - 2 * margin - 10);
-      doc.text(aiLines, margin + 5, currentY + 8);
-      
-      currentY += Math.max(40, aiLines.length * 4 + 16);
+        if (!medicalAnalysis || !medicalAnalysis.patient_data) return;
+        const analysis = medicalAnalysis.patient_data;
+
+        const startY = currentY;
+        addSectionTitle('Yapay Zeka Analizi');
+
+        const analysisContent = [
+            ['Özet:', analysis.hastaVeriAnaliziOzeti || 'Veri yok.'],
+            ['Potansiyel Tanılar:', analysis.potansiyelTanilar ? analysis.potansiyelTanilar.map(t => `${t.hastalikAdi} (%${t.olasilikSkoru})`).join(', ') : 'Veri yok.'],
+        ];
+
+        autoTable(doc, {
+            startY: currentY,
+            body: analysisContent,
+            theme: 'plain',
+            styles: { fontSize: 10, cellPadding: 3 },
+            columnStyles: { 0: { fontStyle: 'bold' } },
+            margin: { left: margin + 5 }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 5;
+        drawBox(startY, currentY);
+        currentY += 10;
     };
-  
-    // Epikriz Bölümü
-    const addEpikriz = () => {
-      if (!patientData.epikriz) return;
-  
-      // Yeni sayfa kontrolü
-      if (currentY > pageHeight - 60) {
-        doc.addPage();
-        currentY = margin;
-      }
-  
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.setTextColor('#dc2626');
-      doc.text('EPİKRİZ', margin, currentY);
-      currentY += 8;
-  
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
-      doc.setTextColor('#374151');
-      
-      const epikrizLines = doc.splitTextToSize(patientData.epikriz, pageWidth - 2 * margin);
-      doc.text(epikrizLines, margin, currentY);
-      
-      currentY += epikrizLines.length * 5 + 10;
+
+    // -- 5. DOCTOR'S NOTES --
+    const addDoctorNotes = () => {
+        // Assuming doctor notes are stored in patientData.doctor_notes
+        if (!patientData.doctor_notes || patientData.doctor_notes.trim() === "") return;
+
+        const startY = currentY;
+        addSectionTitle('Doktor Notu');
+
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        const textLines = doc.splitTextToSize(patientData.doctor_notes, pageWidth - 2 * margin - 10);
+        doc.text(textLines, margin + 5, currentY);
+
+        currentY += textLines.length * 5 + 10; // Add padding
+        drawBox(startY, currentY);
+        currentY += 10;
     };
-  
-    // Footer
-    const addFooter = () => {
-      const footerY = pageHeight - 20;
-      
-      doc.setDrawColor('#e2e8f0');
-      doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-      
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal'); // Font belirtildi
-      doc.setTextColor('#6b7280');
-      doc.text('Bu rapor Shifha Akilli Saglik Sistemi tarafindan otomatik olarak olusturulmustur.', margin, footerY);
-      doc.text(`Sayfa ${doc.internal.getNumberOfPages()}`, pageWidth - margin, footerY, { align: 'right' });
-      doc.text('© 2024 Shifha - Tum haklari saklidir.', pageWidth / 2, footerY, { align: 'center' });
-    };
-  
-    // PDF oluşturma sırası
+
+    // Build the PDF
     addHeader();
     addPatientInfo();
     addMedicalHistory();
     addLabResults();
     addAIAnalysis();
-    addEpikriz();
-    addFooter();
-  
-    // PDF'i kaydet
-    const fileName = `${patientData.ad_soyad || 'hasta'}_epikriz_${new Date().toISOString().split('T')[0]}.pdf`;
+    addDoctorNotes();
+
+    const fileName = `${patientData.ad_soyad || 'hasta'}_rapor_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     setPdfLoading(false);
   };
   const [isEditing, setIsEditing] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastInfo, setToastInfo] = useState({ message: '', type: '' });
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState([]);
@@ -1339,6 +1400,11 @@ const PatientDetailPage = () => {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+
+  const formatTestName = (name) => {
+    const spaced = name.replace(/([A-Z])/g, ' $1');
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  };
 
   // TC'yi hash'ten çöz
   const decodeTcFromHash = (hash) => {
@@ -1399,31 +1465,19 @@ const PatientDetailPage = () => {
     try {
       // Önce kan tahlili verilerini kontrol et
       if (!bloodTestResults || bloodTestResults.length === 0) {
-        setToastMessage('AI analizi için kan tahlili verisi bulunamadı. Lütfen önce kan tahlili yükleyin.');
+        setToastInfo({ message: 'AI analizi için kan tahlili verisi bulunamadı. Lütfen önce kan tahlili yükleyin.', type: 'error' });
         return;
       }
 
       // En son kan tahlili sonucunu al
       const latestBloodTest = bloodTestResults[0];
       
-      // Kan tahlili verilerini formatla
-      const bloodTestData = {
-        hemoglobin: latestBloodTest.hemoglobin,
-        hematokrit: latestBloodTest.hematokrit,
-        eritrosit: latestBloodTest.eritrosit,
-        lökosit: latestBloodTest.lökosit,
-        trombosit: latestBloodTest.trombosit,
-        mcv: latestBloodTest.mcv,
-        mch: latestBloodTest.mch,
-        mchc: latestBloodTest.mchc,
-        rdw: latestBloodTest.rdw,
-        mpv: latestBloodTest.mpv,
-        nötrofil: latestBloodTest.nötrofil,
-        lenfosit: latestBloodTest.lenfosit,
-        monosit: latestBloodTest.monosit,
-        eozinofil: latestBloodTest.eozinofil,
-        bazofil: latestBloodTest.bazofil
-      };
+      // Kan tahlili verilerini formatla (tümünü gönder)
+      const bloodTestData = { ...latestBloodTest };
+      delete bloodTestData.id; // ID'yi göndermeye gerek yok
+      delete bloodTestData.created_at;
+      delete bloodTestData.updated_at;
+      delete bloodTestData.patient_tc;
 
       console.log('AI analizi için gönderilen kan tahlili verisi:', bloodTestData);
 
@@ -1443,14 +1497,14 @@ const PatientDetailPage = () => {
       
       if (data && data.success && data.data) {
         setMedicalAnalysis(data.data);
-        setToastMessage('AI analizi başarıyla oluşturuldu!');
+        setToastInfo({ message: 'AI analizi başarıyla oluşturuldu!', type: 'success' });
         console.log('AI analizi state\'e kaydedildi:', data.data);
       } else {
-        setToastMessage(data.message || 'AI analizi oluşturulurken hata oluştu.');
+        setToastInfo({ message: data.message || 'AI analizi oluşturulurken hata oluştu.', type: 'error' });
       }
     } catch (error) {
       console.error('AI analizi oluşturulurken hata:', error);
-      setToastMessage('AI analizi oluşturulurken hata oluştu.');
+      setToastInfo({ message: 'AI analizi oluşturulurken hata oluştu.', type: 'error' });
     } finally {
       setAnalysisLoading(false);
     }
@@ -1459,20 +1513,27 @@ const PatientDetailPage = () => {
   // PDF yükleme fonksiyonu
   const handlePdfUpload = async (file) => {
     if (!file || file.type !== 'application/pdf') {
-      setToastMessage('Lütfen geçerli bir PDF dosyası seçin.');
+      setToastInfo({ message: 'Lütfen geçerli bir PDF dosyası seçin.', type: 'error' });
       return;
     }
 
     const tc = decodeTcFromHash(patientId);
     if (!tc) {
-      setToastMessage('Hasta bilgisi bulunamadı.');
+      setToastInfo({ message: 'Hasta bilgisi bulunamadı.', type: 'error' });
+      return;
+    }
+
+    // Hasta ID'sini al
+    const currentPatientId = patientData?.id;
+    if (!currentPatientId) {
+      setToastInfo({ message: 'Hasta ID bulunamadı.', type: 'error' });
       return;
     }
 
     setUploadLoading(true);
     const formData = new FormData();
-    formData.append('pdf', file);
-    formData.append('patientTc', tc);
+    formData.append('file', file); // Backend'de 'file' olarak bekleniyor
+    formData.append('patientId', currentPatientId); // Hasta ID'sini gönder
 
     try {
       const response = await fetch('http://localhost:3001/api/upload-pdf', {
@@ -1482,18 +1543,18 @@ const PatientDetailPage = () => {
 
       const data = await response.json();
       
-      if (data.success) {
-        setToastMessage('PDF başarıyla yüklendi ve işlendi!');
+      if (data.success || response.ok) {
+        setToastInfo({ message: 'PDF başarıyla yüklendi ve işlendi!', type: 'success' });
         // Kan tahlili sonuçlarını yeniden çek
         fetchBloodTestResults(tc);
         // AI analizini yeniden çek
         fetchMedicalAnalysis(tc);
       } else {
-        setToastMessage(data.message || 'PDF yüklenirken hata oluştu.');
+        setToastInfo({ message: data.error || data.message || 'PDF yüklenirken hata oluştu.', type: 'error' });
       }
     } catch (error) {
       console.error('PDF yükleme hatası:', error);
-      setToastMessage('PDF yüklenirken hata oluştu.');
+      setToastInfo({ message: 'PDF yüklenirken hata oluştu.', type: 'error' });
     } finally {
       setUploadLoading(false);
     }
@@ -1569,16 +1630,16 @@ const PatientDetailPage = () => {
     // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
   }, [patientId]);
 
-  // Toast mesajını otomatik temizle
+    // Toast mesajını otomatik temizle
   useEffect(() => {
-    if (toastMessage) {
+    if (toastInfo.message) {
       const timer = setTimeout(() => {
-        setToastMessage('');
+        setToastInfo({ message: '', type: '' });
       }, 5000); // 5 saniye sonra kaybol
       
       return () => clearTimeout(timer);
     }
-  }, [toastMessage]);
+  }, [toastInfo]);
 
   if (!patientId || patientId === 'undefined') {
     return <div className="p-8 text-center text-red-600 font-bold text-xl">Geçersiz hasta adresi. Lütfen listeden bir hasta seçin.</div>;
@@ -1595,7 +1656,7 @@ const PatientDetailPage = () => {
   };
   const handleSave = () => {
     setIsEditing(false);
-    setToastMessage('Hasta bilgileri başarıyla güncellendi.');
+    setToastInfo({ message: 'Hasta bilgileri başarıyla güncellendi.', type: 'success' });
     // API'ye güncelleme isteği gönderilebilir
   };
   const handleAddNote = (e) => {
@@ -1638,7 +1699,7 @@ const PatientDetailPage = () => {
             <TabButton title="Doktor Notları" icon={<FileText />} isActive={activeTab === 'notes'} onClick={() => setActiveTab('notes')} />
             <TabButton title="Konsültasyon" icon={<Users />} isActive={activeTab === 'consultation'} onClick={() => setActiveTab('consultation')} />
             <TabButton title="Sevk" icon={<Stethoscope />} isActive={activeTab === 'referral'} onClick={() => setActiveTab('referral')} />
-            <TabButton title="Epikriz" icon={<Dna />} isActive={activeTab === 'epikriz'} onClick={() => setActiveTab('epikriz')} />
+
             <TabButton title="Patoloji" icon={<FileJson />} isActive={activeTab === 'pathology'} onClick={() => setActiveTab('pathology')} />
           </nav>
         </div>
@@ -1652,7 +1713,7 @@ const PatientDetailPage = () => {
     onGenerateAnalysis={() => generateMedicalAnalysis(decodeTcFromHash(patientId))}
   />
 )}
-          {activeTab === 'info' && <InfoTab patient={patientData} isEditing={isEditing} onChange={handleInfoChange} onSave={handleSave} onToggleEdit={() => setIsEditing(!isEditing)} />}
+          {activeTab === 'info' && <PatientInfo patient={patientData} onUpdate={setPatientData} />}
           {activeTab === 'labs' && <LabResultsTab labResults={patientData.labResults || patientData.laboratuvar || []} />}
           {activeTab === 'blood-test' && <BloodTestTab bloodTestResults={bloodTestResults} loading={bloodTestLoading} />}
           {activeTab === 'pdf-upload' && (
@@ -1666,15 +1727,16 @@ const PatientDetailPage = () => {
             />
           )}
           {activeTab === 'radiology' && <RadiologyTab reports={patientData.radyoloji || []} />}
-          {activeTab === 'notes' && <DoctorNotesTab notes={notes} onAddNote={handleAddNote} />}
+          {activeTab === 'notes' && <DoctorNotes patientTc={patientData.tc_kimlik_no} />}
           {activeTab === 'consultation' && <ConsultationTab consultations={consultations} />}
           {activeTab === 'referral' && <ReferralTab referrals={referrals} />}
-          {activeTab === 'epikriz' && <EpikrizTab report={patientData.epikriz} />}
+
           {activeTab === 'pathology' && <PathologyTab reports={patientData.patoloji || []} />}
         </main>
-        {toastMessage && (
-          <div className="fixed bottom-10 right-10 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn">
-            <CheckCircle className="mr-2" /> {toastMessage}
+        {toastInfo.message && (
+          <div className={`fixed bottom-10 right-10 text-white py-2 px-4 rounded-lg shadow-lg flex items-center animate-fadeIn ${toastInfo.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+            {toastInfo.type === 'success' ? <CheckCircle className="mr-2" /> : <XCircle className="mr-2" />}
+            {toastInfo.message}
           </div>
         )}
       </div>

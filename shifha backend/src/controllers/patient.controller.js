@@ -147,6 +147,53 @@ const getBloodTestResults = async (req, res, next) => {
   }
 };
 
+/**
+ * Hastanın doktor notlarını getirir
+ * @route GET /api/patients/:tc/notes
+ */
+const getDoctorNotes = async (req, res, next) => {
+  try {
+    const { tc } = req.params;
+    const { data, error } = await supabase
+      .from('doctor_notes')
+      .select('*')
+      .eq('patient_tc', tc)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data: data || [] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Hastaya yeni doktor notu ekler
+ * @route POST /api/patients/:tc/notes
+ */
+const addDoctorNote = async (req, res, next) => {
+  try {
+    const { tc } = req.params;
+    const { note } = req.body;
+    const doctor_id = req.user.id; // Middleware'den gelen kullanıcı ID'si
+
+    if (!note) {
+      return res.status(400).json({ success: false, error: 'Not içeriği boş olamaz.' });
+    }
+
+    const { data, error } = await supabase
+      .from('doctor_notes')
+      .insert([{ patient_tc: tc, doctor_id, note }])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({ success: true, data: data[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllPatients,
   getPatientByTC,
@@ -154,4 +201,6 @@ module.exports = {
   updatePatient,
   deletePatient,
   getBloodTestResults,
+  getDoctorNotes,
+  addDoctorNote,
 };

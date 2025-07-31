@@ -146,6 +146,15 @@ const login = async (input) => {
     }
     
     console.log('✅ Kullanıcı başarıyla giriş yaptı:', data.user.id);
+
+    // Kullanıcının rolünü al
+    const userRole = data.user.user_metadata?.role;
+
+    // Sadece doktor veya admin giriş yapabilir
+    if (userRole === 'patient') {
+      console.warn(`🚫 Yetkisiz giriş denemesi: ${email} (rol: ${userRole})`);
+      throw new Error('Giriş yetkiniz bulunmamaktadır. Sadece doktorlar ve adminler giriş yapabilir.');
+    }
     
     // Check if user is a doctor
     const isDoctor = email.toLowerCase().endsWith('@saglik.gov.tr');
