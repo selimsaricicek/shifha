@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Heart, Stethoscope, Activity } from 'lucide-react';
+import { User, Stethoscope, Activity } from 'lucide-react';
 
 function PanelSelectionPage({ user, onLogout }) {
     const navigate = useNavigate();
@@ -104,7 +104,6 @@ function PanelSelectionPage({ user, onLogout }) {
                                         <div className="mt-6 text-center">
                                             <span className={`inline-flex items-center px-4 py-2 rounded-full text-white font-semibold ${panel.color} ${panel.hoverColor} transition-colors duration-300`}>
                                                 Panele Git
-                                                <Heart className="ml-2" size={16} />
                                             </span>
                                         </div>
                                     </div>

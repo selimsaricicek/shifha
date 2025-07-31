@@ -92,9 +92,28 @@ function EmergencyPanelPage({ user, onLogout }) {
         }
     ];
 
+    // localStorage'dan hasta verilerini yükle
     useEffect(() => {
-        setEmergencyPatients(demoEmergencyPatients);
+        const savedPatients = localStorage.getItem('emergencyPatients');
+        if (savedPatients) {
+            try {
+                const parsedPatients = JSON.parse(savedPatients);
+                setEmergencyPatients(parsedPatients);
+            } catch (error) {
+                console.error('Hasta verileri yüklenirken hata:', error);
+                setEmergencyPatients(demoEmergencyPatients);
+            }
+        } else {
+            setEmergencyPatients(demoEmergencyPatients);
+        }
     }, []);
+
+    // Hasta listesi değiştiğinde localStorage'a kaydet
+    useEffect(() => {
+        if (emergencyPatients.length > 0) {
+            localStorage.setItem('emergencyPatients', JSON.stringify(emergencyPatients));
+        }
+    }, [emergencyPatients]);
 
     const getTriageColorClass = (color) => {
         switch (color) {
@@ -450,7 +469,6 @@ function EmergencyPanelPage({ user, onLogout }) {
                     </div>
                     <div className="bg-green-100 border-2 border-green-300 rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
-                            <Heart className="text-green-600" size={24} />
                             <h3 className="text-xl font-bold text-green-800">Yeşil Alan (1 Hasta)</h3>
                         </div>
                         <p className="text-green-700">Acil değil - Sırayla muayene</p>
