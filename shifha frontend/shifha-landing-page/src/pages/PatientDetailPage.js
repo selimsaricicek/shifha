@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, CheckCircle,
-    Edit, Save, BrainCircuit, Activity, Upload
+    Edit, Save, BrainCircuit, Activity, Upload, Trash2
 } from 'lucide-react';
 import { XCircle } from 'lucide-react';
 // ===================================================================================
@@ -756,7 +756,10 @@ const bloodTestReferenceRanges = {
   idrar_eritrosit: { min: 0, max: 3, unit: '/hpf' }
 };
 
-const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
+const BloodTestTab = ({ bloodTestResults = [], loading = false, onDeleteBloodTest, patientTc }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   // Aynı tahlillerin tekrar gösterilmesini önlemek için benzersiz tahlilleri filtrele
   const getUniqueBloodTests = (results) => {
     const uniqueTests = [];
@@ -773,6 +776,24 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
     });
     
     return uniqueTests;
+  };
+
+  const handleDeleteClick = (patientTc, resultId) => {
+    setDeleteTarget({ patientTc, resultId });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget && onDeleteBloodTest) {
+      onDeleteBloodTest(deleteTarget.patientTc, deleteTarget.resultId);
+    }
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
   };
 
   const uniqueBloodTestResults = getUniqueBloodTests(bloodTestResults);
@@ -910,7 +931,18 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
                   <h4 className="font-bold text-gray-700">Kan Tahlili #{index + 1}</h4>
                   <p className="text-sm text-gray-500">Tarih: {testDate.toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
-                {isToday && <span className="text-sm font-semibold text-cyan-800 bg-cyan-200 px-3 py-1 rounded-full">Bugünün Tahlili</span>}
+                <div className="flex items-center gap-2">
+                  {isToday && <span className="text-sm font-semibold text-cyan-800 bg-cyan-200 px-3 py-1 rounded-full">Bugünün Tahlili</span>}
+                  {onDeleteBloodTest && (
+                    <button
+                      onClick={() => handleDeleteClick(patientTc, result.id)}
+                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Kan tahlilini sil"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="p-4 bg-white rounded-b-lg border border-t-0 border-gray-200">
                 <div className="overflow-x-auto">
@@ -955,6 +987,41 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
         <div className="text-center py-8">
           <p className="text-gray-500 mb-2">Henüz kan tahlili sonucu bulunmamaktadır.</p>
           <p className="text-sm text-gray-400">PDF yükleyerek kan tahlili sonuçlarını sisteme ekleyebilirsiniz.</p>
+        </div>
+      )}
+      
+      {/* Silme Onay Modalı */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-gray-900">Kan Tahlilini Sil</h3>
+              </div>
+            </div>
+            <div className="mb-6">
+              <p className="text-sm text-gray-500">
+                Bu kan tahlili sonucunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              >
+                Sil
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -1459,6 +1526,30 @@ const PatientDetailPage = () => {
     }
   };
 
+  // Kan tahlili sonucunu sil
+  const deleteBloodTestResult = async (tc, bloodTestId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/patients/${tc}/blood-test-results/${bloodTestId}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (data && data.success) {
+        setToastInfo({ message: 'Kan tahlili sonucu başarıyla silindi!', type: 'success' });
+        // Kan tahlili listesini yenile
+        await fetchBloodTestResults(tc);
+        // AI analizini de yenile (kan tahlili silindiği için)
+        await fetchMedicalAnalysis(tc);
+      } else {
+        setToastInfo({ message: data.error || 'Kan tahlili silinirken hata oluştu!', type: 'error' });
+      }
+    } catch (error) {
+      console.error('Kan tahlili silme hatası:', error);
+      setToastInfo({ message: 'Kan tahlili silinirken hata oluştu!', type: 'error' });
+    }
+  };
+
   // Yeni AI analizi oluştur
   const generateMedicalAnalysis = async (tc) => {
     setAnalysisLoading(true);
@@ -1715,7 +1806,7 @@ const PatientDetailPage = () => {
 )}
           {activeTab === 'info' && <PatientInfo patient={patientData} onUpdate={setPatientData} />}
           {activeTab === 'labs' && <LabResultsTab labResults={patientData.labResults || patientData.laboratuvar || []} />}
-          {activeTab === 'blood-test' && <BloodTestTab bloodTestResults={bloodTestResults} loading={bloodTestLoading} />}
+          {activeTab === 'blood-test' && <BloodTestTab bloodTestResults={bloodTestResults} loading={bloodTestLoading} onDeleteBloodTest={deleteBloodTestResult} patientTc={patientData.tc_kimlik_no} />}
           {activeTab === 'pdf-upload' && (
             <PdfUploadTab 
               onFileUpload={handlePdfUpload}

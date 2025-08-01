@@ -194,6 +194,55 @@ const addDoctorNote = async (req, res, next) => {
   }
 };
 
+/**
+ * Kan tahlili sonucunu siler
+ * @route DELETE /api/patients/:tc/blood-test-results/:id
+ * @returns {Object} 200 - { success, message } | 404 - { success: false, error }
+ */
+const deleteBloodTestResult = async (req, res, next) => {
+  try {
+    const { tc, id } = req.params;
+    console.log(`deleteBloodTestResult isteği alındı: TC=${tc}, ID=${id}`);
+
+    // Önce kan tahlili sonucunun var olup olmadığını ve hastaya ait olup olmadığını kontrol et
+    const { data: existingResult, error: checkError } = await supabase
+      .from('blood_test_results')
+      .select('id, patient_tc')
+      .eq('id', id)
+      .eq('patient_tc', tc)
+      .single();
+
+    if (checkError || !existingResult) {
+      console.log('Kan tahlili sonucu bulunamadı:', checkError);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Kan tahlili sonucu bulunamadı veya bu hastaya ait değil' 
+      });
+    }
+
+    // Kan tahlili sonucunu sil
+    const { error: deleteError } = await supabase
+      .from('blood_test_results')
+      .delete()
+      .eq('id', id)
+      .eq('patient_tc', tc);
+
+    if (deleteError) {
+      console.error('Kan tahlili silme hatası:', deleteError);
+      throw deleteError;
+    }
+
+    console.log(`Kan tahlili sonucu başarıyla silindi: ID=${id}`);
+    res.status(200).json({ 
+      success: true, 
+      message: 'Kan tahlili sonucu başarıyla silindi' 
+    });
+  } catch (err) {
+    console.error('Kan tahlili silme hatası:', err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAllPatients,
   getPatientByTC,
@@ -201,6 +250,7 @@ module.exports = {
   updatePatient,
   deletePatient,
   getBloodTestResults,
+  deleteBloodTestResult,
   getDoctorNotes,
   addDoctorNote,
 };

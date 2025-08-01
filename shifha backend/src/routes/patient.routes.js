@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { getAllPatients, getPatientByTC, addPatient, updatePatient, deletePatient, getBloodTestResults, getDoctorNotes, addDoctorNote } = require('../controllers/patient.controller.js');
+const { getAllPatients, getPatientByTC, addPatient, updatePatient, deletePatient, getBloodTestResults, deleteBloodTestResult, getDoctorNotes, addDoctorNote } = require('../controllers/patient.controller.js');
 const { validatePatient } = require('../middleware/validation.middleware');
 const { supabaseAuthMiddleware, requireRole } = require('../middleware/auth.middleware');
 
@@ -19,6 +19,8 @@ router.delete('/:tc', deletePatient);
 
 // Kan tahlili sonuçlarını getir: GET /api/patients/:tc/blood-test-results
 router.get('/:tc/blood-test-results', getBloodTestResults);
+// Kan tahlili sonucunu sil: DELETE /api/patients/:tc/blood-test-results/:id
+router.delete('/:tc/blood-test-results/:id', deleteBloodTestResult);
 
 // Bir hastanın doktor notlarını getir (sadece doktorlar)
 router.get('/:tc/notes', supabaseAuthMiddleware, requireRole('doktor'), getDoctorNotes);

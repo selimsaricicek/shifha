@@ -43,7 +43,7 @@ async function parsePatientPdf(buffer, patientId = null) {
         // Önce hastanın mevcut olup olmadığını kontrol et
         const { data: existingPatient, error: fetchError } = await supabase
             .from('patients')
-            .select('tc_kimlik_no')
+            .select('*')
             .eq('id', patientId)
             .single();
             
@@ -54,11 +54,8 @@ async function parsePatientPdf(buffer, patientId = null) {
         // Kan tahlili verilerini çıkar ve kaydet
         await extractAndSaveBloodTestResults(text, existingPatient.tc_kimlik_no, patientId);
         
-        return { 
-            success: true, 
-            message: 'Kan tahlili başarıyla güncellendi.',
-            patientId: patientId 
-        };
+        // Güncellenmiş hasta verilerini döndür
+        return existingPatient;
     }
 
     // Önce manuel pattern'larla hasta bilgilerini çıkarmaya çalış
@@ -374,10 +371,7 @@ async function extractAndSaveBloodTestResults(text, patientTc, patientId = null)
             mcv_fl: /mcv\s*([0-9]+\.?[0-9]*)\s*fl/i,
             mch_pg: /mch\s*([0-9]+\.?[0-9]*)\s*pg/i,
             mchc_gdl: /mchc\s*([0-9]+\.?[0-9]*)\s*g\/dl/i,
-            rdw_cv: /rdw\s*cv\s*([0-9]+\.?[0-9]*)\s*%/i,
-            
-            // Ek pattern'lar fotoğraftaki değerler için
-            ggt_value: /ggt\s*([0-9]+)\s*/i
+            rdw_cv: /rdw\s*cv\s*([0-9]+\.?[0-9]*)\s*%/i
         };
         
         // Değerleri çıkar
