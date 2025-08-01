@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 // Gerekli hook'ları ve bileşenleri react-router-dom'dan alıyoruz
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -10,6 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 import PatientDetailPage from './pages/PatientDetailPage';
 import PanelSelectionPage from './pages/PanelSelectionPage';
 import EmergencyPanelPage from './pages/EmergencyPanelPage';
+import AdminPanelApp from './pages/AdminPanelApp';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -53,6 +54,7 @@ function App() {
             } catch (error) {
                 console.error('Kullanıcı verisi parse edilemedi:', error);
                 localStorage.removeItem('shifha_user');
+                localStorage.removeItem('token');
             }
         }
     }, []);
@@ -62,22 +64,33 @@ function App() {
     };
 
     const handleLogin = (userData) => {
-        const { user } = userData;
+        const { user, token } = userData;
         
-        // Backend'de zaten rol kontrolü yapılıyor, burada sadece kullanıcıyı kaydet
-        const essentialUserData = {
-            id: user.id,
-            email: user.email,
-            user_metadata: user.user_metadata,
-            profile: user.profile,
-            doctorProfile: user.doctorProfile,
-            isDoctor: user.isDoctor
-        };
-    
-        setUser(user);
-        setIsAuthenticated(true);
-        localStorage.setItem('shifha_user', JSON.stringify(essentialUserData));
-        navigate('/panel-selection');
+        // Email domain kontrolü yaparak doğru panele yönlendir
+        const isAdminEmail = user.email && user.email.toLowerCase().endsWith('@shifha.admin.tr');
+        
+        if (isAdminEmail) {
+            // Admin kullanıcıları için admin panel'e yönlendir
+            localStorage.setItem('adminToken', token);
+            localStorage.setItem('adminUser', JSON.stringify(user));
+            navigate('/admin-panel');
+        } else {
+            // Normal kullanıcılar için panel seçim sayfasına yönlendir
+            const essentialUserData = {
+                id: user.id,
+                email: user.email,
+                user_metadata: user.user_metadata,
+                profile: user.profile,
+                doctorProfile: user.doctorProfile,
+                isDoctor: user.isDoctor
+            };
+        
+            setUser(user);
+            setIsAuthenticated(true);
+            localStorage.setItem('shifha_user', JSON.stringify(essentialUserData));
+            localStorage.setItem('token', token);
+            navigate('/panel-selection');
+        }
     };
 
     const handleRegisterSuccess = (userData, role) => {
@@ -155,6 +168,7 @@ function App() {
                                     setUser(null);
                                     setIsAuthenticated(false);
                                     localStorage.removeItem('shifha_user');
+                                    localStorage.removeItem('token');
                                     navigate('/');
                                 }}
                             />
@@ -191,6 +205,7 @@ function App() {
                                     setIsAuthenticated(false);
                                     // localStorage'daki kullanıcı verisini temizle
                                     localStorage.removeItem('shifha_user');
+                                    localStorage.removeItem('token');
                                     navigate('/');
                                 }}
                                 searchTerm={searchTerm}
@@ -223,7 +238,9 @@ function App() {
                                 onLogout={() => {
                                     setUser(null);
                                     setIsAuthenticated(false);
+                                    // localStorage'daki kullanıcı verisini temizle
                                     localStorage.removeItem('shifha_user');
+                                    localStorage.removeItem('token');
                                     navigate('/');
                                 }}
                             />
@@ -243,6 +260,15 @@ function App() {
                         )
                     }
                 />
+                <Route path="/admin-panel" element={
+              localStorage.getItem('adminToken') ? 
+                <AdminPanelApp onLogout={() => {
+                  localStorage.removeItem('adminToken');
+                  localStorage.removeItem('adminUser');
+                  window.location.href = '/login';
+                }} /> : 
+                <Navigate to="/login" />
+            } />
                 {/* Dinamik Rota: Her hasta için kendi ID'si ile özel bir sayfa oluşturur */}
                 <Route
                     path="/dashboard/patient/:patientId"

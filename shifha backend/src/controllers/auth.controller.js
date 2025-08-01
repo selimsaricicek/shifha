@@ -28,4 +28,18 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+/**
+ * Admin girişi
+ * @route POST /api/auth/admin-login
+ * @returns {Object} 200 - { success, data }
+ */
+const adminLogin = async (req, res, next) => {
+  try {
+    const { user, token } = await authService.adminLogin(req.body);
+    res.json({ success: true, data: { user, token } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { register, login, adminLogin };

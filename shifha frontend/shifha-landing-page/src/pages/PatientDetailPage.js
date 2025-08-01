@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
-import { addFont } from 'jspdf'; // Bu satırı ekleyin
 import autoTable from 'jspdf-autotable';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, CheckCircle,
-    Edit, Save, BrainCircuit, Activity, Upload
+    Edit, Save, BrainCircuit, Activity, Upload, MessageCircle
 } from 'lucide-react';
 import { XCircle } from 'lucide-react';
 // ===================================================================================
@@ -506,19 +505,7 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
   );
 };
 
-// Move InfoItem and EditableInfoItem to top level
-const InfoItem = ({ label, value }) => (
-  <div className="grid grid-cols-3 gap-4 py-2">
-    <dt className="font-medium text-gray-500">{label}</dt>
-    <dd className="text-gray-700 col-span-2">{value}</dd>
-  </div>
-);
-const EditableInfoItem = ({ label, value, name, type = 'text', onChange }) => (
-  <div className="grid grid-cols-3 gap-4 items-center py-1">
-    <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
-    <input type={type} id={name} name={name} value={value} onChange={(e) => onChange(name, e.target.value)} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
-  </div>
-);
+
 
 const PatientInfo = ({ patient, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -646,7 +633,7 @@ const LabResultsTab = ({ labResults = [] }) => (
                                         {(test.results || []).map((res, i) => (
                                             <tr key={i} className={`border-b ${res.isAbnormal ? 'bg-rose-50' : 'bg-white'}`}>
                                                 <td className="px-3 py-2 font-medium text-gray-900">{res.parameter}</td>
-                                                <td className={`px-3 py-2 font-bold ${res.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>{res.value} {res.unit}</td>
+                                                <td className={`px-3 py-2 font-bold ${res.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>{formatNumber(res.value)} {res.unit}</td>
                                                 <td className="px-3 py-2">
                                                     <ValueVisualizer value={res.value} normalRange={res.normal} />
                                                 </td>
@@ -671,6 +658,16 @@ const LabResultsTab = ({ labResults = [] }) => (
         )}
     </div>
 );
+
+// Sayı formatçı fonksiyon - binlik ayırıcı için
+const formatNumber = (value) => {
+  if (value === null || value === undefined || value === '') return value;
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  
+  // Binlik ayırıcı için Türkçe format (280.150 gibi)
+  return num.toLocaleString('tr-TR');
+};
 
 // Kan tahlili referans değerleri
 const bloodTestReferenceRanges = {
@@ -928,9 +925,9 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
                         <tr key={i} className={`border-b ${test.isAbnormal ? 'bg-rose-50' : 'bg-white'}`}>
                           <td className="px-3 py-2 font-medium text-gray-900">{test.parameter}</td>
                           <td className={`px-3 py-2 font-bold ${test.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>
-                            {test.value} {test.unit}
+                            {formatNumber(test.value)} {test.unit}
                           </td>
-                          <td className="px-3 py-2 text-gray-600">{test.normal} {test.unit}</td>
+                          <td className="px-3 py-2 text-gray-600">{formatNumber(test.normal)} {test.unit}</td>
                           <td className="px-3 py-2">
                             {test.isAbnormal ? (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -979,7 +976,7 @@ const DoctorNotes = ({ patientTc }) => {
         });
         const data = await response.json();
         if (data.success) {
-          setNotes(data.notes);
+          setNotes(data.data);
         }
       } catch (error) {
         console.error('Error fetching notes:', error);
@@ -1002,7 +999,7 @@ const DoctorNotes = ({ patientTc }) => {
       });
       const data = await response.json();
       if (data.success) {
-        setNotes(prev => [...prev, data.note]);
+        setNotes(prev => [...prev, data.data]);
         setNewNote('');
       }
     } catch (error) {
@@ -1015,7 +1012,7 @@ const DoctorNotes = ({ patientTc }) => {
       <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
       <ul className="mb-4">
         {notes && notes.length > 0 ? notes.map((n) => (
-          <li key={n.id} className="mb-2 p-2 bg-gray-50 rounded">{n.note} <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span></li>
+          <li key={n.id} className="mb-2 p-2 bg-gray-50 rounded">{n.note_content} <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span></li>
         )) : <li>Not bulunamadı.</li>}
       </ul>
       <form onSubmit={handleAddNote} className="flex gap-2">
@@ -1026,30 +1023,485 @@ const DoctorNotes = ({ patientTc }) => {
   );
 };
 
-const DoctorNotesTab = ({ notes, onAddNote }) => (
-  <div className="animate-fadeIn">
-    <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
-    <ul className="mb-4">
-      {notes && notes.length > 0 ? notes.map((n, i) => (
-        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{n.text} <span className="text-xs text-gray-400">{n.date}</span></li>
-      )) : <li>Not bulunamadı.</li>}
-    </ul>
-    <form onSubmit={onAddNote} className="flex gap-2">
-      <input name="note" className="border rounded px-2 py-1 flex-1" placeholder="Yeni not..." />
-      <button type="submit" className="bg-cyan-600 text-white px-4 py-1 rounded">Ekle</button>
-    </form>
-  </div>
-);
-const ConsultationTab = ({ consultations }) => (
-  <div className="animate-fadeIn">
-    <h3 className="text-lg font-bold mb-2">Konsültasyonlar</h3>
-    <ul>
-      {consultations && consultations.length > 0 ? consultations.map((c, i) => (
-        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{c.text} <span className="text-xs text-gray-400">{c.date}</span></li>
-      )) : <li>Konsültasyon bulunamadı.</li>}
-    </ul>
-  </div>
-);
+
+const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
+  const [showNewConsultation, setShowNewConsultation] = useState(false);
+  const [availableDoctors, setAvailableDoctors] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [newConsultationForm, setNewConsultationForm] = useState({
+    title: '',
+    description: '',
+    departmentId: '',
+    consultingDoctorId: '',
+    urgencyLevel: 'normal',
+    consultationType: 'opinion'
+  });
+
+  // Mevcut kullanıcının organizasyon ID'sini al (localStorage'dan)
+  const currentUser = JSON.parse(localStorage.getItem('shifha_user') || '{}');
+  const organizationId = currentUser.doctorProfile?.organization_id || currentUser.profile?.organization_id || '1'; // Varsayılan organizasyon
+
+  useEffect(() => {
+    if (showNewConsultation) {
+      fetchAvailableDoctors();
+      fetchDepartments();
+    }
+  }, [showNewConsultation, organizationId]);
+
+  const fetchAvailableDoctors = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/consultations/${organizationId}/available-doctors`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      setAvailableDoctors(data.data || []);
+    } catch (error) {
+      console.error('Doktorları getirme hatası:', error);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/organizations/${organizationId}/departments`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      setDepartments(data.data || []);
+    } catch (error) {
+      console.error('Departmanları getirme hatası:', error);
+    }
+  };
+
+  // Konsültasyon mesajlarını getir
+  const fetchConsultationMessages = async (consultationId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/messages/consultation/${consultationId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessages(data.data || []);
+      }
+    } catch (error) {
+      console.error('Mesajları getirme hatası:', error);
+    }
+  };
+
+  // Yeni mesaj gönder
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !selectedConsultation) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3001/api/messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          consultationId: selectedConsultation.id,
+          content: newMessage,
+          messageType: 'text'
+        })
+      });
+
+      if (response.ok) {
+        setNewMessage('');
+        fetchConsultationMessages(selectedConsultation.id);
+      }
+    } catch (error) {
+      console.error('Mesaj gönderme hatası:', error);
+    }
+  };
+
+  // Konsültasyon seçildiğinde mesajları yükle
+  const selectConsultation = (consultation) => {
+    setSelectedConsultation(consultation);
+    fetchConsultationMessages(consultation.id);
+  };
+
+  const handleCreateConsultation = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3001/api/consultations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...newConsultationForm,
+          patientTc: patient.tc_kimlik_no,
+          organizationId: organizationId
+        })
+      });
+
+      if (response.ok) {
+        setShowNewConsultation(false);
+        setNewConsultationForm({
+          title: '',
+          description: '',
+          departmentId: '',
+          consultingDoctorId: '',
+          urgencyLevel: 'normal',
+          consultationType: 'opinion'
+        });
+        // Konsültasyonları yeniden yükle
+        if (onCreateConsultation) {
+          onCreateConsultation();
+        }
+      }
+    } catch (error) {
+      console.error('Konsültasyon oluşturma hatası:', error);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'declined': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Bekliyor';
+      case 'accepted': return 'Kabul Edildi';
+      case 'completed': return 'Tamamlandı';
+      case 'declined': return 'Reddedildi';
+      default: return status;
+    }
+  };
+
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-orange-100 text-orange-800';
+      case 'normal': return 'bg-blue-100 text-blue-800';
+      case 'low': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getUrgencyText = (urgency) => {
+    switch (urgency) {
+      case 'urgent': return 'Acil';
+      case 'high': return 'Yüksek';
+      case 'normal': return 'Normal';
+      case 'low': return 'Düşük';
+      default: return urgency;
+    }
+  };
+
+  return (
+    <div className="animate-fadeIn space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-bold text-gray-800">Konsültasyonlar</h3>
+          <p className="text-gray-600">Bu hasta için doktor konsültasyonları</p>
+        </div>
+        <button
+          onClick={() => setShowNewConsultation(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+        >
+          <Users className="mr-2" size={16} />
+          Yeni Konsültasyon
+        </button>
+      </div>
+
+      {/* Konsültasyon Listesi */}
+      <div className="space-y-4">
+        {consultations && consultations.length > 0 ? (
+          consultations.map((consultation, index) => (
+            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{consultation.title}</h4>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(consultation.status)}`}>
+                      {getStatusText(consultation.status)}
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(consultation.urgency_level)}`}>
+                      {getUrgencyText(consultation.urgency_level)}
+                    </span>
+                    <span>
+                      {new Date(consultation.requested_at || consultation.created_at).toLocaleDateString('tr-TR')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <span className="font-medium text-gray-700">Açıklama:</span>
+                  <p className="text-gray-600 mt-1">{consultation.description}</p>
+                </div>
+
+                {consultation.requesting_doctor && (
+                  <div>
+                    <span className="font-medium text-gray-700">İsteyen Doktor:</span>
+                    <p className="text-gray-600 mt-1">
+                      {consultation.requesting_doctor.first_name} {consultation.requesting_doctor.last_name}
+                      {consultation.requesting_doctor.specialization && ` - ${consultation.requesting_doctor.specialization}`}
+                    </p>
+                  </div>
+                )}
+
+                {consultation.consulting_doctor && (
+                  <div>
+                    <span className="font-medium text-gray-700">Konsültan Doktor:</span>
+                    <p className="text-gray-600 mt-1">
+                      {consultation.consulting_doctor.first_name} {consultation.consulting_doctor.last_name}
+                      {consultation.consulting_doctor.specialization && ` - ${consultation.consulting_doctor.specialization}`}
+                    </p>
+                  </div>
+                )}
+
+                {consultation.department && (
+                  <div>
+                    <span className="font-medium text-gray-700">Departman:</span>
+                    <p className="text-gray-600 mt-1">{consultation.department.name}</p>
+                  </div>
+                )}
+
+                {consultation.consultation_notes && (
+                  <div>
+                    <span className="font-medium text-gray-700">Konsültasyon Notları:</span>
+                    <p className="text-gray-600 mt-1">{consultation.consultation_notes}</p>
+                  </div>
+                )}
+
+                {consultation.recommendations && (
+                  <div>
+                    <span className="font-medium text-gray-700">Öneriler:</span>
+                    <p className="text-gray-600 mt-1">{consultation.recommendations}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Mesajlaşma Butonu */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => selectConsultation(consultation)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+                >
+                  <MessageCircle className="mr-2" size={16} />
+                  Mesajlaşma
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Konsültasyon bulunamadı</h3>
+            <p className="text-gray-500">Bu hasta için henüz konsültasyon isteği yok</p>
+          </div>
+        )}
+      </div>
+
+      {/* Yeni Konsültasyon Modal */}
+      {showNewConsultation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Yeni Konsültasyon İsteği</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Başlık</label>
+                <input
+                  type="text"
+                  value={newConsultationForm.title}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    title: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="Konsültasyon başlığı"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Departman</label>
+                <select
+                  value={newConsultationForm.departmentId}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    departmentId: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="">Departman seçin</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Konsültan Doktor</label>
+                <select
+                  value={newConsultationForm.consultingDoctorId}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    consultingDoctorId: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="">Doktor seçin (opsiyonel)</option>
+                  {availableDoctors.map(doctor => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.first_name} {doctor.last_name} - {doctor.specialization}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Aciliyet Durumu</label>
+                <select
+                  value={newConsultationForm.urgencyLevel}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    urgencyLevel: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="low">Düşük</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">Yüksek</option>
+                  <option value="urgent">Acil</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
+                <textarea
+                  value={newConsultationForm.description}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    description: e.target.value
+                  }))}
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="Konsültasyon detayları..."
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowNewConsultation(false)}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleCreateConsultation}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Konsültasyon Oluştur
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mesajlaşma Modal */}
+      {selectedConsultation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                Konsültasyon Mesajları: {selectedConsultation.title}
+              </h3>
+              <button
+                onClick={() => setSelectedConsultation(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            {/* Mesaj Listesi */}
+            <div className="flex-1 overflow-y-auto mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[300px]">
+              {messages.length > 0 ? (
+                <div className="space-y-4">
+                  {messages.map((message, index) => {
+                    const isCurrentUser = message.sender_id === currentUser.id;
+                    return (
+                      <div 
+                        key={index} 
+                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div 
+                          className={`max-w-[70%] rounded-lg p-3 ${
+                            isCurrentUser 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-gray-200 text-gray-800'
+                          }`}
+                        >
+                          <div className="text-sm font-medium mb-1">
+                            {isCurrentUser ? 'Siz' : `${message.sender_name || 'Doktor'}`}
+                          </div>
+                          <div>{message.content}</div>
+                          <div className="text-xs mt-1 opacity-70">
+                            {new Date(message.created_at).toLocaleString('tr-TR')}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  Henüz mesaj bulunmamaktadır.
+                </div>
+              )}
+            </div>
+
+            {/* Mesaj Gönderme Formu */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Mesajınızı yazın..."
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2"
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              />
+              <button
+                onClick={sendMessage}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Gönder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 const ReferralTab = ({ referrals }) => (
   <div className="animate-fadeIn">
     <h3 className="text-lg font-bold mb-2">Sevkler</h3>
@@ -1299,7 +1751,7 @@ const PatientDetailPage = () => {
         if (!latestTest) return;
 
         const startY = currentY;
-        addSectionTitle('Son Kan Tahlili Sonuclari');
+        addSectionTitle('');
 
         const body = Object.keys(bloodTestReferenceRanges).map(key => {
             const value = latestTest[key];
@@ -1320,7 +1772,7 @@ const PatientDetailPage = () => {
                 if (data.pageNumber > 1) {
                     doc.setFontSize(10);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Son Kan Tahlili Sonuçlari (devam)', data.settings.margin.left, 20);
+                    doc.text('', data.settings.margin.left, 20);
                 }
             }
         });
@@ -1387,13 +1839,10 @@ const PatientDetailPage = () => {
     doc.save(fileName);
     setPdfLoading(false);
   };
-  const [isEditing, setIsEditing] = useState(false);
   const [toastInfo, setToastInfo] = useState({ message: '', type: '' });
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState([]);
   const [consultations, setConsultations] = useState([]);
-  const [referrals, setReferrals] = useState([]);
   const [bloodTestResults, setBloodTestResults] = useState([]);
   const [bloodTestLoading, setBloodTestLoading] = useState(false);
   const [medicalAnalysis, setMedicalAnalysis] = useState(null);
@@ -1456,6 +1905,28 @@ const PatientDetailPage = () => {
       setMedicalAnalysis(null);
     } finally {
       setAnalysisLoading(false);
+    }
+  };
+
+  // Konsültasyonları çek
+  const fetchConsultations = async (tc) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/consultations/patient/${tc}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (data && data.success && data.data) {
+        setConsultations(data.data);
+      } else {
+        setConsultations([]);
+      }
+    } catch (error) {
+      console.error('Konsültasyonlar alınırken hata:', error);
+      setConsultations([]);
     }
   };
 
@@ -1624,9 +2095,11 @@ const PatientDetailPage = () => {
     // AI tıbbi analizini çek
     fetchMedicalAnalysis(tc);
     
-    // Notlar, konsültasyonlar ve sevkler için ayrı istekler (opsiyonel)
+    // Konsültasyonları çek
+    fetchConsultations(tc);
+    
+    // Notlar ve sevkler için ayrı istekler (opsiyonel)
     // fetch(`http://localhost:3001/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
-    // fetch(`http://localhost:3001/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
     // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
   }, [patientId]);
 
@@ -1651,22 +2124,7 @@ const PatientDetailPage = () => {
   );
   if (!patientData) return <div className="p-8 text-center text-red-600 font-bold text-xl">Hasta bulunamadı veya API'den veri alınamadı.</div>;
 
-  const handleInfoChange = (field, value) => {
-    setPatientData(prev => ({ ...prev, [field]: value }));
-  };
-  const handleSave = () => {
-    setIsEditing(false);
-    setToastInfo({ message: 'Hasta bilgileri başarıyla güncellendi.', type: 'success' });
-    // API'ye güncelleme isteği gönderilebilir
-  };
-  const handleAddNote = (e) => {
-    e.preventDefault();
-    const text = e.target.note.value;
-    if (!text) return;
-    // API'ye not ekleme isteği gönderilebilir
-    setNotes(prev => [...prev, { text, date: new Date().toLocaleString() }]);
-    e.target.reset();
-  };
+
 
   return (
     <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
@@ -1728,8 +2186,14 @@ const PatientDetailPage = () => {
           )}
           {activeTab === 'radiology' && <RadiologyTab reports={patientData.radyoloji || []} />}
           {activeTab === 'notes' && <DoctorNotes patientTc={patientData.tc_kimlik_no} />}
-          {activeTab === 'consultation' && <ConsultationTab consultations={consultations} />}
-          {activeTab === 'referral' && <ReferralTab referrals={referrals} />}
+          {activeTab === 'consultation' && (
+            <ConsultationTab 
+              patient={patientData} 
+              consultations={consultations} 
+              onCreateConsultation={() => fetchConsultations(decodeTcFromHash(patientId))}
+            />
+          )}
+          {activeTab === 'referral' && <ReferralTab referrals={[]} />}
 
           {activeTab === 'pathology' && <PathologyTab reports={patientData.patoloji || []} />}
         </main>
