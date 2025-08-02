@@ -306,11 +306,24 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     return (
         <div className="bg-gradient-to-b from-blue-50 via-cyan-50 to-gray-50 min-h-screen animate-fadeInDash">
             <header className="bg-white/90 shadow-md p-4 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
-                {/* LOGO ve YAZI */}
-                <Link to="/" className="flex items-center space-x-2">
-                    <img src="/logo-symbol.jpg" alt="Shifha Logo" className="h-10 w-10" />
-                    <img src="/logo-text.jpg" alt="SHIFHA" className="h-8" />
-                </Link>
+                <div className="flex items-center space-x-4">
+                    <button
+                        onClick={() => navigate('/panel-selection')}
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                        <ArrowLeft size={20} />
+                        <span>Panel Seçimi</span>
+                    </button>
+                    {/* LOGO ve YAZI */}
+                    <Link to="/" className="flex items-center space-x-2">
+                        <img src="/logo-symbol.jpg" alt="Shifha Logo" className="h-10 w-10" />
+                        <img src="/logo-text.jpg" alt="SHIFHA" className="h-8" />
+                    </Link>
+                    <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
+                        <User className="text-blue-600" size={20} />
+                        <span className="text-blue-800 font-semibold">Poliklinik Paneli</span>
+                    </div>
+                </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">

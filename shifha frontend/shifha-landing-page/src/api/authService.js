@@ -22,3 +22,13 @@ export const login = async (data) => {
     throw error;
   }
 };
+
+export const adminLogin = async (data) => {
+  try {
+    const res = await axios.post(`${API_URL}/admin-login`, data);
+    return res.data;
+  } catch (error) {
+    console.error('Admin login error:', error.response?.data || error.message);
+    throw error;
+  }
+};

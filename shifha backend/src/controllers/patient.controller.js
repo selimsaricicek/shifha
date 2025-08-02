@@ -154,15 +154,20 @@ const getBloodTestResults = async (req, res, next) => {
 const getDoctorNotes = async (req, res, next) => {
   try {
     const { tc } = req.params;
+    console.log('getDoctorNotes çağrıldı, TC:', tc);
+    
     const { data, error } = await supabase
       .from('doctor_notes')
       .select('*')
       .eq('patient_tc', tc)
       .order('created_at', { ascending: false });
 
+    console.log('getDoctorNotes sonucu:', { data, error, count: data?.length || 0 });
+
     if (error) throw error;
     res.status(200).json({ success: true, data: data || [] });
   } catch (err) {
+    console.error('getDoctorNotes hatası:', err);
     next(err);
   }
 };
@@ -175,21 +180,69 @@ const addDoctorNote = async (req, res, next) => {
   try {
     const { tc } = req.params;
     const { note } = req.body;
-    const doctor_id = req.user.id; // Middleware'den gelen kullanıcı ID'si
+    const user_id = req.user.id; // Middleware'den gelen kullanıcı ID'si
+
+    console.log('addDoctorNote çağrıldı:', { tc, note, user_id });
 
     if (!note) {
+      console.log('Not içeriği boş!');
       return res.status(400).json({ success: false, error: 'Not içeriği boş olamaz.' });
     }
 
+    // Kullanıcı ID'si ile doktor profilini bul
+    console.log('Doktor profili aranıyor, user_id:', user_id);
+    const { data: doctorProfile, error: doctorError } = await supabase
+      .from('doctor_profiles')
+      .select('id, organization_id')
+      .eq('user_id', user_id)
+      .single();
+
+    console.log('Doktor profili sonucu:', { doctorProfile, doctorError });
+
+    if (doctorError || !doctorProfile) {
+      console.log('Doktor profili bulunamadı!');
+      return res.status(400).json({ success: false, error: 'Doktor profili bulunamadı.' });
+    }
+
+    // organization_id null ise varsayılan organizasyon ID'si kullan
+    let organizationId = doctorProfile.organization_id;
+    if (!organizationId) {
+      // Varsayılan organizasyonu bul
+      const { data: defaultOrg, error: orgError } = await supabase
+        .from('organizations')
+        .select('id')
+        .limit(1)
+        .single();
+      
+      if (defaultOrg && !orgError) {
+        organizationId = defaultOrg.id;
+        console.log('Varsayılan organizasyon kullanılıyor:', organizationId);
+      } else {
+        console.log('Varsayılan organizasyon bulunamadı, organization_id null bırakılıyor');
+      }
+    }
+
+    const insertData = { 
+      patient_tc: tc, 
+      doctor_id: doctorProfile.id, 
+      organization_id: organizationId,
+      note_content: note 
+    };
+
+    console.log('Doctor note insert edilecek data:', insertData);
+
     const { data, error } = await supabase
       .from('doctor_notes')
-      .insert([{ patient_tc: tc, doctor_id, note }])
+      .insert([insertData])
       .select();
+
+    console.log('Insert sonucu:', { data, error });
 
     if (error) throw error;
 
     res.status(201).json({ success: true, data: data[0] });
   } catch (err) {
+    console.error('addDoctorNote hatası:', err);
     next(err);
   }
 };

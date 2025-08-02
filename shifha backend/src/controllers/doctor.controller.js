@@ -14,6 +14,8 @@ const getAllDoctors = async (req, res, next) => {
       .from('doctor_profiles')
       .select(`
         *,
+        departments:department_id(id, name),
+        organizations:organization_id(id, name),
         hospitals:hospital_id (
           id,
           name,
@@ -56,6 +58,8 @@ const getDoctorById = async (req, res, next) => {
       .from('doctor_profiles')
       .select(`
         *,
+        departments:department_id(id, name),
+        organizations:organization_id(id, name),
         hospitals:hospital_id (
           id,
           name,
@@ -103,6 +107,8 @@ const addDoctor = async (req, res, next) => {
       .insert([body])
       .select(`
         *,
+        departments:department_id(id, name),
+        organizations:organization_id(id, name),
         hospitals:hospital_id (
           id,
           name,
@@ -143,6 +149,8 @@ const updateDoctor = async (req, res, next) => {
       .eq('id', id)
       .select(`
         *,
+        departments:department_id(id, name),
+        organizations:organization_id(id, name),
         hospitals:hospital_id (
           id,
           name,
@@ -217,6 +225,8 @@ const assignDoctorToHospital = async (req, res, next) => {
       .eq('id', id)
       .select(`
         *,
+        departments:department_id(id, name),
+        organizations:organization_id(id, name),
         hospitals:hospital_id (
           id,
           name,

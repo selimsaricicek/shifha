@@ -77,8 +77,26 @@ router.use('/medical-analysis', medicalAnalysisRoutes);
 const doctorRoutes = require('../routes/doctor.routes');
 router.use('/doctors', doctorRoutes);
 
+// Departman rotalarını ekle
+const departmentRoutes = require('../routes/department.routes');
+router.use('/departments', departmentRoutes);
+
 // Lokasyon rotalarını ekle (şehir, ilçe, hastane)
 const locationRoutes = require('../routes/location.routes');
 router.use('/locations', locationRoutes);
+
+// Multi-Doctor Management rotalarını ekle
+const organizationRoutes = require('../routes/organizationRoutes');
+router.use('/organizations', organizationRoutes);
+
+const messageRoutes = require('../routes/messageRoutes');
+router.use('/messages', messageRoutes);
+
+const consultationRoutes = require('../routes/consultationRoutes');
+router.use('/consultations', consultationRoutes);
+
+// Admin rotalarını ekle
+const adminRoutes = require('../routes/admin.routes');
+router.use('/admin', adminRoutes);
 
 module.exports = router;

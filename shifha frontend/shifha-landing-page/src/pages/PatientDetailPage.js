@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import jsPDF from 'jspdf';
-import { addFont } from 'jspdf'; // Bu satırı ekleyin
 import autoTable from 'jspdf-autotable';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, CheckCircle,
-    Edit, Save, BrainCircuit, Activity, Upload, AlertTriangle
+
 } from 'lucide-react';
-import { XCircle } from 'lucide-react';
+
 // ===================================================================================
 // YARDIMCI FONKSİYONLAR VE BİLEŞENLER (Sizin Kodunuz)
 // ===================================================================================
@@ -506,19 +505,7 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
   );
 };
 
-// Move InfoItem and EditableInfoItem to top level
-const InfoItem = ({ label, value }) => (
-  <div className="grid grid-cols-3 gap-4 py-2">
-    <dt className="font-medium text-gray-500">{label}</dt>
-    <dd className="text-gray-700 col-span-2">{value}</dd>
-  </div>
-);
-const EditableInfoItem = ({ label, value, name, type = 'text', onChange }) => (
-  <div className="grid grid-cols-3 gap-4 items-center py-1">
-    <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
-    <input type={type} id={name} name={name} value={value} onChange={(e) => onChange(name, e.target.value)} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
-  </div>
-);
+
 
 const PatientInfo = ({ patient, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -646,7 +633,7 @@ const LabResultsTab = ({ labResults = [] }) => (
                                         {(test.results || []).map((res, i) => (
                                             <tr key={i} className={`border-b ${res.isAbnormal ? 'bg-rose-50' : 'bg-white'}`}>
                                                 <td className="px-3 py-2 font-medium text-gray-900">{res.parameter}</td>
-                                                <td className={`px-3 py-2 font-bold ${res.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>{res.value} {res.unit}</td>
+                                                <td className={`px-3 py-2 font-bold ${res.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>{formatNumber(res.value)} {res.unit}</td>
                                                 <td className="px-3 py-2">
                                                     <ValueVisualizer value={res.value} normalRange={res.normal} />
                                                 </td>
@@ -671,6 +658,16 @@ const LabResultsTab = ({ labResults = [] }) => (
         )}
     </div>
 );
+
+// Sayı formatçı fonksiyon - binlik ayırıcı için
+const formatNumber = (value) => {
+  if (value === null || value === undefined || value === '') return value;
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  
+  // Binlik ayırıcı için Türkçe format (280.150 gibi)
+  return num.toLocaleString('tr-TR');
+};
 
 // Kan tahlili referans değerleri
 const bloodTestReferenceRanges = {
@@ -928,9 +925,9 @@ const BloodTestTab = ({ bloodTestResults = [], loading = false }) => {
                         <tr key={i} className={`border-b ${test.isAbnormal ? 'bg-rose-50' : 'bg-white'}`}>
                           <td className="px-3 py-2 font-medium text-gray-900">{test.parameter}</td>
                           <td className={`px-3 py-2 font-bold ${test.isAbnormal ? 'text-rose-600' : 'text-gray-900'}`}>
-                            {test.value} {test.unit}
+                            {formatNumber(test.value)} {test.unit}
                           </td>
-                          <td className="px-3 py-2 text-gray-600">{test.normal} {test.unit}</td>
+                          <td className="px-3 py-2 text-gray-600">{formatNumber(test.normal)} {test.unit}</td>
                           <td className="px-3 py-2">
                             {test.isAbnormal ? (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -979,7 +976,7 @@ const DoctorNotes = ({ patientTc }) => {
         });
         const data = await response.json();
         if (data.success) {
-          setNotes(data.notes);
+          setNotes(data.data);
         }
       } catch (error) {
         console.error('Error fetching notes:', error);
@@ -1002,7 +999,7 @@ const DoctorNotes = ({ patientTc }) => {
       });
       const data = await response.json();
       if (data.success) {
-        setNotes(prev => [...prev, data.note]);
+        setNotes(prev => [...prev, data.data]);
         setNewNote('');
       }
     } catch (error) {
@@ -1015,7 +1012,7 @@ const DoctorNotes = ({ patientTc }) => {
       <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
       <ul className="mb-4">
         {notes && notes.length > 0 ? notes.map((n) => (
-          <li key={n.id} className="mb-2 p-2 bg-gray-50 rounded">{n.note} <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span></li>
+          <li key={n.id} className="mb-2 p-2 bg-gray-50 rounded">{n.note_content} <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span></li>
         )) : <li>Not bulunamadı.</li>}
       </ul>
       <form onSubmit={handleAddNote} className="flex gap-2">
@@ -1026,30 +1023,877 @@ const DoctorNotes = ({ patientTc }) => {
   );
 };
 
-const DoctorNotesTab = ({ notes, onAddNote }) => (
-  <div className="animate-fadeIn">
-    <h3 className="text-lg font-bold mb-2">Doktor Notları</h3>
-    <ul className="mb-4">
-      {notes && notes.length > 0 ? notes.map((n, i) => (
-        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{n.text} <span className="text-xs text-gray-400">{n.date}</span></li>
-      )) : <li>Not bulunamadı.</li>}
-    </ul>
-    <form onSubmit={onAddNote} className="flex gap-2">
-      <input name="note" className="border rounded px-2 py-1 flex-1" placeholder="Yeni not..." />
-      <button type="submit" className="bg-cyan-600 text-white px-4 py-1 rounded">Ekle</button>
-    </form>
-  </div>
-);
-const ConsultationTab = ({ consultations }) => (
-  <div className="animate-fadeIn">
-    <h3 className="text-lg font-bold mb-2">Konsültasyonlar</h3>
-    <ul>
-      {consultations && consultations.length > 0 ? consultations.map((c, i) => (
-        <li key={i} className="mb-2 p-2 bg-gray-50 rounded">{c.text} <span className="text-xs text-gray-400">{c.date}</span></li>
-      )) : <li>Konsültasyon bulunamadı.</li>}
-    </ul>
-  </div>
-);
+
+const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
+  const [showNewConsultation, setShowNewConsultation] = useState(false);
+  const [availableDoctors, setAvailableDoctors] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [urgencyLevels, setUrgencyLevels] = useState([]);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [onlineDoctors, setOnlineDoctors] = useState(new Set());
+  const [typingUsers] = useState(new Set());
+  const [isTyping, setIsTyping] = useState(false);
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [messageFilter, setMessageFilter] = useState('all'); // all, unread, important
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newConsultationForm, setNewConsultationForm] = useState({
+    title: '',
+    description: '',
+    departmentId: '',
+    consultingDoctorId: '',
+    urgencyLevel: 'normal',
+    consultationType: 'opinion',
+    tags: [],
+    attachments: []
+  });
+  
+  // Toast notification state
+  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+
+  // Toast notification function
+  const showToast = (message, type = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'info' });
+    }, 4000);
+  };
+
+  // Mevcut kullanıcının organizasyon ID'sini al (localStorage'dan)
+  const currentUser = JSON.parse(localStorage.getItem('shifha_user') || '{}');
+  const organizationId = currentUser.doctorProfile?.organization_id || currentUser.profile?.organization_id || '1'; // Varsayılan organizasyon
+
+  // Debug test fonksiyonu
+  const testDebugEndpoint = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3001/api/organizations/debug/user-organizations', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      console.log('🔍 Debug endpoint yanıtı:', data);
+    } catch (error) {
+      console.error('❌ Debug endpoint hatası:', error);
+    }
+  };
+
+  // Fonksiyon tanımları
+  const fetchAvailableDoctors = useCallback(async (departmentId = null) => {
+    try {
+      const token = localStorage.getItem('token');
+      let url = `http://localhost:3001/api/consultations/${organizationId}/available-doctors`;
+      
+      if (departmentId) {
+        url += `?departmentId=${departmentId}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setAvailableDoctors(data.data || []);
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else if (response.status === 403) {
+          showToast('Bu organizasyona erişim yetkiniz yok.', 'error');
+        } else {
+          showToast(data.message || 'Doktorlar yüklenirken hata oluştu.', 'error');
+        }
+        setAvailableDoctors([]);
+      }
+    } catch (error) {
+      console.error('Doktorları getirme hatası:', error);
+      showToast('Doktorlar yüklenirken hata oluştu.', 'error');
+      setAvailableDoctors([]);
+    }
+  }, [organizationId]);
+
+  const fetchDepartments = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('🔍 Departmanlar yükleniyor... organizationId:', organizationId);
+      
+      const response = await fetch(`http://localhost:3001/api/organizations/${organizationId}/departments`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      console.log('📋 Departman API yanıtı:', { status: response.status, data });
+      
+      if (response.ok) {
+        setDepartments(data.data || []);
+        console.log('✅ Departmanlar yüklendi:', data.data?.length || 0, 'adet');
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else if (response.status === 403) {
+          showToast('Bu organizasyona erişim yetkiniz yok.', 'error');
+        } else {
+          showToast(data.message || 'Departmanlar yüklenirken hata oluştu.', 'error');
+        }
+        setDepartments([]);
+      }
+    } catch (error) {
+      console.error('Departmanları getirme hatası:', error);
+      showToast('Departmanlar yüklenirken hata oluştu.', 'error');
+      setDepartments([]);
+    }
+  }, [organizationId]);
+
+  const fetchUrgencyLevels = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/consultations/${organizationId}/urgency-levels`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUrgencyLevels(data.data || []);
+      } else {
+        // Hata durumunda varsayılan etiketleri kullan
+        const defaultUrgencyLevels = [
+          { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+          { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+          { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+          { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+        ];
+        setUrgencyLevels(defaultUrgencyLevels);
+      }
+    } catch (error) {
+      console.error('Aciliyet etiketlerini getirme hatası:', error);
+      // Hata durumunda varsayılan etiketleri kullan
+      const defaultUrgencyLevels = [
+        { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+        { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+        { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+        { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+      ];
+      setUrgencyLevels(defaultUrgencyLevels);
+    }
+  }, [organizationId]);
+
+  // Konsültasyon mesajlarını getir
+  const fetchConsultationMessages = useCallback(async (consultationId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/messages/consultation/${consultationId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessages(data.data || []);
+      }
+    } catch (error) {
+      console.error('Mesajları getirme hatası:', error);
+    }
+  }, []);
+
+  // useEffect hooks
+  useEffect(() => {
+    if (showNewConsultation && organizationId) {
+      fetchAvailableDoctors();
+      fetchDepartments();
+      fetchUrgencyLevels();
+      testDebugEndpoint(); // Debug bilgilerini çağır
+    }
+  }, [showNewConsultation, organizationId, fetchAvailableDoctors, fetchDepartments, fetchUrgencyLevels]);
+
+  // Real-time online status tracking
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      // Mock online doctors - in real app, this would come from WebSocket
+      const onlineIds = new Set([1, 3]);
+      setOnlineDoctors(onlineIds);
+    };
+
+    updateOnlineStatus();
+    const interval = setInterval(updateOnlineStatus, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Real-time message updates
+  useEffect(() => {
+    if (selectedConsultation) {
+      const interval = setInterval(() => {
+        fetchConsultationMessages(selectedConsultation.id);
+      }, 5000); // Check for new messages every 5 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [selectedConsultation, fetchConsultationMessages]);
+
+  // Typing indicator cleanup
+  useEffect(() => {
+    let timeout;
+    if (isTyping) {
+      timeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isTyping]);
+
+  // Enhanced message sending with file support
+  const sendMessage = async () => {
+    if ((!newMessage.trim() && !attachedFile) || !selectedConsultation) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      
+      formData.append('consultationId', selectedConsultation.id);
+      formData.append('content', newMessage);
+      formData.append('messageType', attachedFile ? 'file' : 'text');
+      
+      if (attachedFile) {
+        formData.append('file', attachedFile);
+      }
+
+      const response = await fetch('http://localhost:3001/api/messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        setNewMessage('');
+        setAttachedFile(null);
+        setIsTyping(false);
+        fetchConsultationMessages(selectedConsultation.id);
+      }
+    } catch (error) {
+      console.error('Mesaj gönderme hatası:', error);
+    }
+  };
+
+  // Handle file attachment
+  const handleFileAttach = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAttachedFile(file);
+    }
+  };
+
+  // Handle typing indicator
+  const handleTyping = (value) => {
+    setNewMessage(value);
+    setIsTyping(true);
+  };
+
+  // Filter consultations
+  const filteredConsultations = consultations?.filter(consultation => {
+    const matchesSearch = consultation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         consultation.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (messageFilter === 'unread') {
+      return matchesSearch && consultation.unreadCount > 0;
+    }
+    if (messageFilter === 'important') {
+      return matchesSearch && consultation.urgencyLevel === 'urgent';
+    }
+    return matchesSearch;
+  }) || [];
+
+  // Get online status indicator
+  const getOnlineStatus = (doctorId) => {
+    return onlineDoctors.has(doctorId);
+  };
+
+  // Konsültasyon seçildiğinde mesajları yükle
+  const selectConsultation = (consultation) => {
+    setSelectedConsultation(consultation);
+    fetchConsultationMessages(consultation.id);
+  };
+
+  const handleCreateConsultation = async () => {
+    try {
+      // Form validasyonu
+      if (!newConsultationForm.title.trim()) {
+        showToast('Lütfen konsültasyon başlığını girin.', 'error');
+        return;
+      }
+      
+      if (!newConsultationForm.departmentId) {
+        showToast('Lütfen bir departman seçin.', 'error');
+        return;
+      }
+      
+      if (!newConsultationForm.description.trim()) {
+        showToast('Lütfen konsültasyon açıklamasını girin.', 'error');
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3001/api/consultations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: newConsultationForm.title,
+          description: newConsultationForm.description,
+          departmentId: newConsultationForm.departmentId,
+          consultingDoctorId: newConsultationForm.consultingDoctorId || null,
+          urgencyLevel: newConsultationForm.urgencyLevel,
+          consultationType: newConsultationForm.consultationType || 'opinion',
+          patientTc: patient.tc_kimlik_no,
+          organizationId: organizationId
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showToast('Konsültasyon isteği başarıyla oluşturuldu!', 'success');
+        setShowNewConsultation(false);
+        setNewConsultationForm({
+          title: '',
+          description: '',
+          departmentId: '',
+          consultingDoctorId: '',
+          urgencyLevel: 'normal',
+          consultationType: 'opinion',
+          tags: [],
+          attachments: []
+        });
+        // Konsültasyonları yeniden yükle
+        if (onCreateConsultation) {
+          onCreateConsultation();
+        }
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else {
+          showToast(result.message || 'Konsültasyon oluşturulurken bir hata oluştu.', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Konsültasyon oluşturma hatası:', error);
+      showToast('Konsültasyon oluşturulurken bir hata oluştu.', 'error');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'declined': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Bekliyor';
+      case 'accepted': return 'Kabul Edildi';
+      case 'completed': return 'Tamamlandı';
+      case 'declined': return 'Reddedildi';
+      default: return status;
+    }
+  };
+
+  const getUrgencyColor = (urgency) => {
+    const urgencyLevel = urgencyLevels.find(level => level.id === urgency);
+    if (urgencyLevel && urgencyLevel.color) {
+      // Hex color'ı Tailwind class'ına çevir
+      const colorMap = {
+        '#EF4444': 'bg-red-100 text-red-800',
+        '#F59E0B': 'bg-orange-100 text-orange-800', 
+        '#3B82F6': 'bg-blue-100 text-blue-800',
+        '#6B7280': 'bg-gray-100 text-gray-800'
+      };
+      return colorMap[urgencyLevel.color] || 'bg-gray-100 text-gray-800';
+    }
+    
+    // Fallback to default colors
+    switch (urgency) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-orange-100 text-orange-800';
+      case 'normal': return 'bg-blue-100 text-blue-800';
+      case 'low': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getUrgencyText = (urgency) => {
+    const urgencyLevel = urgencyLevels.find(level => level.id === urgency);
+    if (urgencyLevel) {
+      return urgencyLevel.name;
+    }
+    
+    // Fallback to default texts
+    switch (urgency) {
+      case 'urgent': return 'Acil';
+      case 'high': return 'Yüksek';
+      case 'normal': return 'Normal';
+      case 'low': return 'Düşük';
+      default: return urgency;
+    }
+  };
+
+  return (
+    <div className="animate-fadeIn space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-bold text-gray-800">Konsültasyonlar</h3>
+          <p className="text-gray-600">Bu hasta için doktor konsültasyonları</p>
+        </div>
+        <button
+          onClick={() => setShowNewConsultation(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+        >
+          <Users className="mr-2" size={16} />
+          Yeni Konsültasyon
+        </button>
+      </div>
+
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Konsültasyon ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <select
+              value={messageFilter}
+              onChange={(e) => setMessageFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">Tümü</option>
+              <option value="unread">Okunmamış</option>
+              <option value="important">Acil</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Konsültasyon Listesi */}
+      <div className="space-y-4">
+        {filteredConsultations && filteredConsultations.length > 0 ? (
+          filteredConsultations.map((consultation, index) => (
+            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{consultation.title}</h4>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(consultation.status)}`}>
+                      {getStatusText(consultation.status)}
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(consultation.urgency_level)}`}>
+                      {getUrgencyText(consultation.urgency_level)}
+                    </span>
+                    <span>
+                      {new Date(consultation.requested_at || consultation.created_at).toLocaleDateString('tr-TR')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <span className="font-medium text-gray-700">Açıklama:</span>
+                  <p className="text-gray-600 mt-1">{consultation.description}</p>
+                </div>
+
+                {consultation.requesting_doctor && (
+                  <div>
+                    <span className="font-medium text-gray-700">İsteyen Doktor:</span>
+                    <p className="text-gray-600 mt-1">
+                      {consultation.requesting_doctor.first_name} {consultation.requesting_doctor.last_name}
+                      {consultation.requesting_doctor.specialization && ` - ${consultation.requesting_doctor.specialization}`}
+                    </p>
+                  </div>
+                )}
+
+                {consultation.consulting_doctor && (
+                  <div>
+                    <span className="font-medium text-gray-700">Konsültan Doktor:</span>
+                    <div className="flex items-center mt-1">
+                      <p className="text-gray-600">
+                        {consultation.consulting_doctor.first_name} {consultation.consulting_doctor.last_name}
+                        {consultation.consulting_doctor.specialization && ` - ${consultation.consulting_doctor.specialization}`}
+                      </p>
+                      {getOnlineStatus(consultation.consulting_doctor.id) && (
+                        <span className="ml-2 flex items-center">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                          <span className="text-xs text-green-600">Online</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {consultation.department && (
+                  <div>
+                    <span className="font-medium text-gray-700">Departman:</span>
+                    <p className="text-gray-600 mt-1">{consultation.department.name}</p>
+                  </div>
+                )}
+
+                {consultation.consultation_notes && (
+                  <div>
+                    <span className="font-medium text-gray-700">Konsültasyon Notları:</span>
+                    <p className="text-gray-600 mt-1">{consultation.consultation_notes}</p>
+                  </div>
+                )}
+
+                {consultation.recommendations && (
+                  <div>
+                    <span className="font-medium text-gray-700">Öneriler:</span>
+                    <p className="text-gray-600 mt-1">{consultation.recommendations}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Mesajlaşma Butonu */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => selectConsultation(consultation)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+                >
+                  <MessageCircle className="mr-2" size={16} />
+                  Mesajlaşma
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Konsültasyon bulunamadı</h3>
+            <p className="text-gray-500">Bu hasta için henüz konsültasyon isteği yok</p>
+          </div>
+        )}
+      </div>
+
+      {/* Yeni Konsültasyon Modal */}
+      {showNewConsultation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Yeni Konsültasyon İsteği</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Başlık</label>
+                <input
+                  type="text"
+                  value={newConsultationForm.title}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    title: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="Konsültasyon başlığı"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Departman</label>
+                <select
+                  value={newConsultationForm.departmentId}
+                  onChange={(e) => {
+                    const departmentId = e.target.value;
+                    setNewConsultationForm(prev => ({
+                      ...prev,
+                      departmentId: departmentId,
+                      consultingDoctorId: '' // Departman değiştiğinde doktor seçimini sıfırla
+                    }));
+                    // Seçilen departmana göre doktorları getir
+                    if (departmentId) {
+                      fetchAvailableDoctors(departmentId);
+                    } else {
+                      setAvailableDoctors([]);
+                    }
+                  }}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  required
+                >
+                  <option value="">Departman seçin</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Konsültan Doktor</label>
+                <select
+                  value={newConsultationForm.consultingDoctorId}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    consultingDoctorId: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="">Doktor seçin (opsiyonel)</option>
+                  {availableDoctors.map(doctor => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.first_name} {doctor.last_name} - {doctor.specialization}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Aciliyet Durumu</label>
+                <select
+                  value={newConsultationForm.urgencyLevel}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    urgencyLevel: e.target.value
+                  }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  required
+                >
+                  {urgencyLevels.map((urgency) => (
+                    <option key={urgency.id} value={urgency.id}>
+                      {urgency.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
+                <textarea
+                  value={newConsultationForm.description}
+                  onChange={(e) => setNewConsultationForm(prev => ({
+                    ...prev,
+                    description: e.target.value
+                  }))}
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="Konsültasyon detayları..."
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowNewConsultation(false)}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleCreateConsultation}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Konsültasyon Oluştur
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mesajlaşma Modal */}
+      {selectedConsultation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                Konsültasyon Mesajları: {selectedConsultation.title}
+              </h3>
+              <button
+                onClick={() => setSelectedConsultation(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            {/* Mesaj Listesi */}
+            <div className="flex-1 overflow-y-auto mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[300px]">
+              {messages.length > 0 ? (
+                <div className="space-y-4">
+                  {messages.map((message, index) => {
+                    const isCurrentUser = message.sender_id === (currentUser.id || currentUser.user_id || currentUser.doctorProfile?.user_id);
+                    return (
+                      <div 
+                        key={index} 
+                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div 
+                          className={`max-w-[70%] rounded-lg p-3 ${
+                            isCurrentUser 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-gray-200 text-gray-800'
+                          }`}
+                        >
+                          <div className="text-sm font-medium mb-1">
+                            {isCurrentUser ? 'Siz' : `${message.sender_name || 'Doktor'}`}
+                          </div>
+                          
+                          {/* Message Content */}
+                          {message.messageType === 'file' && message.file_url ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center p-2 bg-white bg-opacity-20 rounded">
+                                <Paperclip size={16} className="mr-2" />
+                                <a 
+                                  href={message.file_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-sm underline hover:no-underline"
+                                >
+                                  {message.file_name || 'Dosya'}
+                                </a>
+                              </div>
+                              {message.content && <div>{message.content}</div>}
+                            </div>
+                          ) : (
+                            <div>{message.content}</div>
+                          )}
+                          
+                          <div className="text-xs mt-1 opacity-70 flex items-center justify-between">
+                            <span>{new Date(message.created_at).toLocaleString('tr-TR')}</span>
+                            {message.read_at && isCurrentUser && (
+                              <CheckCircle size={12} className="text-green-300" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  Henüz mesaj bulunmamaktadır.
+                </div>
+              )}
+            </div>
+
+            {/* Typing Indicator */}
+            {typingUsers.size > 0 && (
+              <div className="text-sm text-gray-500 mb-2 px-4">
+                {Array.from(typingUsers).join(', ')} yazıyor...
+              </div>
+            )}
+
+            {/* File Attachment Preview */}
+            {attachedFile && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Paperclip className="w-4 h-4 text-blue-600 mr-2" />
+                    <span className="text-sm text-blue-800">{attachedFile.name}</span>
+                    <span className="text-xs text-blue-600 ml-2">
+                      ({(attachedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setAttachedFile(null)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Mesaj Gönderme Formu */}
+            <div className="flex gap-2">
+              <div className="flex gap-1">
+                {/* File Attachment Button */}
+                <label className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700 cursor-pointer">
+                  <Paperclip size={20} />
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileAttach}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  />
+                </label>
+                
+                {/* Emoji Button */}
+                <button
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700"
+                >
+                  <Smile size={20} />
+                </button>
+              </div>
+              
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => handleTyping(e.target.value)}
+                placeholder="Mesajınızı yazın..."
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!newMessage.trim() && !attachedFile}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                <Send size={16} />
+              </button>
+            </div>
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div className="absolute bottom-16 left-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+                <div className="grid grid-cols-8 gap-2">
+                  {['😀', '😊', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯', '👏', '🙏', '💪', '🎯'].map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => {
+                        setNewMessage(prev => prev + emoji);
+                        setShowEmojiPicker(false);
+                      }}
+                      className="text-xl hover:bg-gray-100 p-1 rounded"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 const ReferralTab = ({ referrals }) => (
   <div className="animate-fadeIn">
     <h3 className="text-lg font-bold mb-2">Sevkler</h3>
@@ -1159,6 +2003,7 @@ const PdfUploadTab = ({ onFileUpload, uploadLoading, dragActive, onDrag, onDrop,
         </div>
       </div>
     </div>
+
   </div>
 );
 
@@ -1300,7 +2145,7 @@ const PatientDetailPage = () => {
         if (!latestTest) return;
 
         const startY = currentY;
-        addSectionTitle('Son Kan Tahlili Sonuclari');
+        addSectionTitle('');
 
         const body = Object.keys(bloodTestReferenceRanges).map(key => {
             const value = latestTest[key];
@@ -1321,7 +2166,7 @@ const PatientDetailPage = () => {
                 if (data.pageNumber > 1) {
                     doc.setFontSize(10);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Son Kan Tahlili Sonuçlari (devam)', data.settings.margin.left, 20);
+                    doc.text('', data.settings.margin.left, 20);
                 }
             }
         });
@@ -1388,13 +2233,10 @@ const PatientDetailPage = () => {
     doc.save(fileName);
     setPdfLoading(false);
   };
-  const [isEditing, setIsEditing] = useState(false);
   const [toastInfo, setToastInfo] = useState({ message: '', type: '' });
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState([]);
   const [consultations, setConsultations] = useState([]);
-  const [referrals, setReferrals] = useState([]);
   const [bloodTestResults, setBloodTestResults] = useState([]);
   const [bloodTestLoading, setBloodTestLoading] = useState(false);
   const [medicalAnalysis, setMedicalAnalysis] = useState(null);
@@ -1465,6 +2307,28 @@ const PatientDetailPage = () => {
       setMedicalAnalysis(null);
     } finally {
       setAnalysisLoading(false);
+    }
+  };
+
+  // Konsültasyonları çek
+  const fetchConsultations = async (tc) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/consultations/patient/${tc}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (data && data.success && data.data) {
+        setConsultations(data.data);
+      } else {
+        setConsultations([]);
+      }
+    } catch (error) {
+      console.error('Konsültasyonlar alınırken hata:', error);
+      setConsultations([]);
     }
   };
 
@@ -1633,9 +2497,11 @@ const PatientDetailPage = () => {
     // AI tıbbi analizini çek
     fetchMedicalAnalysis(tc);
     
-    // Notlar, konsültasyonlar ve sevkler için ayrı istekler (opsiyonel)
+    // Konsültasyonları çek
+    fetchConsultations(tc);
+    
+    // Notlar ve sevkler için ayrı istekler (opsiyonel)
     // fetch(`http://localhost:3001/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
-    // fetch(`http://localhost:3001/api/patients/${tc}/consultations`).then(res => res.json()).then(data => setConsultations(data.data || []));
     // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
   }, [patientId]);
 
@@ -1660,22 +2526,7 @@ const PatientDetailPage = () => {
   );
   if (!patientData) return <div className="p-8 text-center text-red-600 font-bold text-xl">Hasta bulunamadı veya API'den veri alınamadı.</div>;
 
-  const handleInfoChange = (field, value) => {
-    setPatientData(prev => ({ ...prev, [field]: value }));
-  };
-  const handleSave = () => {
-    setIsEditing(false);
-    setToastInfo({ message: 'Hasta bilgileri başarıyla güncellendi.', type: 'success' });
-    // API'ye güncelleme isteği gönderilebilir
-  };
-  const handleAddNote = (e) => {
-    e.preventDefault();
-    const text = e.target.note.value;
-    if (!text) return;
-    // API'ye not ekleme isteği gönderilebilir
-    setNotes(prev => [...prev, { text, date: new Date().toLocaleString() }]);
-    e.target.reset();
-  };
+
 
   // Sevk modal fonksiyonları
   const handleBackToDashboard = () => {
@@ -1826,8 +2677,14 @@ const PatientDetailPage = () => {
           )}
           {activeTab === 'radiology' && <RadiologyTab reports={patientData.radyoloji || []} />}
           {activeTab === 'notes' && <DoctorNotes patientTc={patientData.tc_kimlik_no} />}
-          {activeTab === 'consultation' && <ConsultationTab consultations={consultations} />}
-          {activeTab === 'referral' && <ReferralTab referrals={referrals} />}
+          {activeTab === 'consultation' && (
+            <ConsultationTab 
+              patient={patientData} 
+              consultations={consultations} 
+              onCreateConsultation={() => fetchConsultations(decodeTcFromHash(patientId))}
+            />
+          )}
+          {activeTab === 'referral' && <ReferralTab referrals={[]} />}
 
           {activeTab === 'pathology' && <PathologyTab reports={patientData.patoloji || []} />}
         </main>

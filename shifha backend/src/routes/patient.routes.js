@@ -21,14 +21,83 @@ router.delete('/:tc', deletePatient);
 router.get('/:tc/blood-test-results', getBloodTestResults);
 
 // Bir hastanın doktor notlarını getir (sadece doktorlar)
-router.get('/:tc/notes', supabaseAuthMiddleware, requireRole('doktor'), getDoctorNotes);
+router.get('/:tc/notes', supabaseAuthMiddleware, requireRole('doctor'), getDoctorNotes);
+
+// Mevcut doktor profilini kontrol et
+router.get('/check-doctor-profile', supabaseAuthMiddleware, async (req, res) => {
+  try {
+    const supabase = require('../services/supabaseClient');
+    const user_id = req.user.id;
+    
+    console.log('Doktor profili kontrol ediliyor, user_id:', user_id);
+    
+    const { data: doctorProfile, error } = await supabase
+      .from('doctor_profiles')
+      .select('*')
+      .eq('user_id', user_id)
+      .single();
+    
+    console.log('Doktor profili sonucu:', { doctorProfile, error });
+    
+    if (error || !doctorProfile) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Doktor profili bulunamadı',
+        user_id: user_id,
+        details: error 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      data: doctorProfile,
+      user_id: user_id 
+    });
+  } catch (err) {
+    console.error('Doktor profili kontrol hatası:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // Bir hastaya yeni doktor notu ekle (sadece doktorlar)
-router.post('/:tc/notes', supabaseAuthMiddleware, requireRole('doktor'), addDoctorNote);
+router.post('/:tc/notes', supabaseAuthMiddleware, requireRole('doctor'), addDoctorNote);
 
 // Test verisi ekleme endpoint'i (sadece development için)
 router.post('/test-data', async (req, res) => {
   try {
+    const supabase = require('../services/supabaseClient');
+    
+    // Test organizasyon oluştur
+    const { data: org, error: orgError } = await supabase
+      .from('organizations')
+      .upsert([{
+        id: 'test-org-id',
+        name: 'Test Hastanesi',
+        type: 'hastane',
+        is_active: true
+      }], { onConflict: 'id' })
+      .select()
+      .single();
+
+    if (orgError) throw orgError;
+
+    // Test doktor profili oluştur
+    const { data: doctor, error: doctorError } = await supabase
+      .from('doctor_profiles')
+      .upsert([{
+        user_id: 'bffed644-81d2-4732-b2f6-296a23c1a234',
+        tc_kimlik_no: '11111111111',
+        full_name: 'Dr. Test Doktor',
+        email: 'test@saglik.gov.tr',
+        phone: '+90 555 123 4567',
+        specialization: 'Dahiliye',
+        organization_id: org.id,
+        is_active: true
+      }], { onConflict: 'user_id' })
+      .select();
+
+    if (doctorError) throw doctorError;
+
     const testPatients = [
       {
         tc_kimlik_no: '12345678901',
@@ -90,7 +159,7 @@ router.post('/test-data', async (req, res) => {
       }
     ];
 
-    const { data, error } = await require('../services/supabaseClient')
+    const { data, error } = await supabase
       .from('patients')
       .upsert(testPatients, { onConflict: 'tc_kimlik_no' })
       .select();
@@ -99,8 +168,8 @@ router.post('/test-data', async (req, res) => {
     
     res.status(201).json({ 
       success: true, 
-      message: 'Test verileri eklendi', 
-      data: data 
+      message: 'Test verileri ve doktor profili eklendi', 
+      data: { patients: data, doctor: doctor, organization: org }
     });
   } catch (err) {
     console.error('Test veri ekleme hatası:', err);
