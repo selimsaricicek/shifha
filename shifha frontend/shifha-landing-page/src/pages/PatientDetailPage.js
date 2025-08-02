@@ -5,7 +5,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
-    Users, ArrowRightCircle, FileText, CheckCircle,
+    Users, ArrowRightCircle, FileText, CheckCircle, BrainCircuit,
+    Save, Edit, Search, MessageCircle, XCircle, Paperclip, X,
+    Smile, Send, Upload, Activity, AlertTriangle
 
 } from 'lucide-react';
 
@@ -2245,6 +2247,7 @@ const PatientDetailPage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showSaveAndReferButton, setShowSaveAndReferButton] = useState(false);
+  const [referrals, setReferrals] = useState([]);
   const [referralForm, setReferralForm] = useState({
     department: '',
     reason: '',
