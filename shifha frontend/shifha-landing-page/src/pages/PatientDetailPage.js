@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useParams } from 'react-router-dom';
@@ -6,9 +6,12 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import {
     HeartPulse, FileJson, User, Image as ImageIcon, Stethoscope,
     Users, ArrowRightCircle, FileText, CheckCircle,
-    Edit, Save, BrainCircuit, Activity, Upload, MessageCircle
+    Edit, Save, BrainCircuit, Activity, Upload, MessageCircle,
+    XCircle, Search, Paperclip, Smile, Send, X, Calendar,
+    Clock, AlertTriangle, TrendingUp, TrendingDown,
+    Eye, Download, Filter, Plus, Minus, Info
 } from 'lucide-react';
-import { XCircle } from 'lucide-react';
+
 // ===================================================================================
 // YARDIMCI FONKSİYONLAR VE BİLEŞENLER (Sizin Kodunuz)
 // ===================================================================================
@@ -1028,63 +1031,172 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
   const [showNewConsultation, setShowNewConsultation] = useState(false);
   const [availableDoctors, setAvailableDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [urgencyLevels, setUrgencyLevels] = useState([]);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [onlineDoctors, setOnlineDoctors] = useState(new Set());
+  const [typingUsers] = useState(new Set());
+  const [isTyping, setIsTyping] = useState(false);
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [messageFilter, setMessageFilter] = useState('all'); // all, unread, important
+  const [searchTerm, setSearchTerm] = useState('');
   const [newConsultationForm, setNewConsultationForm] = useState({
     title: '',
     description: '',
     departmentId: '',
     consultingDoctorId: '',
     urgencyLevel: 'normal',
-    consultationType: 'opinion'
+    consultationType: 'opinion',
+    tags: [],
+    attachments: []
   });
+  
+  // Toast notification state
+  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+
+  // Toast notification function
+  const showToast = (message, type = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'info' });
+    }, 4000);
+  };
 
   // Mevcut kullanıcının organizasyon ID'sini al (localStorage'dan)
   const currentUser = JSON.parse(localStorage.getItem('shifha_user') || '{}');
   const organizationId = currentUser.doctorProfile?.organization_id || currentUser.profile?.organization_id || '1'; // Varsayılan organizasyon
 
-  useEffect(() => {
-    if (showNewConsultation) {
-      fetchAvailableDoctors();
-      fetchDepartments();
-    }
-  }, [showNewConsultation, organizationId]);
-
-  const fetchAvailableDoctors = async () => {
+  // Debug test fonksiyonu
+  const testDebugEndpoint = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/consultations/${organizationId}/available-doctors`, {
+      const response = await fetch('http://localhost:3001/api/organizations/debug/user-organizations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
       const data = await response.json();
-      setAvailableDoctors(data.data || []);
+      console.log('🔍 Debug endpoint yanıtı:', data);
     } catch (error) {
-      console.error('Doktorları getirme hatası:', error);
+      console.error('❌ Debug endpoint hatası:', error);
     }
   };
 
-  const fetchDepartments = async () => {
+  // Fonksiyon tanımları
+  const fetchAvailableDoctors = useCallback(async (departmentId = null) => {
     try {
       const token = localStorage.getItem('token');
+      let url = `http://localhost:3001/api/consultations/${organizationId}/available-doctors`;
+      
+      if (departmentId) {
+        url += `?departmentId=${departmentId}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setAvailableDoctors(data.data || []);
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else if (response.status === 403) {
+          showToast('Bu organizasyona erişim yetkiniz yok.', 'error');
+        } else {
+          showToast(data.message || 'Doktorlar yüklenirken hata oluştu.', 'error');
+        }
+        setAvailableDoctors([]);
+      }
+    } catch (error) {
+      console.error('Doktorları getirme hatası:', error);
+      showToast('Doktorlar yüklenirken hata oluştu.', 'error');
+      setAvailableDoctors([]);
+    }
+  }, [organizationId]);
+
+  const fetchDepartments = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('🔍 Departmanlar yükleniyor... organizationId:', organizationId);
+      
       const response = await fetch(`http://localhost:3001/api/organizations/${organizationId}/departments`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+      
       const data = await response.json();
-      setDepartments(data.data || []);
+      console.log('📋 Departman API yanıtı:', { status: response.status, data });
+      
+      if (response.ok) {
+        setDepartments(data.data || []);
+        console.log('✅ Departmanlar yüklendi:', data.data?.length || 0, 'adet');
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else if (response.status === 403) {
+          showToast('Bu organizasyona erişim yetkiniz yok.', 'error');
+        } else {
+          showToast(data.message || 'Departmanlar yüklenirken hata oluştu.', 'error');
+        }
+        setDepartments([]);
+      }
     } catch (error) {
       console.error('Departmanları getirme hatası:', error);
+      showToast('Departmanlar yüklenirken hata oluştu.', 'error');
+      setDepartments([]);
     }
-  };
+  }, [organizationId]);
+
+  const fetchUrgencyLevels = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/consultations/${organizationId}/urgency-levels`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUrgencyLevels(data.data || []);
+      } else {
+        // Hata durumunda varsayılan etiketleri kullan
+        const defaultUrgencyLevels = [
+          { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+          { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+          { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+          { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+        ];
+        setUrgencyLevels(defaultUrgencyLevels);
+      }
+    } catch (error) {
+      console.error('Aciliyet etiketlerini getirme hatası:', error);
+      // Hata durumunda varsayılan etiketleri kullan
+      const defaultUrgencyLevels = [
+        { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+        { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+        { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+        { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+      ];
+      setUrgencyLevels(defaultUrgencyLevels);
+    }
+  }, [organizationId]);
 
   // Konsültasyon mesajlarını getir
-  const fetchConsultationMessages = async (consultationId) => {
+  const fetchConsultationMessages = useCallback(async (consultationId) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:3001/api/messages/consultation/${consultationId}`, {
@@ -1100,34 +1212,120 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
     } catch (error) {
       console.error('Mesajları getirme hatası:', error);
     }
-  };
+  }, []);
 
-  // Yeni mesaj gönder
+  // useEffect hooks
+  useEffect(() => {
+    if (showNewConsultation && organizationId) {
+      fetchAvailableDoctors();
+      fetchDepartments();
+      fetchUrgencyLevels();
+      testDebugEndpoint(); // Debug bilgilerini çağır
+    }
+  }, [showNewConsultation, organizationId, fetchAvailableDoctors, fetchDepartments, fetchUrgencyLevels]);
+
+  // Real-time online status tracking
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      // Mock online doctors - in real app, this would come from WebSocket
+      const onlineIds = new Set([1, 3]);
+      setOnlineDoctors(onlineIds);
+    };
+
+    updateOnlineStatus();
+    const interval = setInterval(updateOnlineStatus, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Real-time message updates
+  useEffect(() => {
+    if (selectedConsultation) {
+      const interval = setInterval(() => {
+        fetchConsultationMessages(selectedConsultation.id);
+      }, 5000); // Check for new messages every 5 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [selectedConsultation, fetchConsultationMessages]);
+
+  // Typing indicator cleanup
+  useEffect(() => {
+    let timeout;
+    if (isTyping) {
+      timeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isTyping]);
+
+  // Enhanced message sending with file support
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedConsultation) return;
+    if ((!newMessage.trim() && !attachedFile) || !selectedConsultation) return;
 
     try {
       const token = localStorage.getItem('token');
+      const formData = new FormData();
+      
+      formData.append('consultationId', selectedConsultation.id);
+      formData.append('content', newMessage);
+      formData.append('messageType', attachedFile ? 'file' : 'text');
+      
+      if (attachedFile) {
+        formData.append('file', attachedFile);
+      }
+
       const response = await fetch('http://localhost:3001/api/messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          consultationId: selectedConsultation.id,
-          content: newMessage,
-          messageType: 'text'
-        })
+        body: formData
       });
 
       if (response.ok) {
         setNewMessage('');
+        setAttachedFile(null);
+        setIsTyping(false);
         fetchConsultationMessages(selectedConsultation.id);
       }
     } catch (error) {
       console.error('Mesaj gönderme hatası:', error);
     }
+  };
+
+  // Handle file attachment
+  const handleFileAttach = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAttachedFile(file);
+    }
+  };
+
+  // Handle typing indicator
+  const handleTyping = (value) => {
+    setNewMessage(value);
+    setIsTyping(true);
+  };
+
+  // Filter consultations
+  const filteredConsultations = consultations?.filter(consultation => {
+    const matchesSearch = consultation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         consultation.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (messageFilter === 'unread') {
+      return matchesSearch && consultation.unreadCount > 0;
+    }
+    if (messageFilter === 'important') {
+      return matchesSearch && consultation.urgencyLevel === 'urgent';
+    }
+    return matchesSearch;
+  }) || [];
+
+  // Get online status indicator
+  const getOnlineStatus = (doctorId) => {
+    return onlineDoctors.has(doctorId);
   };
 
   // Konsültasyon seçildiğinde mesajları yükle
@@ -1138,6 +1336,22 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
 
   const handleCreateConsultation = async () => {
     try {
+      // Form validasyonu
+      if (!newConsultationForm.title.trim()) {
+        showToast('Lütfen konsültasyon başlığını girin.', 'error');
+        return;
+      }
+      
+      if (!newConsultationForm.departmentId) {
+        showToast('Lütfen bir departman seçin.', 'error');
+        return;
+      }
+      
+      if (!newConsultationForm.description.trim()) {
+        showToast('Lütfen konsültasyon açıklamasını girin.', 'error');
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3001/api/consultations', {
         method: 'POST',
@@ -1146,13 +1360,21 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...newConsultationForm,
+          title: newConsultationForm.title,
+          description: newConsultationForm.description,
+          departmentId: newConsultationForm.departmentId,
+          consultingDoctorId: newConsultationForm.consultingDoctorId || null,
+          urgencyLevel: newConsultationForm.urgencyLevel,
+          consultationType: newConsultationForm.consultationType || 'opinion',
           patientTc: patient.tc_kimlik_no,
           organizationId: organizationId
         })
       });
 
+      const result = await response.json();
+
       if (response.ok) {
+        showToast('Konsültasyon isteği başarıyla oluşturuldu!', 'success');
         setShowNewConsultation(false);
         setNewConsultationForm({
           title: '',
@@ -1160,15 +1382,24 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
           departmentId: '',
           consultingDoctorId: '',
           urgencyLevel: 'normal',
-          consultationType: 'opinion'
+          consultationType: 'opinion',
+          tags: [],
+          attachments: []
         });
         // Konsültasyonları yeniden yükle
         if (onCreateConsultation) {
           onCreateConsultation();
         }
+      } else {
+        if (response.status === 401) {
+          showToast('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+        } else {
+          showToast(result.message || 'Konsültasyon oluşturulurken bir hata oluştu.', 'error');
+        }
       }
     } catch (error) {
       console.error('Konsültasyon oluşturma hatası:', error);
+      showToast('Konsültasyon oluşturulurken bir hata oluştu.', 'error');
     }
   };
 
@@ -1193,6 +1424,19 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
   };
 
   const getUrgencyColor = (urgency) => {
+    const urgencyLevel = urgencyLevels.find(level => level.id === urgency);
+    if (urgencyLevel && urgencyLevel.color) {
+      // Hex color'ı Tailwind class'ına çevir
+      const colorMap = {
+        '#EF4444': 'bg-red-100 text-red-800',
+        '#F59E0B': 'bg-orange-100 text-orange-800', 
+        '#3B82F6': 'bg-blue-100 text-blue-800',
+        '#6B7280': 'bg-gray-100 text-gray-800'
+      };
+      return colorMap[urgencyLevel.color] || 'bg-gray-100 text-gray-800';
+    }
+    
+    // Fallback to default colors
     switch (urgency) {
       case 'urgent': return 'bg-red-100 text-red-800';
       case 'high': return 'bg-orange-100 text-orange-800';
@@ -1203,6 +1447,12 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
   };
 
   const getUrgencyText = (urgency) => {
+    const urgencyLevel = urgencyLevels.find(level => level.id === urgency);
+    if (urgencyLevel) {
+      return urgencyLevel.name;
+    }
+    
+    // Fallback to default texts
     switch (urgency) {
       case 'urgent': return 'Acil';
       case 'high': return 'Yüksek';
@@ -1228,10 +1478,39 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
         </button>
       </div>
 
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Konsültasyon ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <select
+              value={messageFilter}
+              onChange={(e) => setMessageFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">Tümü</option>
+              <option value="unread">Okunmamış</option>
+              <option value="important">Acil</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Konsültasyon Listesi */}
       <div className="space-y-4">
-        {consultations && consultations.length > 0 ? (
-          consultations.map((consultation, index) => (
+        {filteredConsultations && filteredConsultations.length > 0 ? (
+          filteredConsultations.map((consultation, index) => (
             <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
@@ -1269,10 +1548,18 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                 {consultation.consulting_doctor && (
                   <div>
                     <span className="font-medium text-gray-700">Konsültan Doktor:</span>
-                    <p className="text-gray-600 mt-1">
-                      {consultation.consulting_doctor.first_name} {consultation.consulting_doctor.last_name}
-                      {consultation.consulting_doctor.specialization && ` - ${consultation.consulting_doctor.specialization}`}
-                    </p>
+                    <div className="flex items-center mt-1">
+                      <p className="text-gray-600">
+                        {consultation.consulting_doctor.first_name} {consultation.consulting_doctor.last_name}
+                        {consultation.consulting_doctor.specialization && ` - ${consultation.consulting_doctor.specialization}`}
+                      </p>
+                      {getOnlineStatus(consultation.consulting_doctor.id) && (
+                        <span className="ml-2 flex items-center">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                          <span className="text-xs text-green-600">Online</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -1337,6 +1624,7 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                   }))}
                   className="w-full border border-gray-300 rounded-md px-3 py-2"
                   placeholder="Konsültasyon başlığı"
+                  required
                 />
               </div>
 
@@ -1344,11 +1632,22 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Departman</label>
                 <select
                   value={newConsultationForm.departmentId}
-                  onChange={(e) => setNewConsultationForm(prev => ({
-                    ...prev,
-                    departmentId: e.target.value
-                  }))}
+                  onChange={(e) => {
+                    const departmentId = e.target.value;
+                    setNewConsultationForm(prev => ({
+                      ...prev,
+                      departmentId: departmentId,
+                      consultingDoctorId: '' // Departman değiştiğinde doktor seçimini sıfırla
+                    }));
+                    // Seçilen departmana göre doktorları getir
+                    if (departmentId) {
+                      fetchAvailableDoctors(departmentId);
+                    } else {
+                      setAvailableDoctors([]);
+                    }
+                  }}
                   className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  required
                 >
                   <option value="">Departman seçin</option>
                   {departments.map(dept => (
@@ -1385,11 +1684,13 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                     urgencyLevel: e.target.value
                   }))}
                   className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  required
                 >
-                  <option value="low">Düşük</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">Yüksek</option>
-                  <option value="urgent">Acil</option>
+                  {urgencyLevels.map((urgency) => (
+                    <option key={urgency.id} value={urgency.id}>
+                      {urgency.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1404,6 +1705,7 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                   rows={4}
                   className="w-full border border-gray-300 rounded-md px-3 py-2"
                   placeholder="Konsültasyon detayları..."
+                  required
                 />
               </div>
             </div>
@@ -1447,7 +1749,7 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
               {messages.length > 0 ? (
                 <div className="space-y-4">
                   {messages.map((message, index) => {
-                    const isCurrentUser = message.sender_id === currentUser.id;
+                    const isCurrentUser = message.sender_id === (currentUser.id || currentUser.user_id || currentUser.doctorProfile?.user_id);
                     return (
                       <div 
                         key={index} 
@@ -1463,9 +1765,32 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
                           <div className="text-sm font-medium mb-1">
                             {isCurrentUser ? 'Siz' : `${message.sender_name || 'Doktor'}`}
                           </div>
-                          <div>{message.content}</div>
-                          <div className="text-xs mt-1 opacity-70">
-                            {new Date(message.created_at).toLocaleString('tr-TR')}
+                          
+                          {/* Message Content */}
+                          {message.messageType === 'file' && message.file_url ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center p-2 bg-white bg-opacity-20 rounded">
+                                <Paperclip size={16} className="mr-2" />
+                                <a 
+                                  href={message.file_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-sm underline hover:no-underline"
+                                >
+                                  {message.file_name || 'Dosya'}
+                                </a>
+                              </div>
+                              {message.content && <div>{message.content}</div>}
+                            </div>
+                          ) : (
+                            <div>{message.content}</div>
+                          )}
+                          
+                          <div className="text-xs mt-1 opacity-70 flex items-center justify-between">
+                            <span>{new Date(message.created_at).toLocaleString('tr-TR')}</span>
+                            {message.read_at && isCurrentUser && (
+                              <CheckCircle size={12} className="text-green-300" />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1479,23 +1804,93 @@ const ConsultationTab = ({ patient, consultations, onCreateConsultation }) => {
               )}
             </div>
 
+            {/* Typing Indicator */}
+            {typingUsers.size > 0 && (
+              <div className="text-sm text-gray-500 mb-2 px-4">
+                {Array.from(typingUsers).join(', ')} yazıyor...
+              </div>
+            )}
+
+            {/* File Attachment Preview */}
+            {attachedFile && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Paperclip className="w-4 h-4 text-blue-600 mr-2" />
+                    <span className="text-sm text-blue-800">{attachedFile.name}</span>
+                    <span className="text-xs text-blue-600 ml-2">
+                      ({(attachedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setAttachedFile(null)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Mesaj Gönderme Formu */}
             <div className="flex gap-2">
+              <div className="flex gap-1">
+                {/* File Attachment Button */}
+                <label className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700 cursor-pointer">
+                  <Paperclip size={20} />
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileAttach}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  />
+                </label>
+                
+                {/* Emoji Button */}
+                <button
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700"
+                >
+                  <Smile size={20} />
+                </button>
+              </div>
+              
               <input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => handleTyping(e.target.value)}
                 placeholder="Mesajınızı yazın..."
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2"
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
               />
               <button
                 onClick={sendMessage}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={!newMessage.trim() && !attachedFile}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
-                Gönder
+                <Send size={16} />
               </button>
             </div>
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div className="absolute bottom-16 left-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+                <div className="grid grid-cols-8 gap-2">
+                  {['😀', '😊', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯', '👏', '🙏', '💪', '🎯'].map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => {
+                        setNewMessage(prev => prev + emoji);
+                        setShowEmojiPicker(false);
+                      }}
+                      className="text-xl hover:bg-gray-100 p-1 rounded"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1611,6 +2006,7 @@ const PdfUploadTab = ({ onFileUpload, uploadLoading, dragActive, onDrag, onDrop,
         </div>
       </div>
     </div>
+
   </div>
 );
 

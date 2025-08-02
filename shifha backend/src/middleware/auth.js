@@ -70,9 +70,10 @@ const requireRole = (roles) => {
 
       // Kullanıcının rollerini kontrol et
       const { data: userRoles, error } = await supabase
-        .from('user_organization_roles')
+        .from('user_organizations')
         .select('role')
-        .eq('user_id', req.user.id);
+        .eq('user_id', req.user.id)
+        .eq('is_active', true);
 
       if (error) {
         throw error;
@@ -112,10 +113,11 @@ const requireOrganizationAccess = async (req, res, next) => {
 
     // Kullanıcının bu organizasyona erişimi var mı kontrol et
     const { data: access, error } = await supabase
-      .from('user_organization_roles')
+      .from('user_organizations')
       .select('*')
       .eq('user_id', req.user.id)
       .eq('organization_id', organizationId)
+      .eq('is_active', true)
       .single();
 
     if (error || !access) {

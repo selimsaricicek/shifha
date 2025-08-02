@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require('../middleware/auth');
 const {
   createConsultation,
   getDoctorConsultations,
@@ -7,23 +8,32 @@ const {
   respondToConsultation,
   uploadConsultationAttachment,
   getAvailableDoctorsForConsultation,
-  getPatientConsultations
+  getPatientConsultations,
+  getUrgencyLevels
 } = require('../controllers/consultationController');
-const { authenticateUser } = require('../middleware/auth.js');
 
-
+// Konsültasyon oluştur
 router.post('/', authenticateUser, createConsultation);
 
-router.get('/:organizationId', authenticateUser, getDoctorConsultations);
+// Doktorun konsültasyonlarını getir
+router.get('/doctor', authenticateUser, getDoctorConsultations);
 
-router.get('/details/:consultationId', authenticateUser, getConsultationDetails);
+// Konsültasyon detaylarını getir
+router.get('/:consultationId', authenticateUser, getConsultationDetails);
 
-router.put('/:consultationId/respond', authenticateUser, respondToConsultation);
+// Konsültasyona yanıt ver
+router.post('/:consultationId/respond', authenticateUser, respondToConsultation);
 
+// Konsültasyona dosya ekle
 router.post('/:consultationId/attachments', authenticateUser, uploadConsultationAttachment);
 
-router.get('/:organizationId/available-doctors', authenticateUser, getAvailableDoctorsForConsultation);
+// Uygun doktorları getir
+router.get('/organization/:organizationId/available-doctors', authenticateUser, getAvailableDoctorsForConsultation);
 
+// Hasta konsültasyonlarını getir
 router.get('/patient/:patientTc', authenticateUser, getPatientConsultations);
+
+// Aciliyet etiketlerini getir
+router.get('/organization/:organizationId/urgency-levels', authenticateUser, getUrgencyLevels);
 
 module.exports = router;

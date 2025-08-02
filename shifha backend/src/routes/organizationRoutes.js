@@ -7,7 +7,8 @@ const {
   addDoctorToOrganization,
   getOrganizationDoctors,
   createDepartment,
-  getOrganizationDepartments
+  getOrganizationDepartments,
+  debugUserOrganizations
 } = require('../controllers/organizationController');
 const { authenticateUser } = require('../middleware/auth');
 
@@ -25,5 +26,8 @@ router.get('/:organizationId/doctors', authenticateUser, getOrganizationDoctors)
 router.post('/:organizationId/departments', authenticateUser, createDepartment);
 
 router.get('/:organizationId/departments', authenticateUser, getOrganizationDepartments);
+
+// Debug route
+router.get('/debug/user-organizations', authenticateUser, debugUserOrganizations);
 
 module.exports = router;

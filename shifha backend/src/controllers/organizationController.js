@@ -356,6 +356,8 @@ const getOrganizationDepartments = async (req, res) => {
     const { organizationId } = req.params;
     const userId = req.user.id;
 
+    console.log(`🏥 Departmanlar isteniyor - Org: ${organizationId}, User: ${userId}`);
+
     const { data: userOrg, error: userOrgError } = await supabase
       .from('user_organizations')
       .select('role')
@@ -365,11 +367,14 @@ const getOrganizationDepartments = async (req, res) => {
       .single();
 
     if (userOrgError || !userOrg) {
+      console.log('❌ Kullanıcı yetkisi yok:', userOrgError?.message);
       return res.status(403).json({
         success: false,
         message: 'Bu organizasyona erişim yetkiniz yok'
       });
     }
+
+    console.log(`✅ Kullanıcı yetkili - Role: ${userOrg.role}`);
 
     const { data, error } = await supabase
       .from('departments')
@@ -385,7 +390,12 @@ const getOrganizationDepartments = async (req, res) => {
       .eq('organization_id', organizationId)
       .eq('is_active', true);
 
-    if (error) throw error;
+    if (error) {
+      console.log('❌ Departman sorgu hatası:', error.message);
+      throw error;
+    }
+
+    console.log(`📋 ${data?.length || 0} departman bulundu`);
 
     res.json({
       success: true,
@@ -401,6 +411,61 @@ const getOrganizationDepartments = async (req, res) => {
   }
 };
 
+// Debug endpoint - kullanıcının organizasyon bilgilerini kontrol et
+const debugUserOrganizations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    console.log('Debug - User ID:', userId);
+    
+    // Kullanıcının tüm organizasyon kayıtlarını getir
+    const { data: userOrgs, error: userOrgsError } = await supabase
+      .from('user_organizations')
+      .select('*')
+      .eq('user_id', userId);
+    
+    console.log('Debug - User Organizations:', userOrgs);
+    
+    // Kullanıcının doktor profilini kontrol et
+    const { data: doctorProfile, error: doctorError } = await supabase
+      .from('doctor_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+    
+    console.log('Debug - Doctor Profile:', doctorProfile);
+    
+    // Tüm departmanları kontrol et
+    const { data: allDepartments, error: deptError } = await supabase
+      .from('departments')
+      .select('*');
+    
+    console.log('Debug - All Departments:', allDepartments);
+    
+    res.json({
+      success: true,
+      debug: {
+        user_id: userId,
+        user_organizations: userOrgs,
+        doctor_profile: doctorProfile,
+        all_departments: allDepartments,
+        errors: {
+          user_orgs_error: userOrgsError,
+          doctor_error: doctorError,
+          dept_error: deptError
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Debug hatası:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Debug hatası',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createOrganization,
   getUserOrganizations,
@@ -408,5 +473,6 @@ module.exports = {
   addDoctorToOrganization,
   getOrganizationDoctors,
   createDepartment,
-  getOrganizationDepartments
+  getOrganizationDepartments,
+  debugUserOrganizations
 };

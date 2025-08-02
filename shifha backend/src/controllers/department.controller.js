@@ -27,6 +27,35 @@ const getAllDepartments = async (req, res, next) => {
 };
 
 /**
+ * Organizasyona göre departmanları getirir
+ * @route GET /api/organizations/:organizationId/departments
+ */
+const getDepartmentsByOrganization = async (req, res, next) => {
+  try {
+    const { organizationId } = req.params;
+    console.log(`Organizasyon departmanları getiriliyor: organizationId=${organizationId}`);
+
+    const { data, error } = await supabase
+      .from('departments')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('is_active', true)
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Organizasyon departmanları getirme hatası:', error);
+      throw error;
+    }
+
+    console.log(`${data?.length || 0} departman bulundu.`);
+    res.status(200).json({ success: true, data: data || [] });
+  } catch (err) {
+    console.error('getDepartmentsByOrganization hatası:', err);
+    next(err);
+  }
+};
+
+/**
  * Departman ekler
  * @route POST /api/departments
  */
@@ -182,6 +211,7 @@ const getDepartmentDoctors = async (req, res, next) => {
 
 module.exports = {
   getAllDepartments,
+  getDepartmentsByOrganization,
   addDepartment,
   updateDepartment,
   deleteDepartment,

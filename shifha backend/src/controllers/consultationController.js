@@ -492,6 +492,13 @@ const getAvailableDoctorsForConsultation = async (req, res) => {
     const { departmentId, specialization } = req.query;
     const userId = req.user.id;
 
+    console.log('🔍 getAvailableDoctorsForConsultation çağrıldı:', {
+      organizationId,
+      departmentId,
+      specialization,
+      userId
+    });
+
     // Kullanıcının organizasyona erişimi var mı kontrol et
     const { data: userOrg, error: userOrgError } = await supabase
       .from('user_organizations')
@@ -502,36 +509,33 @@ const getAvailableDoctorsForConsultation = async (req, res) => {
       .single();
 
     if (userOrgError || !userOrg) {
+      console.log('❌ Kullanıcının organizasyona erişimi yok:', userOrgError);
       return res.status(403).json({
         success: false,
         message: 'Bu organizasyona erişim yetkiniz yok'
       });
     }
 
+    // Doktorları direkt doctor_profiles tablosundan çek
     let query = supabase
-      .from('user_organizations')
+      .from('doctor_profiles')
       .select(`
-        user_id,
-        role,
-        doctor_profiles (
-          id,
-          first_name,
-          last_name,
-          specialization,
-          years_of_experience,
-          consultation_fee,
-          available_for_consultation,
-          profile_image_url
-        ),
+        id,
+        first_name,
+        last_name,
+        specialization,
+        years_of_experience,
+        consultation_fee,
+        available_for_consultation,
+        profile_image_url,
+        department_id,
         departments (
           id,
           name
         )
       `)
       .eq('organization_id', organizationId)
-      .in('role', ['doctor', 'head_doctor'])
-      .eq('is_active', true)
-      .eq('doctor_profiles.available_for_consultation', true)
+      .eq('available_for_consultation', true)
       .neq('user_id', userId); // Kendisini hariç tut
 
     if (departmentId) {
@@ -539,12 +543,18 @@ const getAvailableDoctorsForConsultation = async (req, res) => {
     }
 
     if (specialization) {
-      query = query.eq('doctor_profiles.specialization', specialization);
+      query = query.eq('specialization', specialization);
     }
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Doktor sorgusu hatası:', error);
+      throw error;
+    }
+
+    console.log('✅ Bulunan doktorlar:', data?.length || 0, 'adet');
+    console.log('📋 Doktor listesi:', data);
 
     res.json({
       success: true,
@@ -642,6 +652,81 @@ const getPatientConsultations = async (req, res) => {
   }
 };
 
+// Aciliyet etiketlerini getir
+const getUrgencyLevels = async (req, res) => {
+  try {
+    const { organizationId } = req.params;
+    const userId = req.user.id;
+
+    // Kullanıcının organizasyona erişimi var mı kontrol et
+    const { data: userOrg, error: userOrgError } = await supabase
+      .from('user_organizations')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('organization_id', organizationId)
+      .eq('is_active', true)
+      .single();
+
+    if (userOrgError || !userOrg) {
+      return res.status(403).json({
+        success: false,
+        message: 'Bu organizasyona erişim yetkiniz yok'
+      });
+    }
+
+    // Organizasyona özel aciliyet etiketlerini getir
+    const { data: urgencyTags, error: urgencyError } = await supabase
+      .from('consultation_urgency_tags')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('is_active', true)
+      .order('priority_order', { ascending: true });
+
+    if (urgencyError) {
+      console.error('Aciliyet etiketleri getirme hatası:', urgencyError);
+      // Varsayılan etiketleri döndür
+      const defaultUrgencyLevels = [
+        { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+        { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+        { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+        { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+      ];
+      
+      return res.json({
+        success: true,
+        data: defaultUrgencyLevels
+      });
+    }
+
+    // Eğer organizasyona özel etiket yoksa varsayılan etiketleri döndür
+    if (!urgencyTags || urgencyTags.length === 0) {
+      const defaultUrgencyLevels = [
+        { id: 'low', name: 'Düşük', color: '#6B7280', priority_order: 1 },
+        { id: 'normal', name: 'Normal', color: '#3B82F6', priority_order: 2 },
+        { id: 'high', name: 'Yüksek', color: '#F59E0B', priority_order: 3 },
+        { id: 'urgent', name: 'Acil', color: '#EF4444', priority_order: 4 }
+      ];
+      
+      return res.json({
+        success: true,
+        data: defaultUrgencyLevels
+      });
+    }
+
+    res.json({
+      success: true,
+      data: urgencyTags
+    });
+  } catch (error) {
+    console.error('Aciliyet etiketlerini getirme hatası:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Aciliyet etiketleri getirilemedi',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createConsultation,
   getDoctorConsultations,
@@ -649,5 +734,6 @@ module.exports = {
   respondToConsultation,
   uploadConsultationAttachment,
   getAvailableDoctorsForConsultation,
-  getPatientConsultations
+  getPatientConsultations,
+  getUrgencyLevels
 };
