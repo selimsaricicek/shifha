@@ -510,8 +510,21 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
 
 
 const PatientInfo = ({ patient, onUpdate }) => {
+  console.log("PatientInfo component - patient prop:", patient);
+  
   const [isEditing, setIsEditing] = useState(false);
-  const [editablePatientData, setEditablePatientData] = useState(patient);
+  const [editablePatientData, setEditablePatientData] = useState(patient || {});
+  
+  if (!patient) {
+    return (
+      <div className="animate-fadeIn">
+        <h3 className="text-xl font-bold text-gray-800 mb-6">Detaylı Hasta Bilgileri</h3>
+        <div className="text-center text-gray-500 py-8">
+          Hasta bilgileri yükleniyor...
+        </div>
+      </div>
+    );
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -545,7 +558,7 @@ const PatientInfo = ({ patient, onUpdate }) => {
   const InfoItem = ({ label, value }) => (
     <div className="grid grid-cols-3 gap-4 py-2">
       <dt className="font-medium text-gray-500">{label}</dt>
-      <dd className="text-gray-700 col-span-2">{value}</dd>
+      <dd className="text-gray-700 col-span-2">{value || '-'}</dd>
     </div>
   );
 
@@ -2248,6 +2261,7 @@ const PatientDetailPage = () => {
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showSaveAndReferButton, setShowSaveAndReferButton] = useState(false);
   const [referrals, setReferrals] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [referralForm, setReferralForm] = useState({
     department: '',
     reason: '',
@@ -2275,18 +2289,60 @@ const PatientDetailPage = () => {
   const fetchBloodTestResults = async (tc) => {
     setBloodTestLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/patients/${tc}/blood-test-results`);
+      console.log('🩸 Kan tahlili sonuçları çekiliyor, TC:', tc);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/patients/${tc}/blood-test-results`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('🩸 Kan tahlili API response status:', response.status);
       const data = await response.json();
-      if (data && data.data) {
+      console.log('🩸 Kan tahlili API response data:', data);
+      
+      if (data && data.success && data.data) {
+        console.log('✅ Kan tahlili sonuçları bulundu:', data.data.length, 'sonuç');
         setBloodTestResults(data.data);
       } else {
+        console.log('❌ Kan tahlili sonucu bulunamadı');
         setBloodTestResults([]);
       }
     } catch (error) {
-      console.error('Kan tahlili sonuçları alınırken hata:', error);
+      console.error('❌ Kan tahlili sonuçları alınırken hata:', error);
       setBloodTestResults([]);
     } finally {
       setBloodTestLoading(false);
+    }
+  };
+
+  // Doktor notlarını çek
+  const fetchDoctorNotes = async (tc) => {
+    try {
+      console.log('📝 Doktor notları çekiliyor, TC:', tc);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/patients/${tc}/notes`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📝 Doktor notları API response status:', response.status);
+      const data = await response.json();
+      console.log('📝 Doktor notları API response data:', data);
+      
+      if (data && data.success && data.data) {
+        console.log('✅ Doktor notları bulundu:', data.data.length, 'not');
+        setNotes(data.data);
+      } else {
+        console.log('❌ Doktor notu bulunamadı');
+        setNotes([]);
+      }
+    } catch (error) {
+      console.error('❌ Doktor notları alınırken hata:', error);
+      setNotes([]);
     }
   };
 
@@ -2294,7 +2350,13 @@ const PatientDetailPage = () => {
   const fetchMedicalAnalysis = async (tc) => {
     setAnalysisLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/medical-analysis/patient/${tc}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/medical-analysis/patient/${tc}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       console.log('AI Analiz API Response:', data); // Debug için eklendi
       if (data && data.success && data.data && data.data.length > 0) {
@@ -2357,9 +2419,11 @@ const PatientDetailPage = () => {
 
       console.log('AI analizi için gönderilen kan tahlili verisi:', bloodTestData);
 
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:3001/api/medical-analysis/blood-test`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
@@ -2412,8 +2476,12 @@ const PatientDetailPage = () => {
     formData.append('patientId', currentPatientId); // Hasta ID'sini gönder
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3001/api/upload-pdf', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 
@@ -2476,13 +2544,22 @@ const PatientDetailPage = () => {
     setLoading(true);
     
     // Backend'den hasta verilerini çek
-    fetch(`http://localhost:3001/api/patients/${tc}`)
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:3001/api/patients/${tc}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
       .then(res => res.json())
       .then(data => {
         console.log("API'den dönen data:", data);
+        console.log("Patient data structure:", JSON.stringify(data, null, 2));
         if (data && data.data) {
+          console.log("Setting patientData to:", data.data);
           setPatientData(data.data);
         } else if (data) {
+          console.log("Setting patientData to:", data);
           setPatientData(data);
         } else {
           setPatientData(null);
@@ -2503,9 +2580,8 @@ const PatientDetailPage = () => {
     // Konsültasyonları çek
     fetchConsultations(tc);
     
-    // Notlar ve sevkler için ayrı istekler (opsiyonel)
-    // fetch(`http://localhost:3001/api/patients/${tc}/notes`).then(res => res.json()).then(data => setNotes(data.data || []));
-    // fetch(`http://localhost:3001/api/patients/${tc}/referrals`).then(res => res.json()).then(data => setReferrals(data.data || []));
+    // Doktor notlarını çek
+    fetchDoctorNotes(tc);
   }, [patientId]);
 
     // Toast mesajını otomatik temizle
@@ -2585,9 +2661,11 @@ const PatientDetailPage = () => {
 
     try {
       // Backend'e sevk bilgilerini gönder
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3001/api/referrals', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newReferral)

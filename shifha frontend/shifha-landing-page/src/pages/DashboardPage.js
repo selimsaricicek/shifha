@@ -2,7 +2,8 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, User } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
 import { Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
-import { uploadPdfAndParsePatient, deletePatient } from '../api/patientService';
+import { uploadPdfAndParsePatient } from '../api/patientService';
+import { getAllPatients, deletePatient } from '../services/patientService';
 import { toast } from 'react-toastify';
 import Calendar from '../components/Calendar';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -41,20 +42,18 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     });
 
     // Hasta listesini çeken fonksiyon
+
     const fetchPatients = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:3001/api/patients');
-            if (!res.ok) throw new Error('Hasta listesi sunucudan alınamadı.');
-            const data = await res.json();
-            const patientData = Array.isArray(data?.data) ? data.data : [];
+            const patientData = await getAllPatients();
             setPatients(patientData);
             if (propSetPatients) {
                 propSetPatients(patientData);
             }
             console.log('✅ Hasta listesi başarıyla yüklendi:', patientData.length, 'hasta');
         } catch (e) {
-            console.error("Hasta listesi alınırken hata:", e);
+            console.error('Hasta listesi alınırken hata:', e);
             toast.error('Hasta listesi yüklenemedi: ' + e.message);
         } finally {
             setLoading(false);
@@ -71,18 +70,47 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         localStorage.setItem('savedPatients', JSON.stringify(savedPatients));
     }, [savedPatients]);
 
-    const filteredPatients = useMemo(() => patients.filter(p => {
-        const name = (p?.ad_soyad || '').toString();
-        const tc = (p?.tc_kimlik_no || '').toString();
-        const searchLower = (searchTerm || '').toLowerCase();
+    const filteredPatients = useMemo(() => {
+        console.log('🔍 Filtering patients:', { 
+            totalPatients: patients.length, 
+            searchTerm, 
+            savedPatientsCount: savedPatients.length 
+        });
         
-        // Kaydedilen hastaları ana listeden çıkar
-        const isSaved = savedPatients.some(saved => saved.tc_kimlik_no === p.tc_kimlik_no);
-        if (isSaved) return false;
+        const filtered = patients.filter(p => {
+            const name = (p?.ad_soyad || '').toString();
+            const tc = (p?.tc_kimlik_no || '').toString();
+            const searchLower = (searchTerm || '').toLowerCase();
+            
+            console.log('🔍 Checking patient:', { name, tc, searchLower });
+            
+            // Kaydedilen hastaları ana listeden çıkar
+            const isSaved = savedPatients.some(saved => saved.tc_kimlik_no === p.tc_kimlik_no);
+            if (isSaved) {
+                console.log('❌ Patient is saved, excluding:', name);
+                return false;
+            }
+            
+            // TC Kimlik No olmayan hastaları listeleme
+            if (!tc) {
+                console.log('❌ Patient has no TC, excluding:', name);
+                return false;
+            }
+            
+            // Arama kriterlerine göre filtrele
+            const matchesSearch = name.toLowerCase().includes(searchLower) || tc.includes(searchTerm);
+            console.log('✅ Patient matches search:', { name, matchesSearch });
+            
+            return matchesSearch;
+        });
         
-        // TC Kimlik No olmayan hastaları listeleme
-        return (name.toLowerCase().includes(searchLower) || tc.includes(searchTerm)) && tc;
-    }), [searchTerm, patients, savedPatients]);
+        console.log('🔍 Filtered patients result:', { 
+            filteredCount: filtered.length, 
+            patients: filtered.map(p => ({ name: p.ad_soyad, tc: p.tc_kimlik_no }))
+        });
+        
+        return filtered;
+    }, [searchTerm, patients, savedPatients]);
 
     const viewPatientDetails = (patient) => {
         if (onSelectPatient) {

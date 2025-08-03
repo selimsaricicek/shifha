@@ -1,6 +1,6 @@
 // Dosya Adı: src/controllers/location.controller.js
 
-const supabase = require('../services/supabaseClient');
+const { supabaseAdmin } = require('../config/supabase');
 
 /**
  * Tüm şehirleri getirir
@@ -9,7 +9,7 @@ const supabase = require('../services/supabaseClient');
 const getAllCities = async (req, res, next) => {
   try {
     console.log("getAllCities isteği alındı.");
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('cities')
       .select('*')
       .order('name', { ascending: true });
@@ -48,13 +48,13 @@ const getDistrictsByCity = async (req, res, next) => {
 };
 
 /**
- * İlçeye ait hastaneleri getirir
+ * İlçeye ait hastaneleri getirir (organizasyon bazlı)
  * @route GET /api/locations/districts/:districtId/hospitals
  */
 const getHospitalsByDistrict = async (req, res, next) => {
   try {
     const { districtId } = req.params;
-    console.log(`getHospitalsByDistrict isteği alındı: districtId=${districtId}`);
+    console.log(`getHospitalsByDistrict isteği alındı: districtId=${districtId}, organizationId=${req.organizationId}`);
 
     const { data, error } = await supabase
       .from('hospitals')
@@ -70,6 +70,7 @@ const getHospitalsByDistrict = async (req, res, next) => {
         )
       `)
       .eq('district_id', districtId)
+      .eq('organization_id', req.organizationId)
       .order('name', { ascending: true });
 
     if (error) throw error;
@@ -82,12 +83,12 @@ const getHospitalsByDistrict = async (req, res, next) => {
 };
 
 /**
- * Tüm hastaneleri getirir
+ * Tüm hastaneleri getirir (organizasyon bazlı)
  * @route GET /api/locations/hospitals
  */
 const getAllHospitals = async (req, res, next) => {
   try {
-    console.log("getAllHospitals isteği alındı.");
+    console.log("getAllHospitals isteği alındı. Organization ID:", req.organizationId);
     const { data, error } = await supabase
       .from('hospitals')
       .select(`
@@ -101,6 +102,7 @@ const getAllHospitals = async (req, res, next) => {
           )
         )
       `)
+      .eq('organization_id', req.organizationId)
       .order('name', { ascending: true });
 
     if (error) throw error;
@@ -171,11 +173,11 @@ const addDistrict = async (req, res, next) => {
 const addHospital = async (req, res, next) => {
   try {
     const { district_id, name, address, phone, email } = req.body;
-    console.log('Yeni hastane ekleniyor:', { district_id, name, address, phone, email });
+    console.log('Yeni hastane ekleniyor:', { district_id, name, address, phone, email, organizationId: req.organizationId });
 
     const { data, error } = await supabase
       .from('hospitals')
-      .insert([{ district_id, name, address, phone, email }])
+      .insert([{ district_id, name, address, phone, email, organization_id: req.organizationId }])
       .select(`
         *,
         districts:district_id (
@@ -205,12 +207,13 @@ const updateHospital = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { district_id, name, address, phone, email } = req.body;
-    console.log(`Hastane güncelleniyor: ID=${id}`, { district_id, name, address, phone, email });
+    console.log(`Hastane güncelleniyor: ID=${id}`, { district_id, name, address, phone, email, organizationId: req.organizationId });
 
     const { data, error } = await supabase
       .from('hospitals')
       .update({ district_id, name, address, phone, email, updated_at: new Date().toISOString() })
       .eq('id', id)
+      .eq('organization_id', req.organizationId)
       .select(`
         *,
         districts:district_id (
@@ -246,12 +249,13 @@ const updateHospital = async (req, res, next) => {
 const deleteHospital = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`Hastane siliniyor: ID=${id}`);
+    console.log(`Hastane siliniyor: ID=${id}, organizationId=${req.organizationId}`);
 
     const { error } = await supabase
       .from('hospitals')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('organization_id', req.organizationId);
 
     if (error) throw error;
     

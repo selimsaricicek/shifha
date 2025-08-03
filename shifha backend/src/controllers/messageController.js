@@ -9,11 +9,12 @@ const supabase = createClient(
 // KONUŞMA YÖNETİMİ
 // =====================================================
 
-// Yeni konuşma başlat
+// Yeni konuşma başlat (organizasyon bazlı)
 const createConversation = async (req, res) => {
   try {
-    const { organizationId, type, title, participantIds } = req.body;
+    const { type, title, participantIds } = req.body;
     const userId = req.user.id;
+    const organizationId = req.organizationId; // Tenant context middleware'den
 
     // Kullanıcının organizasyona erişimi var mı kontrol et
     const { data: userOrg, error: userOrgError } = await supabase
@@ -73,11 +74,11 @@ const createConversation = async (req, res) => {
   }
 };
 
-// Kullanıcının konuşmalarını getir
+// Kullanıcının konuşmalarını getir (organizasyon bazlı)
 const getUserConversations = async (req, res) => {
   try {
-    const { organizationId } = req.params;
     const userId = req.user.id;
+    const organizationId = req.organizationId; // Tenant context middleware'den
 
     const { data, error } = await supabase
       .from('conversation_participants')
@@ -181,10 +182,9 @@ const getConversationDetails = async (req, res) => {
           last_read_at,
           doctor_profiles (
             id,
-            first_name,
-            last_name,
+            full_name,
             email,
-            profile_image_url
+            phone
           )
         )
       `)
@@ -248,9 +248,9 @@ const sendMessage = async (req, res) => {
         *,
         doctor_profiles!messages_sender_id_fkey (
           id,
-          first_name,
-          last_name,
-          profile_image_url
+          full_name,
+          email,
+          phone
         )
       `)
       .single();
@@ -308,9 +308,9 @@ const getConversationMessages = async (req, res) => {
         *,
         doctor_profiles!messages_sender_id_fkey (
           id,
-          first_name,
-          last_name,
-          profile_image_url
+          full_name,
+          email,
+          phone
         )
       `)
       .eq('conversation_id', conversationId)
@@ -430,12 +430,10 @@ const searchDoctorsForMessaging = async (req, res) => {
         role,
         doctor_profiles (
           id,
-          first_name,
-          last_name,
+          full_name,
           email,
           specialization,
-          profile_image_url,
-          available_for_consultation
+          phone
         ),
         departments (
           id,
@@ -448,7 +446,7 @@ const searchDoctorsForMessaging = async (req, res) => {
       .neq('user_id', userId); // Kendisini hariç tut
 
     if (search) {
-      query = query.or(`doctor_profiles.first_name.ilike.%${search}%,doctor_profiles.last_name.ilike.%${search}%,doctor_profiles.specialization.ilike.%${search}%`);
+      query = query.or(`doctor_profiles.full_name.ilike.%${search}%,doctor_profiles.specialization.ilike.%${search}%`);
     }
 
     const { data, error } = await query;

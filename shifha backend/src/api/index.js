@@ -1,9 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-// Auth rotalarını ekle
+// Import middleware
+const { authenticateUser } = require('../middleware/auth');
+const tenantContext = require('../middleware/tenantContext');
+
+// Auth rotalarını ekle (no tenant context needed)
 const authRoutes = require('../routes/auth.routes');
 router.use('/auth', authRoutes);
+
+// Apply authentication middleware to all routes except auth
+router.use(authenticateUser);
+
+// Apply tenant context middleware to all authenticated routes
+router.use(tenantContext);
 
 // Hasta rotalarını ekle
 const patientRoutes = require('../routes/patient.routes');

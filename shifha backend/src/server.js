@@ -82,6 +82,16 @@ const authLimiter = rateLimit({
 
 app.use(express.json({ limit: '10mb' })); // Büyük PDF dosyaları için limit artırıldı
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
@@ -98,62 +108,8 @@ const analysisLimiter = rateLimit({
   message: { success: false, error: 'Çok fazla analiz isteği! Lütfen daha sonra tekrar deneyin.' }
 });
 
-// QR giriş oturumlarını takip için in-memory store
+// QR giriş oturumlarını takip için in-memory store (WebSocket için)
 const qrSessions = {};
-
-// QR session endpoint'inde loginAttemptId üretirken memory'e ekle
-app.get('/api/auth/qr-session', (req, res) => {
-  const loginAttemptId = uuidv4();
-  const sessionData = {
-    status: 'pending',
-    createdAt: Date.now(),
-    expiresAt: Date.now() + 60000,
-    sessionId: null
-  };
-  qrSessions[loginAttemptId] = sessionData;
-  
-  // 65 saniye sonra otomatik temizle
-  setTimeout(() => {
-    delete qrSessions[loginAttemptId];
-  }, 65000);
-  
-  res.json({ loginAttemptId });
-});
-
-// QR doğrulama ve giriş API'si
-app.post('/api/auth/verify-qr-scan', (req, res) => {
-  const { loginAttemptId, doctorId } = req.body;
-  if (!loginAttemptId || !doctorId) {
-    return res.status(400).json({ success: false, message: 'Eksik veri' });
-  }
-  
-  const session = qrSessions[loginAttemptId];
-  if (!session) {
-    return res.status(404).json({ success: false, message: 'Geçersiz veya süresi dolmuş QR kodu' });
-  }
-  if (session.status === 'completed') {
-    return res.status(410).json({ success: false, message: 'Bu QR kodu zaten kullanıldı, lütfen yeni kod isteyin.' });
-  }
-  if (Date.now() > session.expiresAt) {
-    return res.status(410).json({ success: false, message: 'QR kodunun süresi doldu, lütfen yeni kod isteyin.' });
-  }
-  
-  session.status = 'completed';
-  session.doctorId = doctorId;
-  
-  // WebSocket ile ilgili kullanıcıya loginSuccess event'i gönder
-  if (session.sessionId && wsSessions[session.sessionId]) {
-    io.to(wsSessions[session.sessionId].socketId).emit('loginSuccess', { token: 'YENI_WEB_JWT' });
-    console.log(`🚀 loginSuccess event'i gönderildi: sessionId=${session.sessionId}`);
-  }
-  
-  // 5 saniye sonra session'ı temizle
-  setTimeout(() => {
-    delete qrSessions[loginAttemptId];
-  }, 5000);
-  
-  return res.json({ success: true, message: 'Giriş başarılı' });
-});
 
 // Merkezi error handler en sonda
 app.use(errorMiddleware);

@@ -20,7 +20,7 @@ const loginSchema = z.object({
 
 /**
  * Supabase Auth ile kullanıcı kaydı
- * @param {{email: string, password: string, name: string}} input
+ * @param {{email: string, password: string, name: string, tcKimlikNo?: string, organizationId?: string}} input
  * @returns {Promise<object>} 
  * @throws {Error} 
  */
@@ -32,6 +32,7 @@ const register = async (input) => {
     throw new Error('Geçersiz kayıt verisi: ' + parsed.error.errors.map(e => e.message).join(', '));
   }
   const { email, password, name, tcKimlikNo } = parsed.data;
+  const { organizationId } = input; // Optional organization ID
   
   // Check email domain to determine role
   const isDoctor = email.toLowerCase().endsWith('@saglik.gov.tr');
@@ -39,11 +40,52 @@ const register = async (input) => {
   const role = isAdmin ? 'admin' : (isDoctor ? 'doctor' : 'patient');
   
   try {
+    // For admin users, ensure we have a default organization
+    let defaultOrgId = organizationId;
+    if (isAdmin && !defaultOrgId) {
+      // Create or get default admin organization
+      const { data: existingOrg } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('name', 'Shifha Admin Organization')
+        .single();
+      
+      if (existingOrg) {
+        defaultOrgId = existingOrg.id;
+        console.log('✅ Mevcut admin organizasyonu bulundu:', defaultOrgId);
+      } else {
+        // Create default admin organization
+        const { data: newOrg, error: orgError } = await supabase
+          .from('organizations')
+          .insert([{
+            name: 'Shifha Admin Organization',
+            type: 'medical_center',
+            address: 'Admin Center',
+            phone: '+90 555 000 0000',
+            email: 'admin@shifha.admin.tr',
+            license_number: 'ADMIN-001',
+            subscription_plan: 'enterprise',
+            max_doctors: 1000,
+            max_patients: 10000
+          }])
+          .select()
+          .single();
+        
+        if (orgError) {
+          console.error('❌ Admin organizasyon oluşturma hatası:', orgError);
+          throw new Error('Admin organizasyonu oluşturulamadı');
+        }
+        
+        defaultOrgId = newOrg.id;
+        console.log('✅ Admin organizasyonu oluşturuldu:', defaultOrgId);
+      }
+    }
+    
     // Supabase Auth ile kullanıcı oluştur (Supabase şifreyi otomatik hashler)
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
-      user_metadata: { name, role, tcKimlikNo },
+      user_metadata: { name, role, tcKimlikNo, organizationId: defaultOrgId },
       email_confirm: true // Email confirmation'ı otomatik onayla
     });
     
@@ -153,6 +195,27 @@ const register = async (input) => {
       }
     } else {
       console.log('✅ Admin kaydı başarıyla oluşturuldu');
+    }
+    
+    // Add admin to organization
+    if (defaultOrgId) {
+      const { error: userOrgError } = await supabase
+        .from('user_organizations')
+        .insert([
+          {
+            user_id: data.user.id,
+            organization_id: defaultOrgId,
+            role: 'super_admin',
+            is_active: true
+          }
+        ])
+        .select();
+      
+      if (userOrgError) {
+        console.error('❌ User organization creation error:', userOrgError);
+      } else {
+        console.log('✅ Admin organizasyona başarıyla eklendi');
+      }
     }
   }
     

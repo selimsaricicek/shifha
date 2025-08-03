@@ -19,6 +19,212 @@ BEGIN
 END $$;
 
 -- =====================================================
+-- MULTI-TENANCY SCHEMA UPDATES
+-- =====================================================
+
+-- Add organization_id to tables that are missing it
+DO $$
+BEGIN
+    -- Add organization_id to patient_profiles
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+        AND table_name = 'patient_profiles' 
+        AND column_name = 'organization_id'
+    ) THEN
+        ALTER TABLE public.patient_profiles 
+        ADD COLUMN organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+        
+        CREATE INDEX IF NOT EXISTS idx_patient_profiles_organization_id ON public.patient_profiles(organization_id);
+        RAISE NOTICE 'organization_id column added to patient_profiles table.';
+    END IF;
+
+    -- Add organization_id to hospitals
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+        AND table_name = 'hospitals' 
+        AND column_name = 'organization_id'
+    ) THEN
+        ALTER TABLE public.hospitals 
+        ADD COLUMN organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+        
+        CREATE INDEX IF NOT EXISTS idx_hospitals_organization_id ON public.hospitals(organization_id);
+        RAISE NOTICE 'organization_id column added to hospitals table.';
+    END IF;
+
+    -- Add organization_id to appointments
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+        AND table_name = 'appointments' 
+        AND column_name = 'organization_id'
+    ) THEN
+        ALTER TABLE public.appointments 
+        ADD COLUMN organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+        
+        CREATE INDEX IF NOT EXISTS idx_appointments_organization_id ON public.appointments(organization_id);
+        RAISE NOTICE 'organization_id column added to appointments table.';
+    END IF;
+
+    -- Add organization_id to patients
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+        AND table_name = 'patients' 
+        AND column_name = 'organization_id'
+    ) THEN
+        ALTER TABLE public.patients 
+        ADD COLUMN organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+        
+        CREATE INDEX IF NOT EXISTS idx_patients_organization_id ON public.patients(organization_id);
+        RAISE NOTICE 'organization_id column added to patients table.';
+    END IF;
+
+    -- Add organization_id to messages
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' 
+        AND table_name = 'messages' 
+        AND column_name = 'organization_id'
+    ) THEN
+        ALTER TABLE public.messages 
+        ADD COLUMN organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+        
+        CREATE INDEX IF NOT EXISTS idx_messages_organization_id ON public.messages(organization_id);
+        RAISE NOTICE 'organization_id column added to messages table.';
+    END IF;
+
+    RAISE NOTICE 'Multi-tenancy schema updates completed.';
+END $$;
+
+-- Update RLS policies for multi-tenancy
+DO $$
+BEGIN
+    -- Patient profiles RLS policies
+    ALTER TABLE public.patient_profiles ENABLE ROW LEVEL SECURITY;
+    
+    DROP POLICY IF EXISTS "Users can manage their own profile" ON public.patient_profiles;
+    DROP POLICY IF EXISTS "Patients can view their own profile" ON public.patient_profiles;
+    DROP POLICY IF EXISTS "Admins can manage all patient profiles in their organization" ON public.patient_profiles;
+    
+    -- Patients can view their own profile
+    CREATE POLICY "Patients can view their own profile" ON public.patient_profiles
+        FOR SELECT TO authenticated 
+        USING (user_id = auth.uid());
+    
+    -- Patients can update their own profile
+    CREATE POLICY "Patients can update their own profile" ON public.patient_profiles
+        FOR UPDATE TO authenticated 
+        USING (user_id = auth.uid())
+        WITH CHECK (user_id = auth.uid());
+    
+    -- Admins can manage all patient profiles in their organization
+    CREATE POLICY "Admins can manage all patient profiles in their organization" ON public.patient_profiles
+        FOR ALL TO authenticated
+        USING (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ))
+        WITH CHECK (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ));
+
+    -- Hospitals RLS policies
+    ALTER TABLE public.hospitals ENABLE ROW LEVEL SECURITY;
+    
+    DROP POLICY IF EXISTS "Hospitals are viewable by all" ON public.hospitals;
+    DROP POLICY IF EXISTS "Users can view hospitals in their organization" ON public.hospitals;
+    DROP POLICY IF EXISTS "Admins can manage hospitals in their organization" ON public.hospitals;
+    
+    -- Users can view hospitals in their organization
+    CREATE POLICY "Users can view hospitals in their organization" ON public.hospitals
+        FOR SELECT TO authenticated 
+        USING (organization_id IN (
+            SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+        ));
+    
+    -- Admins can manage hospitals in their organization
+    CREATE POLICY "Admins can manage hospitals in their organization" ON public.hospitals
+        FOR ALL TO authenticated
+        USING (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ))
+        WITH CHECK (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ));
+
+    -- Messages RLS policies
+    ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+    
+    DROP POLICY IF EXISTS "Users can view messages in their conversations" ON public.messages;
+    DROP POLICY IF EXISTS "Users can send messages" ON public.messages;
+    DROP POLICY IF EXISTS "Admins can view all messages in their organization" ON public.messages;
+    
+    -- Users can view messages in their organization
+    CREATE POLICY "Users can view messages in their organization" ON public.messages
+        FOR SELECT TO authenticated 
+        USING (organization_id IN (
+            SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+        ));
+    
+    -- Users can send messages in their organization
+    CREATE POLICY "Users can send messages in their organization" ON public.messages
+        FOR INSERT TO authenticated 
+        WITH CHECK (
+            sender_id = auth.uid() AND 
+            organization_id IN (
+                SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+            )
+        );
+    
+    -- Admins can manage all messages in their organization
+    CREATE POLICY "Admins can manage all messages in their organization" ON public.messages
+        FOR ALL TO authenticated
+        USING (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ))
+        WITH CHECK (organization_id IN (
+            SELECT organization_id FROM public.user_organizations 
+            WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin')
+        ));
+
+    RAISE NOTICE 'Multi-tenancy RLS policies updated.';
+END $$;
+
+-- Create function to get user's active organization
+CREATE OR REPLACE FUNCTION public.get_user_active_organization(user_uuid UUID)
+RETURNS UUID AS $$
+DECLARE
+    org_id UUID;
+BEGIN
+    SELECT organization_id INTO org_id
+    FROM public.user_organizations
+    WHERE user_id = user_uuid AND is_active = true
+    ORDER BY joined_at DESC
+    LIMIT 1;
+    
+    RETURN org_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create function to check if user belongs to organization
+CREATE OR REPLACE FUNCTION public.user_belongs_to_organization(user_uuid UUID, org_uuid UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM public.user_organizations
+        WHERE user_id = user_uuid AND organization_id = org_uuid AND is_active = true
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- =====================================================
 -- 16. ADMIN TABLOSU VE YÖNETİM SİSTEMİ
 -- =====================================================
 
@@ -123,7 +329,6 @@ BEGIN
     END IF;
 END $$;
 
-RAISE NOTICE 'Admin tablosu migration tamamlandı.';
 
 -- Eğer "BloodTestAnalysis" (PascalCase) tablosu varsa sil (yanlış isimlendirme)
 DO $$ 
@@ -311,14 +516,15 @@ BEGIN
             email TEXT,
             phone TEXT,
             specialization TEXT,
-            department TEXT,
-            is_active BOOLEAN DEFAULT TRUE,
+                department_id BIGINT REFERENCES public.departments(id) ON DELETE SET NULL,
+                is_active BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
         
         CREATE INDEX IF NOT EXISTS idx_doctor_profiles_user_id ON public.doctor_profiles(user_id);
         CREATE INDEX IF NOT EXISTS idx_doctor_profiles_hospital_id ON public.doctor_profiles(hospital_id);
+        CREATE INDEX IF NOT EXISTS idx_doctor_profiles_department_id ON public.doctor_profiles(department_id);
         ALTER TABLE public.doctor_profiles ENABLE ROW LEVEL SECURITY;
         
         CREATE POLICY "Doctors can manage their own profile" ON public.doctor_profiles
@@ -476,11 +682,20 @@ BEGIN
     
     -- NOT: Bu politikalar tüm kimliği doğrulanmış kullanıcıların hasta verilerine erişmesine izin verir.
     -- Gerçek bir uygulamada bu politikaları daha kısıtlayıcı yapmanız gerekebilir.
-    CREATE POLICY "Patients viewable by authenticated users" ON public.patients
-    FOR SELECT TO authenticated USING (true);
+    CREATE POLICY "Patients viewable within their organization" ON public.patients
+    FOR SELECT TO authenticated 
+    USING (organization_id IN (
+        SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+    ));
 
-    CREATE POLICY "Patients can be managed by authenticated users" ON public.patients
-    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+    CREATE POLICY "Patients can be managed within their organization" ON public.patients
+    FOR ALL TO authenticated 
+    USING (organization_id IN (
+        SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+    ))
+    WITH CHECK (organization_id IN (
+        SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid()
+    ));
 
     RAISE NOTICE 'Patients tablosu için RLS politikaları eklendi.';
   ELSE
@@ -1153,7 +1368,7 @@ DO $$
 BEGIN
     -- Örnek organizasyon
     INSERT INTO public.organizations (name, type, address, phone, email, max_doctors, max_patients)
-    VALUES ('Shifha Tıp Merkezi', 'medical_center', 'İstanbul, Türkiye', '+90 212 555 0000', 'info@shifha.com', 50, 1000)
+    VALUES ('Shifha Tıp Merkezi', 'medical_center', 'İstanbul, Türkiye', '+90 212 555 0000', 'info@saglik.gov.tr', 50, 1000)
     ON CONFLICT (license_number) DO NOTHING;
     
     RAISE NOTICE 'Başlangıç verileri eklendi/kontrol edildi.';

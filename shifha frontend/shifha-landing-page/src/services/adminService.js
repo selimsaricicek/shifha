@@ -12,7 +12,11 @@ const api = axios.create({
 
 // Add token to requests if available
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Admin paneli için adminToken, normal kullanıcı için token kullan
+  const adminToken = localStorage.getItem('adminToken');
+  const userToken = localStorage.getItem('token');
+  const token = adminToken || userToken;
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -26,14 +26,14 @@ const initialHospitalData = [
 ];
 
 const initialDoctorData = [
-  { id: 1, name: 'Dr. Aylin Yılmaz', specialty: 'Kardiyoloji', email: 'aylin.yilmaz@shifha.com', status: 'Aktif', city: 'İstanbul', hospitalId: 202, experience: 8, phone: '0532 123 4567' },
-  { id: 2, name: 'Dr. Mehmet Öztürk', specialty: 'Nöroloji', email: 'mehmet.ozturk@shifha.com', status: 'Aktif', city: 'Ankara', hospitalId: 203, experience: 12, phone: '0533 234 5678' },
-  { id: 3, name: 'Dr. Elif Kaya', specialty: 'Pediatri', email: 'elif.kaya@shifha.com', status: 'Onay Bekliyor', city: 'İzmir', hospitalId: 204, experience: 5, phone: '0534 345 6789' },
-  { id: 4, name: 'Dr. Caner Baş', specialty: 'Dahiliye', email: 'caner.bas@shifha.com', status: 'Askıya Alındı', city: 'Bursa', hospitalId: 205, experience: 15, phone: '0535 456 7890' },
-  { id: 5, name: 'Dr. Sema Güler', specialty: 'Göz Hastalıkları', email: 'sema.guler@shifha.com', status: 'Aktif', city: 'Antalya', hospitalId: null, experience: 7, phone: '0536 567 8901' },
-  { id: 6, name: 'Dr. Ali Vural', specialty: 'Kardiyoloji', email: 'ali.vural@shifha.com', status: 'Aktif', city: 'Ankara', hospitalId: 203, experience: 10, phone: '0537 678 9012' },
-  { id: 7, name: 'Dr. Zeynep Şahin', specialty: 'Dahiliye', email: 'zeynep.sahin@shifha.com', status: 'Onay Bekliyor', city: 'İstanbul', hospitalId: 202, experience: 6, phone: '0538 789 0123' },
-  { id: 8, name: 'Dr. Hakan Kurt', specialty: 'Nöroloji', email: 'hakan.kurt@shifha.com', status: 'Aktif', city: 'İzmir', hospitalId: 204, experience: 9, phone: '0539 890 1234' },
+  { id: 1, name: 'Dr. Aylin Yılmaz', specialty: 'Kardiyoloji', email: 'aylin.yilmaz@saglik.gov.tr', status: 'Aktif', city: 'İstanbul', hospitalId: 202, experience: 8, phone: '0532 123 4567' },
+  { id: 2, name: 'Dr. Mehmet Öztürk', specialty: 'Nöroloji', email: 'mehmet.ozturk@saglik.gov.tr', status: 'Aktif', city: 'Ankara', hospitalId: 203, experience: 12, phone: '0533 234 5678' },
+  { id: 3, name: 'Dr. Elif Kaya', specialty: 'Pediatri', email: 'elif.kaya@saglik.gov.tr', status: 'Onay Bekliyor', city: 'İzmir', hospitalId: 204, experience: 5, phone: '0534 345 6789' },
+  { id: 4, name: 'Dr. Caner Baş', specialty: 'Dahiliye', email: 'caner.bas@saglik.gov.tr', status: 'Askıya Alındı', city: 'Bursa', hospitalId: 205, experience: 15, phone: '0535 456 7890' },
+  { id: 5, name: 'Dr. Sema Güler', specialty: 'Göz Hastalıkları', email: 'sema.guler@saglik.gov.tr', status: 'Aktif', city: 'Antalya', hospitalId: null, experience: 7, phone: '0536 567 8901' },
+  { id: 6, name: 'Dr. Ali Vural', specialty: 'Kardiyoloji', email: 'ali.vural@saglik.gov.tr', status: 'Aktif', city: 'Ankara', hospitalId: 203, experience: 10, phone: '0537 678 9012' },
+  { id: 7, name: 'Dr. Zeynep Şahin', specialty: 'Dahiliye', email: 'zeynep.sahin@saglik.gov.tr', status: 'Onay Bekliyor', city: 'İstanbul', hospitalId: 202, experience: 6, phone: '0538 789 0123' },
+  { id: 8, name: 'Dr. Hakan Kurt', specialty: 'Nöroloji', email: 'hakan.kurt@saglik.gov.tr', status: 'Aktif', city: 'İzmir', hospitalId: 204, experience: 9, phone: '0539 890 1234' },
 ];
 
 const patientData = [
@@ -265,7 +265,7 @@ const ProfilePage = ({ adminUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: adminUser?.full_name || 'Admin User',
-    email: adminUser?.email || 'admin@shifha.com',
+    email: adminUser?.email || 'admin@saglik.gov.tr',
     phone: adminUser?.phone || '+90 555 123 4567',
     role: adminUser?.role || 'Sistem Yöneticisi',
     department: adminUser?.department || 'Bilgi İşlem',
@@ -1270,7 +1270,7 @@ const Dashboard = ({ dashboardStats, doctors, patients, hospitals }) => {
 // --- MODALS ---
 const AddDoctorModal = ({ isOpen, onClose, onAddDoctor, hospitals, departments }) => {
   const [formData, setFormData] = useState({
-    full_name: '', tc_kimlik_no: '', specialization: '', email: '', phone: '', hospital_id: '', department: '', years_of_experience: ''
+    full_name: '', tc_kimlik_no: '', specialization: '', email: '', phone: '', hospital_id: '', departmentId: '', years_of_experience: ''
   });
 
   const specialties = ['Kardiyoloji', 'Nöroloji', 'Pediatri', 'Dahiliye', 'Göz Hastalıkları', 'Genel Cerrahi', 'Ortopedi', 'Üroloji', 'Kadın Dogum', 'Kulak Burun Bogaz'];
@@ -1298,12 +1298,12 @@ const AddDoctorModal = ({ isOpen, onClose, onAddDoctor, hospitals, departments }
       phone: formData.phone,
       specialization: formData.specialization,
       hospital_id: formData.hospital_id ? parseInt(formData.hospital_id) : null,
-      department: formData.department || null,
+      department_id: formData.departmentId ? parseInt(formData.departmentId) : null,
       years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
       is_active: true
     };
     onAddDoctor(newDoctor);
-    setFormData({ full_name: '', tc_kimlik_no: '', specialization: '', email: '', phone: '', hospital_id: '', department: '', years_of_experience: '' });
+    setFormData({ full_name: '', tc_kimlik_no: '', specialization: '', email: '', phone: '', hospital_id: '', departmentId: '', years_of_experience: '' });
     onClose();
   };
 
@@ -1332,7 +1332,10 @@ const AddDoctorModal = ({ isOpen, onClose, onAddDoctor, hospitals, departments }
             <option value="">Hastane Seçin (Opsiyonel)</option>
             {hospitals.map(hospital => <option key={hospital.id} value={hospital.id}>{hospital.name}</option>)}
           </select>
-          <input type="text" placeholder="Departman" value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <select value={formData.departmentId} onChange={(e) => setFormData({...formData, departmentId: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Departman Seçin (Opsiyonel)</option>
+            {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+          </select>
           <div className="flex space-x-3">
             <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">Ekle</button>
             <button type="button" onClick={onClose} className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-colors">İptal</button>
@@ -1345,7 +1348,7 @@ const AddDoctorModal = ({ isOpen, onClose, onAddDoctor, hospitals, departments }
 
 const EditDoctorModal = ({ isOpen, onClose, onEditDoctor, doctor, hospitals, departments }) => {
   const [formData, setFormData] = useState({
-    name: '', tc_kimlik_no: '', specialty: '', email: '', phone: '', hospitalId: '', department: '', years_of_experience: '', status: '', role: ''
+    name: '', tc_kimlik_no: '', specialty: '', email: '', phone: '', hospitalId: '', departmentId: '', years_of_experience: '', status: '', role: ''
   });
 
   const specialties = ['Kardiyoloji', 'Nöroloji', 'Pediatri', 'Dahiliye', 'Göz Hastalıkları', 'Genel Cerrahi', 'Ortopedi', 'Üroloji', 'Kadın Dogum', 'Kulak Burun Bogaz'];
@@ -1361,7 +1364,7 @@ const EditDoctorModal = ({ isOpen, onClose, onEditDoctor, doctor, hospitals, dep
         email: doctor.email || '',
         phone: doctor.phone || '',
         hospitalId: doctor.hospital_id || doctor.hospitalId || '',
-        department: doctor.department || '',
+        departmentId: doctor.department_id || doctor.department || '',
         years_of_experience: doctor.years_of_experience || doctor.experience || '',
         status: doctor.is_active ? 'Aktif' : (doctor.status || ''),
         role: doctor.role || 'doctor'
@@ -1393,7 +1396,7 @@ const EditDoctorModal = ({ isOpen, onClose, onEditDoctor, doctor, hospitals, dep
       phone: formData.phone,
       specialization: formData.specialty,
       hospital_id: formData.hospitalId ? parseInt(formData.hospitalId) : null,
-      department: formData.department || null,
+      department_id: formData.departmentId ? parseInt(formData.departmentId) : null,
       years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
       is_active: formData.status === 'Aktif',
       role: formData.role
@@ -1427,7 +1430,10 @@ const EditDoctorModal = ({ isOpen, onClose, onEditDoctor, doctor, hospitals, dep
             <option value="">Hastane Seçin (Opsiyonel)</option>
             {hospitals.map(hospital => <option key={hospital.id} value={hospital.id}>{hospital.name}</option>)}
           </select>
-          <input type="text" placeholder="Departman" value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <select value={formData.departmentId} onChange={(e) => setFormData({...formData, departmentId: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Departman Seçin (Opsiyonel)</option>
+            {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+          </select>
           <input type="number" placeholder="Deneyim (Yıl)" value={formData.years_of_experience} onChange={(e) => setFormData({...formData, years_of_experience: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" max="50" />
           <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             <option value="">Durum Seçin</option>
@@ -3899,32 +3905,150 @@ export default function AdminPanelApp({ onLogout }) {
   const [searchResults, setSearchResults] = useState([]);
   const [adminUser, setAdminUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'connected', 'disconnected'
+  const [lastDataLoad, setLastDataLoad] = useState(null);
+  const [showBackendWarning, setShowBackendWarning] = useState(false);
   
   // Modal states
   const [showAddDepartmentModal, setShowAddDepartmentModal] = useState(false);
   const [showEditDepartmentModal, setShowEditDepartmentModal] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState(null);
   
-  // Verileri yükle
+  // Backend bağlantı kontrolü
+  const checkBackendConnection = async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        setBackendStatus('connected');
+        setShowBackendWarning(false);
+        return true;
+      } else {
+        setBackendStatus('disconnected');
+        return false;
+      }
+    } catch (error) {
+      console.error('Backend bağlantı kontrolü başarısız:', error);
+      setBackendStatus('disconnected');
+      return false;
+    }
+  };
+
+  // Verileri yükle - cache kontrolü ile
   useEffect(() => {
-    loadInitialData();
+    const initializeApp = async () => {
+      // Cache kontrolü - son 5 dakika içinde yüklenmiş mi?
+      const lastLoad = localStorage.getItem('adminPanelLastLoad');
+      const now = Date.now();
+      const fiveMinutes = 5 * 60 * 1000;
+      
+      if (lastLoad && (now - parseInt(lastLoad)) < fiveMinutes) {
+        // Cache'den verileri yükle
+        loadFromCache();
+        setLastDataLoad(new Date(parseInt(lastLoad)));
+      } else {
+        // Backend'den verileri yükle
+        await loadInitialData();
+      }
+    };
+    
+    initializeApp();
   }, []);
+
+  const loadFromCache = () => {
+    try {
+      const cachedDoctors = localStorage.getItem('adminPanel_doctors');
+      const cachedPatients = localStorage.getItem('adminPanel_patients');
+      const cachedHospitals = localStorage.getItem('adminPanel_hospitals');
+      
+      if (cachedDoctors) {
+        setDoctors(JSON.parse(cachedDoctors));
+      }
+      if (cachedPatients) {
+        setPatients(JSON.parse(cachedPatients));
+      }
+      if (cachedHospitals) {
+        setHospitals(JSON.parse(cachedHospitals));
+      }
+      
+      console.log('Veriler cache\'den yüklendi');
+    } catch (error) {
+      console.error('Cache\'den veri yükleme hatası:', error);
+      loadInitialData(); // Cache başarısızsa normal yükleme yap
+    }
+  };
+
+  const saveToCache = (doctors, patients, hospitals) => {
+    try {
+      localStorage.setItem('adminPanel_doctors', JSON.stringify(doctors));
+      localStorage.setItem('adminPanel_patients', JSON.stringify(patients));
+      localStorage.setItem('adminPanel_hospitals', JSON.stringify(hospitals));
+      localStorage.setItem('adminPanelLastLoad', Date.now().toString());
+    } catch (error) {
+      console.error('Cache\'e veri kaydetme hatası:', error);
+    }
+  };
 
   const loadInitialData = async () => {
     setLoading(true);
+    setBackendStatus('checking');
+    
     try {
-      await Promise.all([
-        loadDoctors(),
-        loadHospitals(),
-        loadPatients(),
-        loadCities(),
-        loadDepartments(),
-        loadDashboardStats(),
-        loadAdminProfile(),
-        loadNotifications()
-      ]);
+      // Önce backend bağlantısını kontrol et
+      const isBackendConnected = await checkBackendConnection();
+      
+      if (isBackendConnected) {
+        // Backend bağlı, verileri yükle
+        const [doctorsData, patientsData, hospitalsData] = await Promise.all([
+          loadDoctors(),
+          loadPatients(),
+          loadHospitals()
+        ]);
+        
+        // Diğer verileri de yükle
+        await Promise.all([
+          loadCities(),
+          loadDepartments(),
+          loadDashboardStats(),
+          loadAdminProfile(),
+          loadNotifications()
+        ]);
+        
+        // Başarılı yükleme sonrası cache'e kaydet
+        saveToCache(doctorsData || doctors, patientsData || patients, hospitalsData || hospitals);
+        setLastDataLoad(new Date());
+        
+      } else {
+        // Backend bağlı değil, uyarı göster ve cache'den yükle
+        setShowBackendWarning(true);
+        loadFromCache();
+        
+        // Mock verileri yükle (cache boşsa)
+        if (doctors.length === 0) setDoctors(initialDoctorData);
+        if (patients.length === 0) setPatients(patientData);
+        if (hospitals.length === 0) setHospitals(initialHospitalData);
+      }
+      
     } catch (error) {
       console.error('Veri yükleme hatası:', error);
+      setBackendStatus('disconnected');
+      setShowBackendWarning(true);
+      
+      // Hata durumunda cache'den yükle
+      loadFromCache();
+      
+      // Cache de boşsa mock data kullan
+      if (doctors.length === 0) setDoctors(initialDoctorData);
+      if (patients.length === 0) setPatients(patientData);
+      if (hospitals.length === 0) setHospitals(initialHospitalData);
     } finally {
       setLoading(false);
     }
@@ -3954,7 +4078,7 @@ export default function AdminPanelApp({ onLogout }) {
       const firstPatient = patientData[0];
       setAdminUser({
         name: firstPatient ? firstPatient.full_name || firstPatient.name : 'Admin User',
-        email: firstPatient ? firstPatient.email : 'admin@shifha.com',
+        email: firstPatient ? firstPatient.email : 'admin@saglik.gov.tr',
         role: 'Sistem Yöneticisi'
       });
     }
@@ -4038,11 +4162,13 @@ export default function AdminPanelApp({ onLogout }) {
       const doctors = await getAllDoctors();
       console.log('API\'den doktor verileri alındı:', doctors);
       setDoctors(doctors);
+      return doctors;
     } catch (error) {
       console.error('Doktor verisi yüklenemedi:', error);
       console.log('Hata nedeniyle mock data kullanılıyor');
       // Fallback to mock data
       setDoctors(initialDoctorData);
+      return initialDoctorData;
     }
   };
 
@@ -4050,10 +4176,12 @@ export default function AdminPanelApp({ onLogout }) {
     try {
       const hospitals = await getAllHospitals();
       setHospitals(hospitals);
+      return hospitals;
     } catch (error) {
       console.error('Hastane verisi yüklenemedi:', error);
       // Fallback to mock data
       setHospitals(initialHospitalData);
+      return initialHospitalData;
     }
   };
 
@@ -4063,11 +4191,13 @@ export default function AdminPanelApp({ onLogout }) {
       const patients = await getAllPatients();
       console.log('API\'den hasta verileri alındı:', patients);
       setPatients(patients);
+      return patients;
     } catch (error) {
       console.error('Hasta verisi yüklenemedi:', error);
       console.log('Hata nedeniyle mock data kullanılıyor');
       // Fallback to mock data
       setPatients(patientData);
+      return patientData;
     }
   };
 
@@ -4414,6 +4544,18 @@ export default function AdminPanelApp({ onLogout }) {
     }
   };
 
+  // Manuel yenileme fonksiyonu
+  const handleManualRefresh = async () => {
+    // Cache'i temizle
+    localStorage.removeItem('adminPanel_doctors');
+    localStorage.removeItem('adminPanel_patients');
+    localStorage.removeItem('adminPanel_hospitals');
+    localStorage.removeItem('adminPanelLastLoad');
+    
+    // Verileri yeniden yükle
+    await loadInitialData();
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
       <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} onLogout={onLogout} />
@@ -4428,6 +4570,79 @@ export default function AdminPanelApp({ onLogout }) {
           onLogout={onLogout}
           setCurrentPage={setCurrentPage}
         />
+        
+        {/* Backend Durum Göstergesi */}
+        {showBackendWarning && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-700">
+                    Backend sunucusuna bağlanılamıyor. Veriler cache'den yüklendi.
+                    {lastDataLoad && (
+                      <span className="block text-xs text-yellow-600 mt-1">
+                        Son güncelleme: {lastDataLoad.toLocaleString('tr-TR')}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleManualRefresh}
+                  disabled={loading}
+                  className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                  Yenile
+                </button>
+                <button
+                  onClick={() => setShowBackendWarning(false)}
+                  className="inline-flex items-center px-2 py-1 text-yellow-400 hover:text-yellow-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Backend Durum Çubuğu */}
+        <div className="bg-white border-b border-gray-200 px-6 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  backendStatus === 'connected' ? 'bg-green-400' : 
+                  backendStatus === 'disconnected' ? 'bg-red-400' : 'bg-yellow-400'
+                }`}></div>
+                <span className="text-sm text-gray-600">
+                  Backend: {
+                    backendStatus === 'connected' ? 'Bağlı' : 
+                    backendStatus === 'disconnected' ? 'Bağlantısız' : 'Kontrol ediliyor...'
+                  }
+                </span>
+              </div>
+              {lastDataLoad && (
+                <span className="text-xs text-gray-500">
+                  Son güncelleme: {lastDataLoad.toLocaleString('tr-TR')}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={handleManualRefresh}
+              disabled={loading}
+              className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              Verileri Yenile
+            </button>
+          </div>
+        </div>
+
         <div className="flex-1 p-6 overflow-y-auto">
           {renderPage()}
         </div>

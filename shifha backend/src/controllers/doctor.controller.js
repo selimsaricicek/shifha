@@ -1,16 +1,16 @@
 // Dosya Adı: src/controllers/doctor.controller.js
 
-const supabase = require('../services/supabaseClient');
+const { supabaseAdmin } = require('../config/supabase');
 
 /**
- * Tüm doktorları getirir
+ * Tüm doktorları getirir (organizasyon bazlı)
  * @route GET /api/doctors
  * @returns {Object} 200 - { success, data }
  */
 const getAllDoctors = async (req, res, next) => {
   try {
-    console.log("getAllDoctors isteği alındı.");
-    const { data, error } = await supabase
+    console.log("getAllDoctors isteği alındı. Organization ID:", req.organizationId);
+    const { data, error } = await supabaseAdmin
       .from('doctor_profiles')
       .select(`
         *,
@@ -30,6 +30,7 @@ const getAllDoctors = async (req, res, next) => {
           )
         )
       `)
+      .eq('organization_id', req.organizationId)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -45,14 +46,14 @@ const getAllDoctors = async (req, res, next) => {
 };
 
 /**
- * ID ile doktor getirir
+ * ID ile doktor getirir (organizasyon bazlı)
  * @route GET /api/doctors/:id
  * @returns {Object} 200 - { success, data } | 404 - { success: false, error }
  */
 const getDoctorById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`getDoctorById isteği alındı: ID=${id}`);
+    console.log(`getDoctorById isteği alındı: ID=${id}, Organization ID: ${req.organizationId}`);
 
     const { data, error } = await supabase
       .from('doctor_profiles')
@@ -75,6 +76,7 @@ const getDoctorById = async (req, res, next) => {
         )
       `)
       .eq('id', id)
+      .eq('organization_id', req.organizationId)
       .single();
 
     if (error) {
@@ -94,17 +96,22 @@ const getDoctorById = async (req, res, next) => {
 };
 
 /**
- * Yeni doktor ekle
+ * Yeni doktor ekle (organizasyon bazlı)
  * @route POST /api/doctors
  */
 const addDoctor = async (req, res, next) => {
   try {
     const { body } = req;
-    console.log('Yeni doktor ekleniyor:', body);
+    // Organizasyon ID'sini otomatik olarak ekle
+    const doctorData = {
+      ...body,
+      organization_id: req.organizationId
+    };
+    console.log('Yeni doktor ekleniyor:', doctorData);
 
     const { data, error } = await supabase
       .from('doctor_profiles')
-      .insert([body])
+      .insert([doctorData])
       .select(`
         *,
         departments:department_id(id, name),
@@ -134,19 +141,20 @@ const addDoctor = async (req, res, next) => {
 };
 
 /**
- * Doktor güncelle
+ * Doktor güncelle (organizasyon bazlı)
  * @route PUT /api/doctors/:id
  */
 const updateDoctor = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { body } = req;
-    console.log(`Doktor güncelleniyor: ID=${id}`, body);
+    console.log(`Doktor güncelleniyor: ID=${id}, Organization ID: ${req.organizationId}`, body);
 
     const { data, error } = await supabase
       .from('doctor_profiles')
       .update(body)
       .eq('id', id)
+      .eq('organization_id', req.organizationId)
       .select(`
         *,
         departments:department_id(id, name),
@@ -183,18 +191,19 @@ const updateDoctor = async (req, res, next) => {
 };
 
 /**
- * Doktor sil
+ * Doktor sil (organizasyon bazlı)
  * @route DELETE /api/doctors/:id
  */
 const deleteDoctor = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`Doktor siliniyor: ID=${id}`);
+    console.log(`Doktor siliniyor: ID=${id}, Organization ID: ${req.organizationId}`);
 
     const { error } = await supabase
       .from('doctor_profiles')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('organization_id', req.organizationId);
 
     if (error) throw error;
     
@@ -206,23 +215,24 @@ const deleteDoctor = async (req, res, next) => {
 };
 
 /**
- * Hastaneye doktor ata
+ * Hastaneye doktor ata (organizasyon bazlı)
  * @route PUT /api/doctors/:id/assign-hospital
  */
 const assignDoctorToHospital = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { hospital_id, department } = req.body;
-    console.log(`Doktor hastaneye atanıyor: ID=${id}, Hospital=${hospital_id}, Department=${department}`);
+    const { hospital_id, department_id } = req.body;
+    console.log(`Doktor hastaneye atanıyor: ID=${id}, Hospital=${hospital_id}, DepartmentID=${department_id}, Organization ID: ${req.organizationId}`);
 
     const { data, error } = await supabase
       .from('doctor_profiles')
       .update({ 
         hospital_id, 
-        department,
+        department_id,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+      .eq('organization_id', req.organizationId)
       .select(`
         *,
         departments:department_id(id, name),

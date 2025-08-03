@@ -9,11 +9,10 @@ const supabase = createClient(
 // KONSÜLTASYON YÖNETİMİ
 // =====================================================
 
-// Konsültasyon isteği oluştur
+// Konsültasyon isteği oluştur (organizasyon bazlı)
 const createConsultation = async (req, res) => {
   try {
     const {
-      organizationId,
       consultingDoctorId,
       patientTc,
       departmentId,
@@ -23,6 +22,7 @@ const createConsultation = async (req, res) => {
       consultationType = 'opinion'
     } = req.body;
     const userId = req.user.id;
+    const organizationId = req.organizationId; // Tenant context middleware'den
 
     // İstek yapan doktorun bilgilerini al
     const { data: requestingDoctor, error: doctorError } = await supabase
@@ -89,21 +89,18 @@ const createConsultation = async (req, res) => {
         *,
         requesting_doctor:doctor_profiles!consultations_requesting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization
         ),
         consulting_doctor:doctor_profiles!consultations_consulting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization
         ),
         patients (
           tc_kimlik_no,
-          first_name,
-          last_name,
-          birth_date
+          ad_soyad,
+          dogum_tarihi
         ),
         departments (
           id,
@@ -130,7 +127,7 @@ const createConsultation = async (req, res) => {
             organization_id: organizationId,
             type: 'consultation',
             title: 'Yeni Konsültasyon İsteği',
-            content: `${consultation.requesting_doctor.first_name} ${consultation.requesting_doctor.last_name} tarafından "${title}" konulu konsültasyon isteği`,
+            content: `${consultation.requesting_doctor.full_name} tarafından "${title}" konulu konsültasyon isteği`,
             reference_id: consultation.id
           });
       }
@@ -151,12 +148,12 @@ const createConsultation = async (req, res) => {
   }
 };
 
-// Doktorun konsültasyonlarını getir
+// Doktorun konsültasyonlarını getir (organizasyon bazlı)
 const getDoctorConsultations = async (req, res) => {
   try {
-    const { organizationId } = req.params;
     const { status, type = 'all' } = req.query; // type: 'requested', 'received', 'all'
     const userId = req.user.id;
+    const organizationId = req.organizationId; // Tenant context middleware'den
 
     // Doktor profilini al
     const { data: doctorProfile, error: doctorError } = await supabase
@@ -178,23 +175,22 @@ const getDoctorConsultations = async (req, res) => {
         *,
         requesting_doctor:doctor_profiles!consultations_requesting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url
+          email,
+          phone
         ),
         consulting_doctor:doctor_profiles!consultations_consulting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url
+          email,
+          phone
         ),
         patients (
           tc_kimlik_no,
-          first_name,
-          last_name,
-          birth_date
+          ad_soyad,
+          dogum_tarihi
         ),
         departments (
           id,
@@ -264,28 +260,23 @@ const getConsultationDetails = async (req, res) => {
         *,
         requesting_doctor:doctor_profiles!consultations_requesting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url,
           email,
           phone
         ),
         consulting_doctor:doctor_profiles!consultations_consulting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url,
           email,
           phone
         ),
         patients (
           tc_kimlik_no,
-          first_name,
-          last_name,
-          birth_date,
-          gender,
+          ad_soyad,
+          dogum_tarihi,
+          cinsiyet,
           phone,
           email
         ),
@@ -383,8 +374,7 @@ const respondToConsultation = async (req, res) => {
         *,
         requesting_doctor:doctor_profiles!consultations_requesting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           user_id
         )
       `)
@@ -521,13 +511,8 @@ const getAvailableDoctorsForConsultation = async (req, res) => {
       .from('doctor_profiles')
       .select(`
         id,
-        first_name,
-        last_name,
+        full_name,
         specialization,
-        years_of_experience,
-        consultation_fee,
-        available_for_consultation,
-        profile_image_url,
         department_id,
         departments (
           id,
@@ -615,17 +600,17 @@ const getPatientConsultations = async (req, res) => {
         *,
         requesting_doctor:doctor_profiles!consultations_requesting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url
+          email,
+          phone
         ),
         consulting_doctor:doctor_profiles!consultations_consulting_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           specialization,
-          profile_image_url
+          email,
+          phone
         ),
         departments (
           id,

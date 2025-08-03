@@ -12,16 +12,24 @@ const api = axios.create({
 
 // Add token to requests if available
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Admin paneli için adminToken, normal kullanıcı için token kullan
+  const adminToken = localStorage.getItem('adminToken');
+  const userToken = localStorage.getItem('token');
+  const token = adminToken || userToken;
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  const orgId = localStorage.getItem('organizationId');
+  if (orgId) {
+    config.headers['x-organization-id'] = orgId;
   }
   return config;
 });
 
 export const getAllDoctors = async () => {
   try {
-    const response = await api.get('/doctors');
+    const response = await api.get('/admin/doctors');
     return response.data.data;
   } catch (error) {
     console.error('Error fetching doctors:', error);

@@ -3,7 +3,6 @@ const multer = require('multer');
 const rateLimit = require('express-rate-limit');
 const { parsePatientPdf } = require('../services/pdfParser.service');
 const router = express.Router();
-const { supabaseAuthMiddleware } = require('../middleware/auth.middleware');
 
 // Dosya tipi ve boyut limiti
 const upload = multer({

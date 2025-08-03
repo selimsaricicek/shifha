@@ -69,6 +69,12 @@ function App() {
         // Email domain kontrolü yaparak doğru panele yönlendir
         const isAdminEmail = user.email && user.email.toLowerCase().endsWith('@shifha.admin.tr');
         
+        // Ortak organizationId yakala ve sakla
+        const organizationId = user.user_metadata?.organizationId || user.doctorProfile?.organization_id || user.profile?.organization_id;
+        if (organizationId) {
+            localStorage.setItem('organizationId', organizationId);
+        }
+        
         if (isAdminEmail) {
             // Admin kullanıcıları için admin panel'e yönlendir
             localStorage.setItem('adminToken', token);

@@ -1,7 +1,6 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabaseAuthMiddleware } = require('../middleware/auth.middleware');
 const { validateAssayAnalysis } = require('../middleware/validation.middleware');
 module.exports = router;
 

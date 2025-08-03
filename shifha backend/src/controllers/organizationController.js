@@ -264,17 +264,10 @@ const getOrganizationDoctors = async (req, res) => {
         *,
         doctor_profiles (
           id,
-          first_name,
-          last_name,
+          full_name,
           email,
           phone,
-          specialization,
-          license_number,
-          years_of_experience,
-          consultation_fee,
-          available_for_consultation,
-          bio,
-          profile_image_url
+          specialization
         ),
         departments (
           id,
@@ -382,8 +375,7 @@ const getOrganizationDepartments = async (req, res) => {
         *,
         doctor_profiles!departments_head_doctor_id_fkey (
           id,
-          first_name,
-          last_name,
+          full_name,
           email
         )
       `)

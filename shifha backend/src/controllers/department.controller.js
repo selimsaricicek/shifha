@@ -62,7 +62,7 @@ const getDepartmentsByOrganization = async (req, res, next) => {
 const addDepartment = async (req, res, next) => {
   try {
     const { name, description } = req.body;
-    console.log('Yeni departman ekleniyor:', { name, description });
+    console.log('Yeni departman ekleniyor:', { name, description, organizationId: req.organizationId });
 
     if (!name) {
       return res.status(400).json({ success: false, error: 'Departman adı zorunludur.' });
@@ -70,7 +70,8 @@ const addDepartment = async (req, res, next) => {
 
     const insertData = {
       name: name.trim(),
-      description: description?.trim() || null
+      description: description?.trim() || null,
+      organization_id: req.organizationId
     };
 
     const { data, error } = await supabase
@@ -101,7 +102,7 @@ const updateDepartment = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
-    console.log(`Departman güncelleniyor: ID=${id}`, { name, description });
+    console.log(`Departman güncelleniyor: ID=${id}`, { name, description, organizationId: req.organizationId });
 
     if (!name) {
       return res.status(400).json({ success: false, error: 'Departman adı zorunludur.' });
@@ -117,6 +118,7 @@ const updateDepartment = async (req, res, next) => {
       .from('departments')
       .update(updateData)
       .eq('id', id)
+      .eq('organization_id', req.organizationId)
       .select('*');
 
     if (error) {
@@ -148,13 +150,14 @@ const updateDepartment = async (req, res, next) => {
 const deleteDepartment = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`Departman siliniyor: ID=${id}`);
+    console.log(`Departman siliniyor: ID=${id}, organizationId=${req.organizationId}`);
 
-    // Önce bu departmana bağlı doktor var mı kontrol et
+    // Önce bu departmana bağlı doktor var mı kontrol et (organizasyon bazlı)
     const { data: doctors, error: doctorError } = await supabase
       .from('doctor_profiles')
       .select('id')
-      .eq('department_id', id);
+      .eq('department_id', id)
+      .eq('organization_id', req.organizationId);
 
     if (doctorError) throw doctorError;
 
@@ -168,7 +171,8 @@ const deleteDepartment = async (req, res, next) => {
     const { error } = await supabase
       .from('departments')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('organization_id', req.organizationId);
 
     if (error) throw error;
 
@@ -187,7 +191,7 @@ const deleteDepartment = async (req, res, next) => {
 const getDepartmentDoctors = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`Departman doktorları getiriliyor: ID=${id}`);
+    console.log(`Departman doktorları getiriliyor: ID=${id}, organizationId=${req.organizationId}`);
 
     const { data, error } = await supabase
       .from('doctor_profiles')
@@ -197,6 +201,7 @@ const getDepartmentDoctors = async (req, res, next) => {
         organizations:organization_id(id, name)
       `)
       .eq('department_id', id)
+      .eq('organization_id', req.organizationId)
       .order('name', { ascending: true });
 
     if (error) throw error;

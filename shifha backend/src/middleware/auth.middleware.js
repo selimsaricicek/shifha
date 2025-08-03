@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const supabase = require('../services/supabaseClient');
 
 // Supabase JWT secret - bu genellikle service role key ile aynıdır
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
@@ -79,4 +80,34 @@ function requireRole(requiredRole) {
   };
 }
 
-module.exports = { supabaseAuthMiddleware, requireRole };
+// Organization ID'yi belirleyen middleware
+const setOrganizationId = async (req, res, next) => {
+  try {
+    console.log('🔍 SetOrganizationId middleware called for user:', req.user?.id);
+    
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    // User'ın organizasyon ID'sini bul
+    const { data: userOrg, error } = await supabase
+      .from('user_organizations')
+      .select('organization_id')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (error || !userOrg) {
+      console.log('❌ User organization not found:', error);
+      return res.status(403).json({ message: 'User organization not found' });
+    }
+
+    req.organizationId = userOrg.organization_id;
+    console.log('✅ Organization ID set:', req.organizationId);
+    next();
+  } catch (error) {
+    console.log('❌ Error setting organization ID:', error.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { supabaseAuthMiddleware, requireRole, setOrganizationId };

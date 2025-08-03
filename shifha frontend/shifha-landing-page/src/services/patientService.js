@@ -12,26 +12,35 @@ const api = axios.create({
 
 // Add token to requests if available
 api.interceptors.request.use((config) => {
+  // Token'ı al ve header'a ekle
   const token = localStorage.getItem('token');
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('🔍 API isteği gönderiliyor:', config.url, 'Token var:', !!token);
+  } else {
+    console.warn('⚠️ Token bulunamadı!');
   }
+  
   return config;
 });
 
 export const getAllPatients = async () => {
   try {
+    // Doctor rolü için /patients endpoint'ini kullan
     const response = await api.get('/patients');
-    return response.data.data;
+    console.log('✅ Hasta listesi API yanıtı:', response.data);
+    return response.data.data || response.data;
   } catch (error) {
-    console.error('Error fetching patients:', error);
+    console.error('❌ Hasta listesi alınırken hata:', error);
+    console.error('❌ Hata detayları:', error.response?.data);
     throw error;
   }
 };
 
 export const getPatientByTC = async (tc) => {
   try {
-    const response = await api.get(`/patients/tc/${tc}`);
+    const response = await api.get(`/patients/${tc}`);
     return response.data.data;
   } catch (error) {
     console.error('Error fetching patient by TC:', error);
@@ -71,7 +80,7 @@ export const deletePatient = async (id) => {
 
 export const getBloodTestResults = async (patientId) => {
   try {
-    const response = await api.get(`/patients/${patientId}/blood-tests`);
+    const response = await api.get(`/patients/${patientId}/blood-test-results`);
     return response.data.data;
   } catch (error) {
     console.error('Error fetching blood test results:', error);
@@ -81,7 +90,7 @@ export const getBloodTestResults = async (patientId) => {
 
 export const getDoctorNotes = async (patientId) => {
   try {
-    const response = await api.get(`/patients/${patientId}/doctor-notes`);
+    const response = await api.get(`/patients/${patientId}/notes`);
     return response.data.data;
   } catch (error) {
     console.error('Error fetching doctor notes:', error);
@@ -91,7 +100,7 @@ export const getDoctorNotes = async (patientId) => {
 
 export const addDoctorNote = async (patientId, noteData) => {
   try {
-    const response = await api.post(`/patients/${patientId}/doctor-notes`, noteData);
+    const response = await api.post(`/patients/${patientId}/notes`, noteData);
     return response.data.data;
   } catch (error) {
     console.error('Error adding doctor note:', error);

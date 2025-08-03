@@ -2,14 +2,14 @@
 
 const express = require('express');
 const router = express.Router();
-const { getAllPatients, getPatientByTC, addPatient, updatePatient, deletePatient, getBloodTestResults, getDoctorNotes, addDoctorNote } = require('../controllers/patient.controller.js');
+const { getAllPatients, getPatientByTC, addPatient, updatePatient, deletePatient, getBloodTestResults, getDoctorNotes, addDoctorNote, addPatientAccess, removePatientAccess, getPatientAccess, createBulkPatientAccess } = require('../controllers/patient.controller.js');
 const { validatePatient } = require('../middleware/validation.middleware');
-const { supabaseAuthMiddleware, requireRole } = require('../middleware/auth.middleware');
+const { requireRole } = require('../middleware/auth');
 
-// Tek bir hastayı getiren rota: GET /api/patients/:tc
-router.get('/:tc', getPatientByTC);
-// Bütün hastaları getiren rota: GET /api/patients
+// Bütün hastaları getiren rota: GET /api/patients (auth ve tenant context zaten API router'da uygulandı)
 router.get('/', getAllPatients);
+// Tek bir hastayı getiren rota: GET /api/patients/:tc (auth ve tenant context zaten API router'da uygulandı)
+router.get('/:tc', getPatientByTC);
 // Yeni hasta ekle: POST /api/patients
 router.post('/', validatePatient, addPatient);
 // Hasta güncelle: PUT /api/patients/:tc
@@ -21,10 +21,10 @@ router.delete('/:tc', deletePatient);
 router.get('/:tc/blood-test-results', getBloodTestResults);
 
 // Bir hastanın doktor notlarını getir (sadece doktorlar)
-router.get('/:tc/notes', supabaseAuthMiddleware, requireRole('doctor'), getDoctorNotes);
+router.get('/:tc/notes', requireRole(['doctor']), getDoctorNotes);
 
 // Mevcut doktor profilini kontrol et
-router.get('/check-doctor-profile', supabaseAuthMiddleware, async (req, res) => {
+router.get('/check-doctor-profile', async (req, res) => {
   try {
     const supabase = require('../services/supabaseClient');
     const user_id = req.user.id;
@@ -60,7 +60,15 @@ router.get('/check-doctor-profile', supabaseAuthMiddleware, async (req, res) => 
 });
 
 // Bir hastaya yeni doktor notu ekle (sadece doktorlar)
-router.post('/:tc/notes', supabaseAuthMiddleware, requireRole('doctor'), addDoctorNote);
+router.post('/:tc/notes', requireRole(['doctor']), addDoctorNote);
+
+// Hasta-doktor erişim yönetimi
+router.post('/:tc/access', requireRole(['doctor']), addPatientAccess);
+router.delete('/:tc/access/:doctorId', requireRole(['doctor']), removePatientAccess);
+router.get('/:tc/access', requireRole(['doctor']), getPatientAccess);
+
+// Toplu hasta-doktor erişimi oluştur (test için)
+router.post('/bulk-access', requireRole(['doctor']), createBulkPatientAccess);
 
 // Test verisi ekleme endpoint'i (sadece development için)
 router.post('/test-data', async (req, res) => {

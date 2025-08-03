@@ -1,4 +1,4 @@
-const supabase = require('../services/supabaseClient');
+const { supabaseAdmin } = require('../config/supabase');
 
 /**
  * Get admin profile
@@ -10,7 +10,7 @@ const getProfile = async (req, res, next) => {
     const adminData = req.admin;
     
     // Get additional profile data
-    const { data: profileData, error: profileError } = await supabase
+    const { data: profileData, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .eq('id', adminData.user_id)
@@ -39,7 +39,7 @@ const getProfile = async (req, res, next) => {
  */
 const getAllAdmins = async (req, res, next) => {
   try {
-    const { data: admins, error } = await supabase
+    const { data: admins, error } = await supabaseAdmin
       .from('admins')
       .select(`
         *,
@@ -77,7 +77,7 @@ const createAdmin = async (req, res, next) => {
     }
 
     // Create user in Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       user_metadata: { 
@@ -92,7 +92,7 @@ const createAdmin = async (req, res, next) => {
     }
 
     // Create profile
-    const { error: profileError } = await supabase
+    const { error: profileError } = await supabaseAdmin
       .from('profiles')
       .insert([
         {
@@ -107,7 +107,7 @@ const createAdmin = async (req, res, next) => {
     }
 
     // Create admin record
-    const { data: adminData, error: adminError } = await supabase
+    const { data: adminData, error: adminError } = await supabaseAdmin
       .from('admins')
       .insert([
         {
@@ -149,7 +149,7 @@ const updateAdmin = async (req, res, next) => {
     if (is_active !== undefined) updateData.is_active = is_active;
     if (permissions !== undefined) updateData.permissions = permissions;
 
-    const { data: adminData, error } = await supabase
+    const { data: adminData, error } = await supabaseAdmin
       .from('admins')
       .update(updateData)
       .eq('id', id)
@@ -177,7 +177,7 @@ const deleteAdmin = async (req, res, next) => {
     const { id } = req.params;
 
     // Get admin data first
-    const { data: adminData, error: getError } = await supabase
+    const { data: adminData, error: getError } = await supabaseAdmin
       .from('admins')
       .select('user_id')
       .eq('id', id)
@@ -199,7 +199,7 @@ const deleteAdmin = async (req, res, next) => {
     }
 
     // Delete admin record (this will cascade to auth.users due to foreign key)
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from('admins')
       .delete()
       .eq('id', id);
@@ -209,7 +209,7 @@ const deleteAdmin = async (req, res, next) => {
     }
 
     // Delete user from Supabase Auth
-    const { error: authDeleteError } = await supabase.auth.admin.deleteUser(adminData.user_id);
+    const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(adminData.user_id);
     
     if (authDeleteError) {
       console.error('Auth user deletion error:', authDeleteError);
@@ -226,32 +226,51 @@ const deleteAdmin = async (req, res, next) => {
 };
 
 /**
- * Get dashboard statistics
+ * Get dashboard statistics (tüm sistem)
  * @route GET /api/admin/dashboard/stats
  * @returns {Object} 200 - { success, data }
  */
 const getDashboardStats = async (req, res, next) => {
   try {
-    // Get various statistics
+    console.log('Admin dashboard stats alınıyor...');
+
+    // Get system-wide statistics
     const [
       doctorsResult,
       patientsResult,
-      appointmentsResult,
-      organizationsResult
+      organizationsResult,
+      hospitalsResult
     ] = await Promise.all([
-      supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('patients').select('tc_kimlik_no', { count: 'exact', head: true }),
-      supabase.from('appointments').select('id', { count: 'exact', head: true }),
-      supabase.from('organizations').select('id', { count: 'exact', head: true })
+      supabaseAdmin.from('doctor_profiles').select('id', { count: 'exact', head: true }),
+      supabaseAdmin.from('patients').select('tc_kimlik_no', { count: 'exact', head: true }),
+      supabaseAdmin.from('organizations').select('id', { count: 'exact', head: true }),
+      supabaseAdmin.from('hospitals').select('id', { count: 'exact', head: true })
     ]);
+
+    // Get recent activity
+    const { data: recentDoctors } = await supabaseAdmin
+      .from('doctor_profiles')
+      .select('full_name, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    const { data: recentPatients } = await supabaseAdmin
+      .from('patients')
+      .select('ad_soyad, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5);
 
     const stats = {
       totalDoctors: doctorsResult.count || 0,
       totalPatients: patientsResult.count || 0,
-      totalAppointments: appointmentsResult.count || 0,
-      totalOrganizations: organizationsResult.count || 0
+      totalOrganizations: organizationsResult.count || 0,
+      totalHospitals: hospitalsResult.count || 0,
+      recentDoctors: recentDoctors || [],
+      recentPatients: recentPatients || [],
+      lastUpdated: new Date().toISOString()
     };
 
+    console.log('Dashboard stats:', stats);
     res.json({ success: true, data: stats });
   } catch (error) {
     console.error('Get dashboard stats error:', error);

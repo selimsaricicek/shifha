@@ -5,27 +5,22 @@ const Calendar = ({ appointments = [], onDateSelect, onAppointmentClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Ayın ilk günü ve son günü
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
   
-  // Takvimin başlangıç ve bitiş günleri (önceki ayın son günleri + sonraki ayın ilk günleri dahil)
   const startDate = new Date(firstDayOfMonth);
   startDate.setDate(startDate.getDate() - firstDayOfMonth.getDay());
   
   const endDate = new Date(lastDayOfMonth);
   endDate.setDate(endDate.getDate() + (6 - lastDayOfMonth.getDay()));
 
-  // Ay isimleri
   const monthNames = [
     'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
     'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
   ];
 
-  // Gün isimleri
   const dayNames = ['Pzr', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
 
-  // Takvim günlerini oluştur
   const generateCalendarDays = () => {
     const days = [];
     const current = new Date(startDate);
@@ -38,30 +33,25 @@ const Calendar = ({ appointments = [], onDateSelect, onAppointmentClick }) => {
     return days;
   };
 
-  // Belirli bir günün randevularını getir
   const getAppointmentsForDate = (date) => {
     const dateString = date.toISOString().split('T')[0];
     return appointments.filter(apt => apt.date === dateString);
   };
 
-  // Önceki ay
   const previousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
 
-  // Sonraki ay
   const nextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  // Bugün
   const goToToday = () => {
     const today = new Date();
     setCurrentDate(today);
     setSelectedDate(today);
   };
 
-  // Gün seçimi
   const handleDateClick = (date) => {
     setSelectedDate(date);
     if (onDateSelect) {
@@ -69,18 +59,15 @@ const Calendar = ({ appointments = [], onDateSelect, onAppointmentClick }) => {
     }
   };
 
-  // Günün bugün olup olmadığını kontrol et
   const isToday = (date) => {
     const today = new Date();
     return date.toDateString() === today.toDateString();
   };
 
-  // Günün seçili olup olmadığını kontrol et
   const isSelected = (date) => {
     return date.toDateString() === selectedDate.toDateString();
   };
 
-  // Günün bu ayın günü olup olmadığını kontrol et
   const isCurrentMonth = (date) => {
     return date.getMonth() === currentDate.getMonth();
   };
