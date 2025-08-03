@@ -1,34 +1,9 @@
-import axios from 'axios';
+import api from '../api/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  // Token'ı al ve header'a ekle
-  const token = localStorage.getItem('token');
-  
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log('🔍 API isteği gönderiliyor:', config.url, 'Token var:', !!token);
-  } else {
-    console.warn('⚠️ Token bulunamadı!');
-  }
-  
-  return config;
-});
-
-export const getAllPatients = async () => {
+export const getAllPatients = async (organizationId) => {
   try {
     // Doctor rolü için /patients endpoint'ini kullan
-    const response = await api.get('/patients');
+    const response = await api.get('/patients', { params: { organizationId } });
     console.log('✅ Hasta listesi API yanıtı:', response.data);
     return response.data.data || response.data;
   } catch (error) {

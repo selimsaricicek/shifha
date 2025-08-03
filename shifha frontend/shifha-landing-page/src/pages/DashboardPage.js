@@ -3,7 +3,7 @@ import { Search, Calendar as CalendarIcon, FileUp, Check, X, Pencil, ArrowLeft, 
 import ChatBot from '../components/ChatBot';
 import { Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
 import { uploadPdfAndParsePatient } from '../api/patientService';
-import { getAllPatients, deletePatient } from '../services/patientService';
+import { getAllPatients, updatePatient, deletePatient } from '../services/patientService';
 import { toast } from 'react-toastify';
 import Calendar from '../components/Calendar';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -230,11 +230,7 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const handleUpdatePatient = async (updated) => {
         setLoading(true);
         try {
-            // updatePatient fonksiyonu artık import edilmediği için bu kısım çalışmayacak.
-            // Bu fonksiyonun doğru çalışması için patientService.js'e updatePatient fonksiyonunun eklenmesi gerekiyor.
-            // Şimdilik bu kısım sadece bir placeholder olarak bırakıldı.
-            console.log("Hasta güncelleme fonksiyonu çalıştırıldı. Ancak updatePatient fonksiyonu import edilmedi.");
-            // await updatePatient(updated.tc_kimlik_no, updated); // Bu satır uncomment edilirse updatePatient fonksiyonu çalışacak.
+            await updatePatient(updated.tc_kimlik_no, updated);
             setShowEditModal(false);
             setEditPatient(null);
             await fetchPatients();
@@ -1004,11 +1000,7 @@ function PatientDetailPageRemote() {
     const updated = { ...patient, [field]: newValue };
     setPatient(updated);
     try {
-      // updatePatient fonksiyonu artık import edilmediği için bu kısım çalışmayacak.
-      // Bu fonksiyonun doğru çalışması için patientService.js'e updatePatient fonksiyonunun eklenmesi gerekiyor.
-      // Şimdilik bu kısım sadece bir placeholder olarak bırakıldı.
-      console.log("Hasta güncelleme fonksiyonu çalıştırıldı. Ancak updatePatient fonksiyonu import edilmedi.");
-      // await updatePatient(patient.tc_kimlik_no, updated); // Bu satır uncomment edilirse updatePatient fonksiyonu çalışacak.
+      await updatePatient(patient.tc_kimlik_no, updated);
     } catch (e) {
       toast.error('Güncelleme başarısız: ' + e.message, {
         icon: '❌',

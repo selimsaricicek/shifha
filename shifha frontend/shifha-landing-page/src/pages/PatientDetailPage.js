@@ -509,11 +509,45 @@ const SummaryTab = ({ patient, bloodTestResults = [], medicalAnalysis = null, an
 
 
 
-const PatientInfo = ({ patient, onUpdate }) => {
+// InfoItem ve EditableInfoItem componentlerini PatientInfo dışında tanımlıyoruz
+const InfoItem = ({ label, value }) => (
+  <div className="grid grid-cols-3 gap-4 py-2">
+    <dt className="font-medium text-gray-500">{label}</dt>
+    <dd className="text-gray-700 col-span-2">{value || '-'}</dd>
+  </div>
+);
+
+const EditableInfoItem = ({ label, value, name, type = 'text', onChange }) => (
+  <div className="grid grid-cols-3 gap-4 items-center py-1">
+    <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
+    <input 
+      type={type} 
+      id={name} 
+      name={name} 
+      value={value || ''} 
+      onChange={onChange} 
+      className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white"
+      autoComplete="off"
+    />
+  </div>
+);
+
+const PatientInfo = React.memo(({ patient, onUpdate }) => {
   console.log("PatientInfo component - patient prop:", patient);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editablePatientData, setEditablePatientData] = useState(patient || {});
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
+  // Patient prop'u değiştiğinde editablePatientData'yı güncelle (sadece ilk kez veya editing mode değilken)
+  useEffect(() => {
+    if (patient && (!hasInitialized || !isEditing)) {
+      setEditablePatientData(patient);
+      if (!hasInitialized) {
+        setHasInitialized(true);
+      }
+    }
+  }, [patient, isEditing, hasInitialized]);
   
   if (!patient) {
     return (
@@ -533,8 +567,9 @@ const PatientInfo = ({ patient, onUpdate }) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/patients/${patient.tc_kimlik_no}`,
-       {
+      console.log('Hasta bilgileri kaydediliyor:', editablePatientData);
+      
+      const response = await fetch(`http://localhost:3001/api/patients/${patient.tc_kimlik_no}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -542,32 +577,26 @@ const PatientInfo = ({ patient, onUpdate }) => {
         },
         body: JSON.stringify(editablePatientData),
       });
+      
       const result = await response.json();
+      console.log('Kaydetme sonucu:', result);
+      
       if (result.success) {
+        // Parent component'teki patientData'yı güncelle
         onUpdate(editablePatientData);
         setIsEditing(false);
-        // toast success
+        
+        // Başarı mesajı göster
+        alert('Hasta bilgileri başarıyla güncellendi!');
       } else {
-        // toast error
+        console.error('Kaydetme hatası:', result.error);
+        alert('Hasta bilgileri güncellenirken hata oluştu: ' + (result.error || 'Bilinmeyen hata'));
       }
     } catch (error) {
-      // toast error
+      console.error('Kaydetme hatası:', error);
+      alert('Hasta bilgileri güncellenirken hata oluştu: ' + error.message);
     }
   };
-
-  const InfoItem = ({ label, value }) => (
-    <div className="grid grid-cols-3 gap-4 py-2">
-      <dt className="font-medium text-gray-500">{label}</dt>
-      <dd className="text-gray-700 col-span-2">{value || '-'}</dd>
-    </div>
-  );
-
-  const EditableInfoItem = ({ label, value, name, type = 'text' }) => (
-    <div className="grid grid-cols-3 gap-4 items-center py-1">
-      <label htmlFor={name} className="font-medium text-gray-500">{label}</label>
-      <input type={type} id={name} name={name} value={value || ''} onChange={handleInputChange} className="col-span-2 border rounded-md p-2 focus:ring-cyan-500 focus:border-cyan-500 bg-white" />
-    </div>
-  );
 
   return (
     <div className="animate-fadeIn">
@@ -579,21 +608,24 @@ const PatientInfo = ({ patient, onUpdate }) => {
       </div>
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 p-4 rounded-lg ${isEditing ? 'bg-gray-50' : ''}`}>
         <div className="divide-y divide-gray-200">
-          {isEditing ? <EditableInfoItem label="Ad Soyad" name="ad_soyad" value={editablePatientData.ad_soyad} /> : <InfoItem label="Ad Soyad" value={patient.ad_soyad} />}
-          {isEditing ? <EditableInfoItem label="T.C. Kimlik No" name="tc_kimlik_no" value={editablePatientData.tc_kimlik_no} /> : <InfoItem label="T.C. Kimlik No" value={patient.tc_kimlik_no} />}
-          {isEditing ? <EditableInfoItem label="Doğum Tarihi" name="dogum_tarihi" value={editablePatientData.dogum_tarihi} /> : <InfoItem label="Doğum Tarihi" value={patient.dogum_tarihi} />}
-          {isEditing ? <EditableInfoItem label="Yaş" name="yas" value={editablePatientData.yas} type="number"/> : <InfoItem label="Yaş" value={patient.yas} />}
-          {isEditing ? <EditableInfoItem label="Cinsiyet" name="cinsiyet" value={editablePatientData.cinsiyet} /> : <InfoItem label="Cinsiyet" value={patient.cinsiyet} />}
+          {isEditing ? <EditableInfoItem label="Ad Soyad" name="ad_soyad" value={editablePatientData.ad_soyad} onChange={handleInputChange} /> : <InfoItem label="Ad Soyad" value={patient.ad_soyad} />}
+          {isEditing ? <EditableInfoItem label="T.C. Kimlik No" name="tc_kimlik_no" value={editablePatientData.tc_kimlik_no} onChange={handleInputChange} /> : <InfoItem label="T.C. Kimlik No" value={patient.tc_kimlik_no} />}
+          {isEditing ? <EditableInfoItem label="Doğum Tarihi" name="dogum_tarihi" value={editablePatientData.dogum_tarihi} onChange={handleInputChange} /> : <InfoItem label="Doğum Tarihi" value={patient.dogum_tarihi} />}
+          {isEditing ? <EditableInfoItem label="Yaş" name="yas" value={editablePatientData.yas} type="number" onChange={handleInputChange} /> : <InfoItem label="Yaş" value={patient.yas} />}
+          {isEditing ? <EditableInfoItem label="Cinsiyet" name="cinsiyet" value={editablePatientData.cinsiyet} onChange={handleInputChange} /> : <InfoItem label="Cinsiyet" value={patient.cinsiyet} />}
         </div>
         <div className="divide-y divide-gray-200">
-          {isEditing ? <EditableInfoItem label="Kronik Hastalıklar" name="kronik_hastaliklar" value={editablePatientData.kronik_hastaliklar} /> : <InfoItem label="Kronik Hastalıklar" value={patient.kronik_hastaliklar} />}
-          {isEditing ? <EditableInfoItem label="Alerjiler" name="allerjiler" value={editablePatientData.allerjiler} /> : <InfoItem label="Alerjiler" value={patient.allerjiler} />}
-          {isEditing ? <EditableInfoItem label="Ameliyatlar" name="ameliyatlar" value={editablePatientData.ameliyatlar} /> : <InfoItem label="Ameliyatlar" value={patient.ameliyatlar} />}
+          {isEditing ? <EditableInfoItem label="Kronik Hastalıklar" name="kronik_hastaliklar" value={editablePatientData.kronik_hastaliklar} onChange={handleInputChange} /> : <InfoItem label="Kronik Hastalıklar" value={patient.kronik_hastaliklar} />}
+          {isEditing ? <EditableInfoItem label="Alerjiler" name="allerjiler" value={editablePatientData.allerjiler} onChange={handleInputChange} /> : <InfoItem label="Alerjiler" value={patient.allerjiler} />}
+          {isEditing ? <EditableInfoItem label="Ameliyatlar" name="ameliyatlar" value={editablePatientData.ameliyatlar} onChange={handleInputChange} /> : <InfoItem label="Ameliyatlar" value={patient.ameliyatlar} />}
         </div>
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Sadece patient prop'u değiştiğinde re-render et
+  return JSON.stringify(prevProps.patient) === JSON.stringify(nextProps.patient);
+}); // End of PatientInfo component
 
 const ValueVisualizer = ({ value, normalRange = "" }) => {
     const parts = normalRange.split('-').map(Number);
@@ -2291,10 +2323,12 @@ const PatientDetailPage = () => {
     try {
       console.log('🩸 Kan tahlili sonuçları çekiliyor, TC:', tc);
       const token = localStorage.getItem('token');
+      const organizationId = localStorage.getItem('organizationId');
       const response = await fetch(`http://localhost:3001/api/patients/${tc}/blood-test-results`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'X-Organization-Id': organizationId || ''
         }
       });
       
@@ -2322,10 +2356,12 @@ const PatientDetailPage = () => {
     try {
       console.log('📝 Doktor notları çekiliyor, TC:', tc);
       const token = localStorage.getItem('token');
+      const organizationId = localStorage.getItem('organizationId');
       const response = await fetch(`http://localhost:3001/api/patients/${tc}/notes`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'X-Organization-Id': organizationId || ''
         }
       });
       
@@ -2351,10 +2387,12 @@ const PatientDetailPage = () => {
     setAnalysisLoading(true);
     try {
       const token = localStorage.getItem('token');
+      const organizationId = localStorage.getItem('organizationId');
       const response = await fetch(`http://localhost:3001/api/medical-analysis/patient/${tc}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'X-Organization-Id': organizationId || ''
         }
       });
       const data = await response.json();
@@ -2379,10 +2417,12 @@ const PatientDetailPage = () => {
   const fetchConsultations = async (tc) => {
     try {
       const token = localStorage.getItem('token');
+      const organizationId = localStorage.getItem('organizationId');
       const response = await fetch(`http://localhost:3001/api/consultations/patient/${tc}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'X-Organization-Id': organizationId || ''
         }
       });
       const data = await response.json();
@@ -2420,11 +2460,13 @@ const PatientDetailPage = () => {
       console.log('AI analizi için gönderilen kan tahlili verisi:', bloodTestData);
 
       const token = localStorage.getItem('token');
+      const organizationId = localStorage.getItem('organizationId');
       const response = await fetch(`http://localhost:3001/api/medical-analysis/blood-test`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json',
+          'X-Organization-Id': organizationId || '' ,
         },
         body: JSON.stringify({ 
           patient_tc: tc,

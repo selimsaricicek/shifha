@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Import middleware
 const { authenticateUser } = require('../middleware/auth');
-const tenantContext = require('../middleware/tenantContext');
+const tenantContext = require('../middleware/tenantcontext');
 
 // Auth rotalarını ekle (no tenant context needed)
 const authRoutes = require('../routes/auth.routes');

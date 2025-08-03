@@ -1,27 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3001/api/admin';
-
-// Create axios instance with default config
-const adminAPI = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add auth token to requests
-adminAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  const orgId = localStorage.getItem('organizationId');
-  if (orgId) {
-    config.headers['x-organization-id'] = orgId;
-  }
-  return config;
-});
+import adminAPI from './api';
 
 // Admin Profile
 export const getAdminProfile = async () => {

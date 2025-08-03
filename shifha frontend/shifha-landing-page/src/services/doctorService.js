@@ -1,35 +1,8 @@
-import axios from 'axios';
+import api from '../api/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  // Admin paneli için adminToken, normal kullanıcı için token kullan
-  const adminToken = localStorage.getItem('adminToken');
-  const userToken = localStorage.getItem('token');
-  const token = adminToken || userToken;
-  
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  const orgId = localStorage.getItem('organizationId');
-  if (orgId) {
-    config.headers['x-organization-id'] = orgId;
-  }
-  return config;
-});
-
-export const getAllDoctors = async () => {
+export const getAllDoctors = async (organizationId) => {
   try {
-    const response = await api.get('/admin/doctors');
+    const response = await api.get('/admin/doctors', { params: { organizationId } });
     return response.data.data;
   } catch (error) {
     console.error('Error fetching doctors:', error);

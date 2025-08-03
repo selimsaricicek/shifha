@@ -8,21 +8,16 @@ const { requireRole } = require('../middleware/auth');
 
 // Bütün hastaları getiren rota: GET /api/patients (auth ve tenant context zaten API router'da uygulandı)
 router.get('/', getAllPatients);
-// Tek bir hastayı getiren rota: GET /api/patients/:tc (auth ve tenant context zaten API router'da uygulandı)
-router.get('/:tc', getPatientByTC);
 // Yeni hasta ekle: POST /api/patients
 router.post('/', validatePatient, addPatient);
 // Hasta güncelle: PUT /api/patients/:tc
 router.put('/:tc', validatePatient, updatePatient);
 // Hasta sil: DELETE /api/patients/:tc
 router.delete('/:tc', deletePatient);
-
 // Kan tahlili sonuçlarını getir: GET /api/patients/:tc/blood-test-results
 router.get('/:tc/blood-test-results', getBloodTestResults);
-
 // Bir hastanın doktor notlarını getir (sadece doktorlar)
 router.get('/:tc/notes', requireRole(['doctor']), getDoctorNotes);
-
 // Mevcut doktor profilini kontrol et
 router.get('/check-doctor-profile', async (req, res) => {
   try {
@@ -187,5 +182,8 @@ router.post('/test-data', async (req, res) => {
     });
   }
 });
+
+// Tek bir hastayı getiren rota: GET /api/patients/:tc (GENERIC, en sonda)
+router.get('/:tc', getPatientByTC);
 
 module.exports = router;

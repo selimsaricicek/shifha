@@ -28,9 +28,12 @@ const tenantContext = async (req, res, next) => {
       });
     }
 
-    // Get organization ID from header (preferred method)
-    let organizationId = req.headers['x-organization-id'];
-    console.log('📋 Header\'dan organization ID:', organizationId);
+    // Get organization ID from header or query/body parameters (preferred methods)
+    let organizationId = req.headers['x-organization-id']
+      || req.query.organizationId
+      || (req.body ? req.body.organizationId : undefined)
+      || req.params.organizationId;
+    console.log('📋 Gelen organization ID (header/query/body/params):', organizationId);
     
     // If no header provided, get user's default/active organization
     if (!organizationId) {

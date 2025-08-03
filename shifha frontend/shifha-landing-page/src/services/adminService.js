@@ -1,27 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  // Admin paneli için adminToken, normal kullanıcı için token kullan
-  const adminToken = localStorage.getItem('adminToken');
-  const userToken = localStorage.getItem('token');
-  const token = adminToken || userToken;
-  
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import api from '../api/api';
 
 export const getAdminProfile = async () => {
   try {

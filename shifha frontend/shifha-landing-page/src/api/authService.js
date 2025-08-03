@@ -1,7 +1,7 @@
 import axios from 'axios';
+import api from './api';
 
-// Backend port 3001'de çalışıyor
-const API_URL = 'http://localhost:3001/api/auth';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/auth';
 
 export const register = async (data) => {
   try {
@@ -14,21 +14,19 @@ export const register = async (data) => {
 };
 
 export const login = async (data) => {
-  try {
-    const res = await axios.post(`${API_URL}/login`, data);
-    return res.data;
-  } catch (error) {
-    console.error('Login error:', error.response?.data || error.message);
-    throw error;
+  const res = await api.post('/auth/login', data);
+  if (res.data.token) {
+    localStorage.setItem('token', res.data.token);
+    localStorage.setItem('organizationId', res.data.organizationId);
   }
+  return res.data;
 };
 
 export const adminLogin = async (data) => {
-  try {
-    const res = await axios.post(`${API_URL}/admin-login`, data);
-    return res.data;
-  } catch (error) {
-    console.error('Admin login error:', error.response?.data || error.message);
-    throw error;
+  const res = await api.post('/auth/admin-login', data);
+  if (res.data.token) {
+    localStorage.setItem('adminToken', res.data.token);
+    localStorage.setItem('organizationId', res.data.organizationId);
   }
+  return res.data;
 };

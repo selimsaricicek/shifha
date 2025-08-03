@@ -107,6 +107,7 @@ BEGIN
     DROP POLICY IF EXISTS "Users can manage their own profile" ON public.patient_profiles;
     DROP POLICY IF EXISTS "Patients can view their own profile" ON public.patient_profiles;
     DROP POLICY IF EXISTS "Admins can manage all patient profiles in their organization" ON public.patient_profiles;
+    DROP POLICY IF EXISTS "Patients can update their own profile" ON public.patient_profiles;
     
     -- Patients can view their own profile
     CREATE POLICY "Patients can view their own profile" ON public.patient_profiles
@@ -162,7 +163,10 @@ BEGIN
     
     DROP POLICY IF EXISTS "Users can view messages in their conversations" ON public.messages;
     DROP POLICY IF EXISTS "Users can send messages" ON public.messages;
+    DROP POLICY IF EXISTS "Users can send messages in their organization" ON public.messages;
     DROP POLICY IF EXISTS "Admins can view all messages in their organization" ON public.messages;
+    DROP POLICY IF EXISTS "Admins can manage all messages in their organization" ON public.messages;
+    DROP POLICY IF EXISTS "Users can view messages in their organization" ON public.messages;
     
     -- Users can view messages in their organization
     CREATE POLICY "Users can view messages in their organization" ON public.messages
@@ -551,6 +555,7 @@ BEGIN
     IF NOT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'patient_profiles') THEN
         CREATE TABLE public.patient_profiles (
             id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+            organization_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
             user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
             tc_kimlik_no TEXT NOT NULL UNIQUE,
             full_name TEXT NOT NULL,
@@ -596,6 +601,7 @@ BEGIN
     IF NOT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'appointments') THEN
         CREATE TABLE public.appointments (
             id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+            organization_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
             patient_id BIGINT NOT NULL REFERENCES public.patient_profiles(id),
             doctor_id BIGINT NOT NULL REFERENCES public.doctor_profiles(id),
             hospital_id BIGINT NOT NULL REFERENCES public.hospitals(id),
@@ -613,19 +619,53 @@ BEGIN
         CREATE INDEX IF NOT EXISTS idx_appointments_hospital_id ON public.appointments(hospital_id);
         ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
         
+        -- Patients can manage their own appointments within their organization
         CREATE POLICY "Patients can manage their own appointments" ON public.appointments
         FOR ALL TO authenticated 
-        USING (patient_id = (SELECT id FROM public.patient_profiles WHERE user_id = auth.uid()))
-        WITH CHECK (patient_id = (SELECT id FROM public.patient_profiles WHERE user_id = auth.uid()));
+        USING (
+            patient_id = (SELECT id FROM public.patient_profiles WHERE user_id = auth.uid())
+            AND organization_id IN (SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid())
+        )
+        WITH CHECK (
+            patient_id = (SELECT id FROM public.patient_profiles WHERE user_id = auth.uid())
+            AND organization_id IN (SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid())
+        );
         
+        -- Doctors can view and manage their appointments
         CREATE POLICY "Doctors can view their appointments" ON public.appointments
         FOR SELECT TO authenticated 
-        USING (doctor_id = (SELECT id FROM public.doctor_profiles WHERE user_id = auth.uid()));
+        USING (
+            doctor_id = (SELECT id FROM public.doctor_profiles WHERE user_id = auth.uid())
+            AND organization_id IN (SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid())
+        );
         
+        -- Doctors can update their appointments
+        CREATE POLICY "Doctors can update their appointments" ON public.appointments
+        FOR UPDATE TO authenticated 
+        USING (
+            doctor_id = (SELECT id FROM public.doctor_profiles WHERE user_id = auth.uid())
+            AND organization_id IN (SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid())
+        )
+        WITH CHECK (
+            doctor_id = (SELECT id FROM public.doctor_profiles WHERE user_id = auth.uid())
+            AND organization_id IN (SELECT organization_id FROM public.user_organizations WHERE user_id = auth.uid())
+        );
+        
+        -- Admins can manage all appointments within their organization
         CREATE POLICY "Admins can manage all appointments" ON public.appointments
         FOR ALL TO authenticated 
-        USING ((SELECT auth.jwt() ->> 'role') = 'admin')
-        WITH CHECK ((SELECT auth.jwt() ->> 'role') = 'admin');
+        USING (
+            organization_id IN (
+                SELECT organization_id FROM public.user_organizations 
+                WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin', 'head_doctor')
+            )
+        )
+        WITH CHECK (
+            organization_id IN (
+                SELECT organization_id FROM public.user_organizations 
+                WHERE user_id = auth.uid() AND role IN ('org_admin', 'super_admin', 'head_doctor')
+            )
+        );
         
         RAISE NOTICE 'Appointments tablosu oluşturuldu.';
     ELSE

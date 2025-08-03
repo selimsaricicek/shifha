@@ -4159,7 +4159,8 @@ export default function AdminPanelApp({ onLogout }) {
   const loadDoctors = async () => {
     try {
       console.log('Doktor verileri yükleniyor...');
-      const doctors = await getAllDoctors();
+      const organizationId = localStorage.getItem('organizationId');
+      const doctors = await getAllDoctors(organizationId);
       console.log('API\'den doktor verileri alındı:', doctors);
       setDoctors(doctors);
       return doctors;
@@ -4174,7 +4175,8 @@ export default function AdminPanelApp({ onLogout }) {
 
   const loadHospitals = async () => {
     try {
-      const hospitals = await getAllHospitals();
+      const organizationId = localStorage.getItem('organizationId');
+      const hospitals = await getAllHospitals(organizationId);
       setHospitals(hospitals);
       return hospitals;
     } catch (error) {
@@ -4188,7 +4190,8 @@ export default function AdminPanelApp({ onLogout }) {
   const loadPatients = async () => {
     try {
       console.log('Hasta verileri yükleniyor...');
-      const patients = await getAllPatients();
+      const organizationId = localStorage.getItem('organizationId');
+      const patients = await getAllPatients(organizationId);
       console.log('API\'den hasta verileri alındı:', patients);
       setPatients(patients);
       return patients;
@@ -4224,7 +4227,8 @@ export default function AdminPanelApp({ onLogout }) {
 
   const loadDepartments = async () => {
     try {
-      const departments = await getAllDepartments();
+      const organizationId = localStorage.getItem('organizationId');
+      const departments = await getAllDepartments(organizationId);
       setDepartments(departments);
     } catch (error) {
       console.error('Departman verisi yüklenemedi:', error);

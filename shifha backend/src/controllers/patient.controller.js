@@ -174,9 +174,13 @@ const updatePatient = async (req, res, next) => {
     const { body } = req;
     console.log(`Hasta güncelleniyor: TC=${tc}, Organization ID: ${req.organizationId}`, body);
     
+    // id alanını filtreleyerek güncelleme verilerini hazırla
+    const { id, ...updateData } = body;
+    console.log('Güncellenecek veriler (id filtrelendi):', updateData);
+    
     const { data, error } = await supabaseAdmin
       .from('patient_profiles')
-      .update(body)
+      .update(updateData)
       .eq('tc_kimlik_no', tc)
       .eq('organization_id', req.organizationId)
       .select();
