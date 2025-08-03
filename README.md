@@ -32,9 +32,9 @@ Sonuç olarak, Shifha, modern sağlık sisteminde doktorların karar alma süre�
 <details>
 <summary><strong>English Description</strong></summary>
 
-In today’s healthcare environment, speed, accuracy, and data-driven decision-making are vital for both medical professionals and patients. Shifha is an AI-powered smart doctor assistant developed to meet this need. Available on both web and mobile platforms, Shifha helps doctors access, interpret, and act upon patient data quickly and effectively, streamlining clinical decision-making.
+In today's healthcare environment, speed, accuracy, and data-driven decision-making are vital for both medical professionals and patients. Shifha is an AI-powered smart doctor assistant developed to meet this need. Available on both web and mobile platforms, Shifha helps doctors access, interpret, and act upon patient data quickly and effectively, streamlining clinical decision-making.
 
-Shifha simplifies doctors' workflows while offering patients a more efficient and effective care experience. It analyzes blood test results, flags abnormal values, and provides medical suggestions based on those insights. For conditions like diabetes, it combines medical history with test results to generate diagnostic recommendations. Patient history is recorded in the system by the first doctor, and this information can then be accessed by other physicians involved in the patient’s care. An internal messaging feature allows doctors to consult each other on patient-specific cases.
+Shifha simplifies doctors' workflows while offering patients a more efficient and effective care experience. It analyzes blood test results, flags abnormal values, and provides medical suggestions based on those insights. For conditions like diabetes, it combines medical history with test results to generate diagnostic recommendations. Patient history is recorded in the system by the first doctor, and this information can then be accessed by other physicians involved in the patient's care. An internal messaging feature allows doctors to consult each other on patient-specific cases.
 
 With Shifha, doctors can view details such as age, weight, nutrition habits, medication history, and family disease background. Patients can be searched by national ID. AI-driven test analysis offers personalized insights and health advice tailored to each test type. The mobile app provides real-time alerts for critical test results, and a QR-code sharing feature allows patients to securely share their medical history with doctors in other countries.
 
@@ -857,7 +857,7 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ---
 <details>
-  <summary><h2>App Map</h2></summary>
+  <summary><h2><a href="https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B%22pageId%22%3A%22KyPbk5wrGZAwVsf7y1UN%22%7D" target="_blank">App Map</a></h2></summary>
 
 ### Shifha Application Architecture Map
 ![App Map](https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B"pageId"%3A"KyPbk5wrGZAwVsf7y1UN"%7D)
@@ -870,147 +870,42 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 <details>
   <summary><h2>App Screenshots S3</h2></summary>
 
-### Web Application Screenshots
-![Web App 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web1.png)
-![Web App 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web2.png)
-![Web App 3](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web3.png)
-
-### Mobile Application Screenshots
-![Mobile App 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile1.png)
-![Mobile App 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile2.png)
-![Mobile App 3](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile3.png)
-
-### AI Analysis Screenshots
-![AI Analysis 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/ai1.png)
-![AI Analysis 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/ai2.png)
+|  |  |  |
+|--|--|--|
+| ![acil1.jpg](ShifhaAppss3/acil1.jpg) | ![acil2.jpg](ShifhaAppss3/acil2.jpg) | ![acil3.jpg](ShifhaAppss3/acil3.jpg) |
+| ![acil4.jpg](ShifhaAppss3/acil4.jpg) | ![panel.jpg](ShifhaAppss3/panel.jpg) | ![poliklinik1.jpg](ShifhaAppss3/poliklinik1.jpg) |
+| ![poliklinik2.jpg](ShifhaAppss3/poliklinik2.jpg) | ![poliklinik3.jpg](ShifhaAppss3/poliklinik3.jpg) | ![poliklinik4.jpg](ShifhaAppss3/poliklinik4.jpg) |
+| ![poliklinik5.jpg](ShifhaAppss3/poliklinik5.jpg) | ![poliklinik6.jpg](ShifhaAppss3/poliklinik6.jpg) | ![poliklinik7.jpg](ShifhaAppss3/poliklinik7.jpg) |
+| ![poliklinik8.jpg](ShifhaAppss3/poliklinik8.jpg) | ![poliklinik9.jpg](ShifhaAppss3/poliklinik9.jpg) | ![poliklinik10.jpg](ShifhaAppss3/poliklinik10.jpg) |
+| ![poliklinik11.jpg](ShifhaAppss3/poliklinik11.jpg) |  |  |
 
 </details>
 
 ---
+
 <details>
   <summary><h2>Project Management S3</h2></summary>
 
-### Jira Board 1
-![Jira1](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/1.png)
-
----
-### Jira Board 2
-![Jira2](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/2.png)
-
----
-### Jira Board 3
-![Jira3](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/3.png)
-
----
-### Jira Board 4
-![Jira4](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/4.png)
-
----
-### Jira Board 5
-![Jira5](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/5.png)
-
----
-### Jira Board 6
-![Jira6](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/6.png)
-
----
-### Jira Board 7
-![Jira7](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/7.png)
-
----
-### Jira Board 8
-![Jira8](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/8.png)
-
----
-### Jira Board 9
-![Jira9](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/9.png)
-
----
-### Jira Board 10
-![Jira10](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/10.png)
+|  |  |  |
+|--|--|--|
+| ![Jira1](JıraS3/WhatsApp Image 2025-08-03 at 20.03.50_c5025acc.jpg) | ![Jira2](JıraS3/WhatsApp Image 2025-08-03 at 20.04.07_3841aad0.jpg) | ![Jira3](JıraS3/WhatsApp Image 2025-08-03 at 20.04.31_59fc4d10.jpg) |
+| ![Jira4](JıraS3/WhatsApp Image 2025-08-03 at 20.05.01_ce6c6c90.jpg) | ![Jira5](JıraS3/WhatsApp Image 2025-08-03 at 20.05.19_49485952.jpg) | ![Jira6](JıraS3/WhatsApp Image 2025-08-03 at 20.05.48_25e7561c.jpg) |
+| ![Jira7](JıraS3/WhatsApp Image 2025-08-03 at 20.06.12_9376a0a9.jpg) | ![Jira8](JıraS3/WhatsApp Image 2025-08-03 at 20.06.28_691a90a7.jpg) | ![Jira9](JıraS3/WhatsApp Image 2025-08-03 at 20.06.53_8b73d188.jpg) |
+| ![Jira10](JıraS3/WhatsApp Image 2025-08-03 at 20.07.47_8ac33227.jpg) |  |  |
 
 </details>
 
 ---
+
 <details>
-  <summary><h2>Burndown Chart S3</h2></summary>
+  <summary><h2>Lean Canva S3</h2></summary>
 
-### Burndown Chart 3
-![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS3/burndownChartS3chart.jpg)
-
----
-### Burndown Graph 3
-![Burndown Chart 2](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS3/burndownChartS3Graph.jpg)
+![Lean Canva](ShifhaLeancanva/leanCanvaShifha.jpg)
 
 </details>
 
 ---
-<details>
-  <summary><h2>Daily Scrum S3</h2></summary>
 
-### 20.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/3.png) |
-
-### 21.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/3.png) |
-
-### 22.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/3.png) |
-
-### 23.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/3.png) |
-
-### 24.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/3.png) |
-
-### 25.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/3.png) |
-
-### 26.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/3.png) |
-
-### 27.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/3.png) |
-
-### 28.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/3.png) |
-
-### 29.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/3.png) |
-
-### 30.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/3.png) |
-
-### 31.07.2025
-|  |  |  |
-|--|--|--|
-| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/3.png) |
-
-</details>
-
----
 <details>
 <summary><strong>🟦 Sprint 3 Özeti (Türkçe)</strong></summary>
 
