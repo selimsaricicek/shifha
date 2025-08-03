@@ -32,6 +32,15 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+    const [showCreateAppointmentModal, setShowCreateAppointmentModal] = useState(false);
+    const [newAppointment, setNewAppointment] = useState({
+        patientId: '',
+        date: '',
+        time: '',
+        type: 'Randevu',
+        urgency: 'normal',
+        notes: ''
+    });
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [selectedPatients, setSelectedPatients] = useState([]);
     const [savedPatients, setSavedPatients] = useState(() => {
@@ -226,81 +235,128 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
         }
     };
 
+    // Randevu oluşturma fonksiyonu
+    const handleCreateAppointment = () => {
+        if (!newAppointment.patientId || !newAppointment.date || !newAppointment.time) {
+            toast.error('Lütfen tüm gerekli alanları doldurun.', {
+                icon: '⚠️',
+                hideIcon: true,
+                style: { borderRadius: '1.5rem', background: '#fef3c7', color: '#222' }
+            });
+            return;
+        }
+
+        // Seçilen hastayı bul
+        const selectedPatient = patients.find(p => p.tc_kimlik_no === newAppointment.patientId);
+        if (!selectedPatient) {
+            toast.error('Seçilen hasta bulunamadı.', {
+                icon: '❌',
+                hideIcon: true,
+                style: { borderRadius: '1.5rem', background: '#fee2e2', color: '#222' }
+            });
+            return;
+        }
+
+        // Yeni randevu oluştur
+        const appointment = {
+            id: Date.now(),
+            date: newAppointment.date,
+            time: newAppointment.time,
+            patientName: selectedPatient.ad_soyad,
+            patientId: selectedPatient.tc_kimlik_no,
+            patient: selectedPatient,
+            type: newAppointment.type,
+            urgency: newAppointment.urgency,
+            notes: newAppointment.notes
+        };
+
+        // Demo randevulara ekle (gerçek uygulamada API'ye gönderilecek)
+        console.log('Yeni randevu oluşturuldu:', appointment);
+        
+        toast.success(`${selectedPatient.ad_soyad} için randevu oluşturuldu.`, {
+            icon: '✅',
+            hideIcon: true,
+            style: { borderRadius: '1.5rem', background: '#e0f2fe', color: '#222' }
+        });
+
+        // Modal'ı kapat ve formu temizle
+        setShowCreateAppointmentModal(false);
+        setNewAppointment({
+            patientId: '',
+            date: '',
+            time: '',
+            type: 'Randevu',
+            urgency: 'normal',
+            notes: ''
+        });
+    };
+
     // Seçili günün randevuları
     const selectedDateString = selectedDate.toISOString().slice(0, 10);
 
-    // Demo randevular (boş array - gerçek veri kullanılacak)
-    const demoAppointments = useMemo(() => [
-        {
-            id: 1,
-            date: '2023-10-26',
-            time: '09:00',
-            patientName: 'Ahmet Yılmaz',
-            patientId: '12345678901',
-            patient: { id: 1, ad_soyad: 'Ahmet Yılmaz', tc_kimlik_no: '12345678901', yas: 35, cinsiyet: 'Erkek', boy: 175, kilo: 75, kan_grubu: 'A+', kronik_hastaliklar: ['Hipertansiyon'], allerjiler: ['Aspirin'], onTani: ['Gastroenterit'], plan: { takip: '1 ay' } },
-            type: 'Randevu',
-            urgency: 'normal',
-        },
-        {
-            id: 2,
-            date: '2023-10-26',
-            time: '10:00',
-            patientName: 'Ayşe Demir',
-            patientId: '12345678902',
-            patient: { id: 2, ad_soyad: 'Ayşe Demir', tc_kimlik_no: '12345678902', yas: 28, cinsiyet: 'Kadın', boy: 162, kilo: 55, kan_grubu: 'B-', kronik_hastaliklar: ['Diyabet'], allerjiler: ['Aspirin'], onTani: ['Anemi'], plan: { takip: '3 ay' } },
-            type: 'Acil',
-            urgency: 'acil',
-        },
-        {
-            id: 3,
-            date: '2023-10-26',
-            time: '11:00',
-            patientName: 'Mehmet Kaya',
-            patientId: '12345678903',
-            patient: { id: 3, ad_soyad: 'Mehmet Kaya', tc_kimlik_no: '12345678903', yas: 42, cinsiyet: 'Erkek', boy: 180, kilo: 85, kan_grubu: 'O+', kronik_hastaliklar: ['Koroner arter hastalığı'], allerjiler: ['Aspirin'], onTani: ['Koroner arter hastalığı'], plan: { takip: '6 ay' } },
-            type: 'Randevu',
-            urgency: 'normal',
-        },
-    ], []);
-
-    // Tüm randevuları takvim için hazırla
-    const allAppointments = useMemo(() => {
-        return patients.flatMap((patient) =>
-            (patient.appointments || []).map((app) => ({
-                ...app,
-                patientName: patient.ad_soyad,
-                patientId: patient.id,
-                patient,
-            }))
-        );
+    // Hasta verilerinden randevular oluştur
+    const patientAppointments = useMemo(() => {
+        if (!patients || patients.length === 0) return [];
+        
+        const appointments = [];
+        const today = new Date();
+        const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+        
+        // Her hasta için rastgele randevular oluştur
+        patients.forEach((patient, index) => {
+            // Her hastaya 1-3 arası rastgele randevu ver
+            const appointmentCount = Math.floor(Math.random() * 3) + 1;
+            
+            for (let i = 0; i < appointmentCount; i++) {
+                // Gelecek 30 gün içinde rastgele bir tarih seç
+                const futureDate = new Date(today);
+                futureDate.setDate(today.getDate() + Math.floor(Math.random() * 30));
+                
+                // Rastgele saat seç
+                const randomTime = timeSlots[Math.floor(Math.random() * timeSlots.length)];
+                
+                // Randevu türü belirle
+                const appointmentTypes = ['Kontrol', 'Muayene', 'Konsültasyon', 'Takip'];
+                const randomType = appointmentTypes[Math.floor(Math.random() * appointmentTypes.length)];
+                
+                // Aciliyet durumu (kronik hastalığı olanlar için %30 acil şansı)
+                const hasChronicDisease = patient.kronik_hastaliklar && patient.kronik_hastaliklar.length > 0;
+                const isUrgent = hasChronicDisease ? Math.random() < 0.3 : Math.random() < 0.1;
+                
+                appointments.push({
+                    id: `${patient.tc_kimlik_no}_${i}`,
+                    date: futureDate.toISOString().split('T')[0],
+                    time: randomTime,
+                    patientName: patient.ad_soyad,
+                    patientId: patient.tc_kimlik_no,
+                    patient: patient,
+                    type: randomType,
+                    urgency: isUrgent ? 'acil' : 'normal',
+                    notes: `${randomType} randevusu`
+                });
+            }
+        });
+        
+        return appointments.sort((a, b) => {
+            const dateCompare = a.date.localeCompare(b.date);
+            if (dateCompare === 0) {
+                return a.time.localeCompare(b.time);
+            }
+            return dateCompare;
+        });
     }, [patients]);
 
-    const calendarAppointments = allAppointments.length > 0 ? allAppointments : demoAppointments;
+    // Takvim için randevuları hazırla
+    const calendarAppointments = patientAppointments;
 
     // Seçili günün randevuları
     const selectedDateAppointments = useMemo(
         () => {
-            const patientAppointments = patients
-                .flatMap((patient) =>
-                    (patient.appointments || [])
-                        .filter((app) => app.date === selectedDateString)
-                        .map((app) => ({
-                            ...app,
-                            patientName: patient.ad_soyad,
-                            patientId: patient.id,
-                            patient,
-                        }))
-                )
+            return calendarAppointments
+                .filter(app => app.date === selectedDateString)
                 .sort((a, b) => a.time.localeCompare(b.time));
-
-            // Demo randevuları da ekle
-            const demoAppointmentsForDate = demoAppointments.filter(
-                app => app.date === selectedDateString
-            );
-
-            return [...patientAppointments, ...demoAppointmentsForDate].sort((a, b) => a.time.localeCompare(b.time));
         },
-        [patients, selectedDateString, demoAppointments]
+        [calendarAppointments, selectedDateString]
     );
 
     return (
@@ -710,16 +766,144 @@ function DashboardPageInner({ patients: propPatients, setPatients: propSetPatien
                                     onClick={() => {
                                         // Hasta detaylarına git
                                         if (selectedAppointment.patient) {
-                                            navigate(`/Calendar/dashboard/patient/${selectedAppointment.patient.tc_kimlik_no}`);
+                                            // TC'yi hash'le (güvenlik için)
+                                            const hashedTc = btoa(selectedAppointment.patient.tc_kimlik_no);
+                                            navigate(`/dashboard/patient/${hashedTc}`);
                                         } else {
                                             // Demo hasta için
-                                            navigate(`/Calendar/dashboard/patient/demo-${selectedAppointment.id}`);
+                                            navigate(`/dashboard/patient/demo-${selectedAppointment.id}`);
                                         }
                                         setShowAppointmentModal(false);
                                     }}
                                 >
                                     Hasta Detaylarına Git
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Randevu Oluşturma Modal */}
+                {showCreateAppointmentModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold text-gray-800">Yeni Randevu Oluştur</h3>
+                                <button
+                                    onClick={() => setShowCreateAppointmentModal(false)}
+                                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                {/* Hasta Seçimi */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Hasta Seçin
+                                    </label>
+                                    <select
+                                        value={newAppointment.patientId}
+                                        onChange={(e) => setNewAppointment({...newAppointment, patientId: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                    >
+                                        <option value="">Hasta seçin...</option>
+                                        {patients.map(patient => (
+                                            <option key={patient.tc_kimlik_no} value={patient.tc_kimlik_no}>
+                                                {patient.ad_soyad} - {patient.tc_kimlik_no}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Tarih */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Tarih
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={newAppointment.date}
+                                        onChange={(e) => setNewAppointment({...newAppointment, date: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                    />
+                                </div>
+
+                                {/* Saat */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Saat
+                                    </label>
+                                    <input
+                                        type="time"
+                                        value={newAppointment.time}
+                                        onChange={(e) => setNewAppointment({...newAppointment, time: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                    />
+                                </div>
+
+                                {/* Randevu Türü */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Randevu Türü
+                                    </label>
+                                    <select
+                                        value={newAppointment.type}
+                                        onChange={(e) => setNewAppointment({...newAppointment, type: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                    >
+                                        <option value="Randevu">Randevu</option>
+                                        <option value="Kontrol">Kontrol</option>
+                                        <option value="Acil">Acil</option>
+                                        <option value="Konsültasyon">Konsültasyon</option>
+                                    </select>
+                                </div>
+
+                                {/* Aciliyet */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Aciliyet Durumu
+                                    </label>
+                                    <select
+                                        value={newAppointment.urgency}
+                                        onChange={(e) => setNewAppointment({...newAppointment, urgency: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                    >
+                                        <option value="normal">Normal</option>
+                                        <option value="medium">Orta</option>
+                                        <option value="high">Yüksek</option>
+                                    </select>
+                                </div>
+
+                                {/* Notlar */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Notlar (Opsiyonel)
+                                    </label>
+                                    <textarea
+                                        value={newAppointment.notes}
+                                        onChange={(e) => setNewAppointment({...newAppointment, notes: e.target.value})}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                        placeholder="Randevu ile ilgili notlar..."
+                                    />
+                                </div>
+
+                                {/* Butonlar */}
+                                <div className="flex space-x-3 pt-4">
+                                    <button
+                                        onClick={() => setShowCreateAppointmentModal(false)}
+                                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        İptal
+                                    </button>
+                                    <button
+                                        onClick={handleCreateAppointment}
+                                        className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+                                    >
+                                        Randevu Oluştur
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

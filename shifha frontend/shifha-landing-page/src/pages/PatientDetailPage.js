@@ -2041,11 +2041,9 @@ const PatientDetailPage = () => {
     const margin = 15;
     let currentY = margin;
 
-    // Helper function for drawing styled boxes
+    // Helper function for drawing styled boxes - Gri kutucuklar kaldırıldı
     const drawBox = (startY, endY) => {
-        doc.setDrawColor(224, 224, 224); // Light grey border
-        doc.setFillColor(250, 250, 250); // Very light grey background
-        doc.roundedRect(margin, startY, pageWidth - 2 * margin, endY - startY, 3, 3, 'FD');
+        // Gri kutucuklar kaldırıldı - boş fonksiyon
     };
 
     // Helper for section titles
@@ -2714,10 +2712,20 @@ const PatientDetailPage = () => {
               <div className="flex space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={handleJustSave}
+                  onClick={() => {
+                    setShowSaveAndReferButton(false);
+                    navigate('/dashboard');
+                  }}
                   className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                 >
-                  Sadece Kaydet
+                  Kaydetme
+                </button>
+                <button
+                  type="button"
+                  onClick={handleJustSave}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Kaydet
                 </button>
                 <button
                   type="button"

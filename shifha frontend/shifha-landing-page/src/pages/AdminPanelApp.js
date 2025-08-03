@@ -1894,11 +1894,9 @@ const PatientsPage = ({ patients, onAddPatient, onEditPatient, onDeletePatient, 
     const margin = 15;
     let currentY = margin;
 
-    // Helper function for drawing styled boxes
+    // Helper function for drawing styled boxes - Gri kutucuklar kaldırıldı
     const drawBox = (startY, endY) => {
-        doc.setDrawColor(224, 224, 224); // Light grey border
-        doc.setFillColor(250, 250, 250); // Very light grey background
-        doc.roundedRect(margin, startY, pageWidth - 2 * margin, endY - startY, 3, 3, 'FD');
+        // Gri kutucuklar kaldırıldı - boş fonksiyon
     };
 
     // Helper for section titles
@@ -2028,11 +2026,9 @@ const PatientsPage = ({ patients, onAddPatient, onEditPatient, onDeletePatient, 
     const margin = 15;
     let currentY = margin;
 
-    // Helper function for drawing styled boxes
+    // Helper function for drawing styled boxes - Gri kutucuklar kaldırıldı
     const drawBox = (startY, endY) => {
-        doc.setDrawColor(224, 224, 224); // Light grey border
-        doc.setFillColor(250, 250, 250); // Very light grey background
-        doc.roundedRect(margin, startY, pageWidth - 2 * margin, endY - startY, 3, 3, 'FD');
+        // Gri kutucuklar kaldırıldı - boş fonksiyon
     };
 
     // Helper for section titles
