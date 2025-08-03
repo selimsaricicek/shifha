@@ -1096,6 +1096,12 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ---
 
-# Endnotes
+---
 
-- Contributions are welcome!
+---
+
+# 📋 Endnotes
+
+**Contributions are welcome!**
+
+---
