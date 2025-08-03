@@ -793,7 +793,9 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ---
 <details>
-  <summary><h2>Sprint 3</h2></summary>
+  <summary><h1>Sprint 3</h1></summary>
+
+---
 
 ### Tech Tree - Sprint 3
 
@@ -1035,21 +1037,8 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 </details>
 
 ---
-  Endnotes
+# Endnotes
 
 - Contributions are welcome! 
 
 ---
-
-<details>
-  <summary><h2>Burndown Chart S3</h2></summary>
-
-- **Burndown Chart:**
-
-  ![burndownchartS3.jpg](burndownChartsS3/burndownchartS3.jpg)
-
-- **Burndown Graph:**
-
-  ![burndowngraph.jpg](burndownChartsS3/burndowngraph.jpg)
-
-</details>
