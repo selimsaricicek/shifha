@@ -47,7 +47,6 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 
 
-
 ---
 
 ## Ürün Özellikleri  
@@ -969,43 +968,43 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
   <summary><h2>Project Management S3</h2></summary>
 
 ### Jira Board 1
-![Jira1](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.03.50_c5025acc.jpg)
+![Jira1](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.03.50_c5025acc.jpg)
 
 ---
 ### Jira Board 2
-![Jira2](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.04.07_3841aad0.jpg)
+![Jira2](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.04.07_3841aad0.jpg)
 
 ---
 ### Jira Board 3
-![Jira3](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.04.31_59fc4d10.jpg)
+![Jira3](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.04.31_59fc4d10.jpg)
 
 ---
 ### Jira Board 4
-![Jira4](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.01_ce6c6c90.jpg)
+![Jira4](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.05.01_ce6c6c90.jpg)
 
 ---
 ### Jira Board 5
-![Jira5](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.19_49485952.jpg)
+![Jira5](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.05.19_49485952.jpg)
 
 ---
 ### Jira Board 6
-![Jira6](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.48_25e7561c.jpg)
+![Jira6](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.05.48_25e7561c.jpg)
 
 ---
 ### Jira Board 7
-![Jira7](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.12_9376a0a9.jpg)
+![Jira7](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.06.12_9376a0a9.jpg)
 
 ---
 ### Jira Board 8
-![Jira8](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.28_691a90a7.jpg)
+![Jira8](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.06.28_691a90a7.jpg)
 
 ---
 ### Jira Board 9
-![Jira9](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.53_8b73d188.jpg)
+![Jira9](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.06.53_8b73d188.jpg)
 
 ---
 ### Jira Board 10
-![Jira10](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.07.47_8ac33227.jpg)
+![Jira10](JıraS3/WhatsApp%20Image%202025-08-03%20at%2020.07.47_8ac33227.jpg)
 
 </details>
 
