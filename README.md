@@ -886,6 +886,56 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ---
 
 <details>
+  <summary><h2>Mobil App Screenshots S3</h2></summary>
+
+### Hasta Uygulaması
+
+**Ana Sayfa:**  
+![mobile2.jpg](AppScreenshotsS3/hasta ana sayfası/mobile2.jpg) ![mobile3.jpg](AppScreenshotsS3/hasta ana sayfası/mobile3.jpg) ![mobile4.jpg](AppScreenshotsS3/hasta ana sayfası/mobile4.jpg)
+
+**Giriş Sayfası:**  
+![mobile1.jpg](AppScreenshotsS3/hasta giriş sayfası/mobile1.jpg)
+
+**Topluluk Sayfası:**  
+![mobile19.jpg](AppScreenshotsS3/hasta topluluk sayfası/mobile19.jpg) ![mobile20.jpg](AppScreenshotsS3/hasta topluluk sayfası/mobile20.jpg)
+
+**Takip Sayfası:**  
+![mobile5.jpg](AppScreenshotsS3/hasta takip sayfası/mobile5.jpg) ![mobile6.jpg](AppScreenshotsS3/hasta takip sayfası/mobile6.jpg) ![mobile7.jpg](AppScreenshotsS3/hasta takip sayfası/mobile7.jpg) ![mobile8.jpg](AppScreenshotsS3/hasta takip sayfası/mobile8.jpg) ![mobile9.jpg](AppScreenshotsS3/hasta takip sayfası/mobile9.jpg)
+
+**Tahlil Sayfası:**  
+![mobile22.jpg](AppScreenshotsS3/hasta tahlil sayfası/mobile22.jpg) ![mobile23.jpg](AppScreenshotsS3/hasta tahlil sayfası/mobile23.jpg)
+
+**Randevu Sayfası:**  
+![mobile10.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile10.jpg) ![mobile11.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile11.jpg) ![mobile12.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile12.jpg) ![mobile13.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile13.jpg) ![mobile14.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile14.jpg) ![mobile15.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile15.jpg) ![mobile16.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile16.jpg) ![mobile17.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile17.jpg) ![mobile18.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile18.jpg)
+
+**Profil Sayfası:**  
+![mobile24.jpg](AppScreenshotsS3/hasta profil sayfası/mobile24.jpg) ![mobile25.jpg](AppScreenshotsS3/hasta profil sayfası/mobile25.jpg) ![mobile26.jpg](AppScreenshotsS3/hasta profil sayfası/mobile26.jpg)
+
+**AI Sayfası:**  
+![mobile21.jpg](AppScreenshotsS3/hasta AI sayfası/mobile21.jpg)
+
+### Doktor Uygulaması
+
+**Ana Sayfa:**  
+![mobile30.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile30.jpg) ![mobile31.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile31.jpg) ![mobile32.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile32.jpg) ![mobile33.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile33.jpg)
+
+**Giriş Sayfası:**  
+![mobile27.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile27.jpg) ![mobile28.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile28.jpg) ![mobile29.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile29.jpg)
+
+**Hastalar Sayfası:**  
+![mobile34.jpg](AppScreenshotsS3/doktor hastalar sayfası/mobile34.jpg)
+
+**Profil Sayfası:**  
+![mobile36.jpg](AppScreenshotsS3/doktor profil sayfası/mobile36.jpg) ![mobile37.jpg](AppScreenshotsS3/doktor profil sayfası/mobile37.jpg) ![mobile38.jpg](AppScreenshotsS3/doktor profil sayfası/mobile38.jpg)
+
+**Randevular Sayfası:**  
+![mobile35.jpg](AppScreenshotsS3/doktor randevular sayfası/mobile35.jpg)
+
+</details>
+
+---
+
+<details>
   <summary><h2>Project Management S3</h2></summary>
 
 |  |  |  |
@@ -1026,6 +1076,14 @@ In Sprint 3, _'400'_ points were targeted as the focus was on completing remaini
 - International data sharing made secure with QR code system
 - AI analysis system optimized with Google Gemini to produce more accurate results
 - Form validation and management elevated to professional level with Zod and React Hook Form
+- It was decided to use Expo Router in the mobile application development process
+- Both camera and manual input options were added for QR code scanning feature
+- Backend infrastructure was established for real-time communication with WebSocket
+- Secure system was designed for session management with Redis
+- Separate UI/UX designs were made for patient and doctor panels
+- React Native was preferred for cross-platform development
+- Mobile application testing processes were planned
+- API security and authentication system were strengthened
 
 ### Participants
 Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
@@ -1039,6 +1097,4 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ---
 # Endnotes
 
-- Contributions are welcome! 
-
----
+- Contributions are welcome!
