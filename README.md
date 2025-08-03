@@ -859,10 +859,10 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ---
 <details>
-  <summary><h2><a href="https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B%22pageId%22%3A%22KyPbk5wrGZAwVsf7y1UN%22%7D" target="_blank">App Map</a></h2></summary>
+  <summary><h2>App Map</h2></summary>
 
 ### Shifha Application Architecture Map
-![App Map](https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B"pageId"%3A"KyPbk5wrGZAwVsf7y1UN"%7D)
+[View Interactive App Map](https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B%22pageId%22%3A%22KyPbk5wrGZAwVsf7y1UN%22%7D)
 
 *Interactive application architecture diagram showing the complete structure and flow of the Shifha application for Sprint 3.*
 
@@ -890,46 +890,76 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 
 ### Hasta Uygulaması
 
-**Ana Sayfa:**  
-![mobile2.jpg](AppScreenshotsS3/hasta ana sayfası/mobile2.jpg) ![mobile3.jpg](AppScreenshotsS3/hasta ana sayfası/mobile3.jpg) ![mobile4.jpg](AppScreenshotsS3/hasta ana sayfası/mobile4.jpg)
+**Ana Sayfa:**
+| | | |
+|--|--|--|
+| ![mobile2.jpg](AppScreenshotsS3/hasta%20ana%20sayfas%C4%B1/mobile2.jpg) | ![mobile3.jpg](AppScreenshotsS3/hasta%20ana%20sayfas%C4%B1/mobile3.jpg) | ![mobile4.jpg](AppScreenshotsS3/hasta%20ana%20sayfas%C4%B1/mobile4.jpg) |
 
-**Giriş Sayfası:**  
-![mobile1.jpg](AppScreenshotsS3/hasta giriş sayfası/mobile1.jpg)
+**Giriş Sayfası:**
+| |
+|--|
+| ![mobile1.jpg](AppScreenshotsS3/hasta%20giri%C5%9F%20sayfas%C4%B1/mobile1.jpg) |
 
-**Topluluk Sayfası:**  
-![mobile19.jpg](AppScreenshotsS3/hasta topluluk sayfası/mobile19.jpg) ![mobile20.jpg](AppScreenshotsS3/hasta topluluk sayfası/mobile20.jpg)
+**Topluluk Sayfası:**
+| | |
+|--|--|
+| ![mobile19.jpg](AppScreenshotsS3/hasta%20topluluk%20sayfas%C4%B1/mobile19.jpg) | ![mobile20.jpg](AppScreenshotsS3/hasta%20topluluk%20sayfas%C4%B1/mobile20.jpg) |
 
-**Takip Sayfası:**  
-![mobile5.jpg](AppScreenshotsS3/hasta takip sayfası/mobile5.jpg) ![mobile6.jpg](AppScreenshotsS3/hasta takip sayfası/mobile6.jpg) ![mobile7.jpg](AppScreenshotsS3/hasta takip sayfası/mobile7.jpg) ![mobile8.jpg](AppScreenshotsS3/hasta takip sayfası/mobile8.jpg) ![mobile9.jpg](AppScreenshotsS3/hasta takip sayfası/mobile9.jpg)
+**Takip Sayfası:**
+| | | |
+|--|--|--|
+| ![mobile5.jpg](AppScreenshotsS3/hasta%20takip%20sayfas%C4%B1/mobile5.jpg) | ![mobile6.jpg](AppScreenshotsS3/hasta%20takip%20sayfas%C4%B1/mobile6.jpg) | ![mobile7.jpg](AppScreenshotsS3/hasta%20takip%20sayfas%C4%B1/mobile7.jpg) |
+| ![mobile8.jpg](AppScreenshotsS3/hasta%20takip%20sayfas%C4%B1/mobile8.jpg) | ![mobile9.jpg](AppScreenshotsS3/hasta%20takip%20sayfas%C4%B1/mobile9.jpg) | |
 
-**Tahlil Sayfası:**  
-![mobile22.jpg](AppScreenshotsS3/hasta tahlil sayfası/mobile22.jpg) ![mobile23.jpg](AppScreenshotsS3/hasta tahlil sayfası/mobile23.jpg)
+**Tahlil Sayfası:**
+| | |
+|--|--|
+| ![mobile22.jpg](AppScreenshotsS3/hasta%20tahlil%20sayfas%C4%B1/mobile22.jpg) | ![mobile23.jpg](AppScreenshotsS3/hasta%20tahlil%20sayfas%C4%B1/mobile23.jpg) |
 
-**Randevu Sayfası:**  
-![mobile10.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile10.jpg) ![mobile11.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile11.jpg) ![mobile12.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile12.jpg) ![mobile13.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile13.jpg) ![mobile14.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile14.jpg) ![mobile15.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile15.jpg) ![mobile16.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile16.jpg) ![mobile17.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile17.jpg) ![mobile18.jpg](AppScreenshotsS3/hasta randevu sayfası/mobile18.jpg)
+**Randevu Sayfası:**
+| | | |
+|--|--|--|
+| ![mobile10.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile10.jpg) | ![mobile11.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile11.jpg) | ![mobile12.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile12.jpg) |
+| ![mobile13.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile13.jpg) | ![mobile14.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile14.jpg) | ![mobile15.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile15.jpg) |
+| ![mobile16.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile16.jpg) | ![mobile17.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile17.jpg) | ![mobile18.jpg](AppScreenshotsS3/hasta%20randevu%20sayfas%C4%B1/mobile18.jpg) |
 
-**Profil Sayfası:**  
-![mobile24.jpg](AppScreenshotsS3/hasta profil sayfası/mobile24.jpg) ![mobile25.jpg](AppScreenshotsS3/hasta profil sayfası/mobile25.jpg) ![mobile26.jpg](AppScreenshotsS3/hasta profil sayfası/mobile26.jpg)
+**Profil Sayfası:**
+| | | |
+|--|--|--|
+| ![mobile24.jpg](AppScreenshotsS3/hasta%20profil%20sayfas%C4%B1/mobile24.jpg) | ![mobile25.jpg](AppScreenshotsS3/hasta%20profil%20sayfas%C4%B1/mobile25.jpg) | ![mobile26.jpg](AppScreenshotsS3/hasta%20profil%20sayfas%C4%B1/mobile26.jpg) |
 
-**AI Sayfası:**  
-![mobile21.jpg](AppScreenshotsS3/hasta AI sayfası/mobile21.jpg)
+**AI Sayfası:**
+| |
+|--|
+| ![mobile21.jpg](AppScreenshotsS3/hasta%20AI%20sayfas%C4%B1/mobile21.jpg) |
 
 ### Doktor Uygulaması
 
-**Ana Sayfa:**  
-![mobile30.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile30.jpg) ![mobile31.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile31.jpg) ![mobile32.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile32.jpg) ![mobile33.jpg](AppScreenshotsS3/doktor ana sayfaı/mobile33.jpg)
+**Ana Sayfa:**
+| | | |
+|--|--|--|
+| ![mobile30.jpg](AppScreenshotsS3/doktor%20ana%20sayfa%C4%B1/mobile30.jpg) | ![mobile31.jpg](AppScreenshotsS3/doktor%20ana%20sayfa%C4%B1/mobile31.jpg) | ![mobile32.jpg](AppScreenshotsS3/doktor%20ana%20sayfa%C4%B1/mobile32.jpg) |
+| ![mobile33.jpg](AppScreenshotsS3/doktor%20ana%20sayfa%C4%B1/mobile33.jpg) | | |
 
-**Giriş Sayfası:**  
-![mobile27.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile27.jpg) ![mobile28.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile28.jpg) ![mobile29.jpg](AppScreenshotsS3/doktor giriş sayfası/mobile29.jpg)
+**Giriş Sayfası:**
+| | | |
+|--|--|--|
+| ![mobile27.jpg](AppScreenshotsS3/doktor%20giri%C5%9F%20sayfas%C4%B1/mobile27.jpg) | ![mobile28.jpg](AppScreenshotsS3/doktor%20giri%C5%9F%20sayfas%C4%B1/mobile28.jpg) | ![mobile29.jpg](AppScreenshotsS3/doktor%20giri%C5%9F%20sayfas%C4%B1/mobile29.jpg) |
 
-**Hastalar Sayfası:**  
-![mobile34.jpg](AppScreenshotsS3/doktor hastalar sayfası/mobile34.jpg)
+**Hastalar Sayfası:**
+| |
+|--|
+| ![mobile34.jpg](AppScreenshotsS3/doktor%20hastalar%20sayfas%C4%B1/mobile34.jpg) |
 
-**Profil Sayfası:**  
-![mobile36.jpg](AppScreenshotsS3/doktor profil sayfası/mobile36.jpg) ![mobile37.jpg](AppScreenshotsS3/doktor profil sayfası/mobile37.jpg) ![mobile38.jpg](AppScreenshotsS3/doktor profil sayfası/mobile38.jpg)
+**Profil Sayfası:**
+| | | |
+|--|--|--|
+| ![mobile36.jpg](AppScreenshotsS3/doktor%20profil%20sayfas%C4%B1/mobile36.jpg) | ![mobile37.jpg](AppScreenshotsS3/doktor%20profil%20sayfas%C4%B1/mobile37.jpg) | ![mobile38.jpg](AppScreenshotsS3/doktor%20profil%20sayfas%C4%B1/mobile38.jpg) |
 
-**Randevular Sayfası:**  
-![mobile35.jpg](AppScreenshotsS3/doktor randevular sayfası/mobile35.jpg)
+**Randevular Sayfası:**
+| |
+|--|
+| ![mobile35.jpg](AppScreenshotsS3/doktor%20randevular%20sayfas%C4%B1/mobile35.jpg) |
 
 </details>
 
@@ -938,12 +968,44 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 <details>
   <summary><h2>Project Management S3</h2></summary>
 
-|  |  |  |
-|--|--|--|
-| ![Jira1](JıraS3/WhatsApp Image 2025-08-03 at 20.03.50_c5025acc.jpg) | ![Jira2](JıraS3/WhatsApp Image 2025-08-03 at 20.04.07_3841aad0.jpg) | ![Jira3](JıraS3/WhatsApp Image 2025-08-03 at 20.04.31_59fc4d10.jpg) |
-| ![Jira4](JıraS3/WhatsApp Image 2025-08-03 at 20.05.01_ce6c6c90.jpg) | ![Jira5](JıraS3/WhatsApp Image 2025-08-03 at 20.05.19_49485952.jpg) | ![Jira6](JıraS3/WhatsApp Image 2025-08-03 at 20.05.48_25e7561c.jpg) |
-| ![Jira7](JıraS3/WhatsApp Image 2025-08-03 at 20.06.12_9376a0a9.jpg) | ![Jira8](JıraS3/WhatsApp Image 2025-08-03 at 20.06.28_691a90a7.jpg) | ![Jira9](JıraS3/WhatsApp Image 2025-08-03 at 20.06.53_8b73d188.jpg) |
-| ![Jira10](JıraS3/WhatsApp Image 2025-08-03 at 20.07.47_8ac33227.jpg) |  |  |
+### Jira Board 1
+![Jira1](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.03.50_c5025acc.jpg)
+
+---
+### Jira Board 2
+![Jira2](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.04.07_3841aad0.jpg)
+
+---
+### Jira Board 3
+![Jira3](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.04.31_59fc4d10.jpg)
+
+---
+### Jira Board 4
+![Jira4](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.01_ce6c6c90.jpg)
+
+---
+### Jira Board 5
+![Jira5](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.19_49485952.jpg)
+
+---
+### Jira Board 6
+![Jira6](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.05.48_25e7561c.jpg)
+
+---
+### Jira Board 7
+![Jira7](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.12_9376a0a9.jpg)
+
+---
+### Jira Board 8
+![Jira8](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.28_691a90a7.jpg)
+
+---
+### Jira Board 9
+![Jira9](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.06.53_8b73d188.jpg)
+
+---
+### Jira Board 10
+![Jira10](J%C4%B1raS3/WhatsApp%20Image%202025-08-03%20at%2020.07.47_8ac33227.jpg)
 
 </details>
 
@@ -1093,10 +1155,6 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 ---
 
 </details>
-
----
-
----
 
 ---
 
