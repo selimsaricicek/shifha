@@ -44,6 +44,12 @@ In summary, Shifha is a powerful assistant designed to enhance decision-making i
 
 ---
 
+
+
+
+
+---
+
 ## Ürün Özellikleri  
 
 ### 🩸 **Akıllı Kan Tahlili Analizi**
@@ -775,6 +781,340 @@ In Sprint 2, _'500'_ points were targeted as the focus was on mobile application
 - React Native was preferred for cross-platform development
 - Mobile application testing processes were planned
 - API security and authentication system were strengthened
+
+### Participants
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+</details>
+
+---
+
+</details>
+
+---
+<details>
+  <summary><h2>Sprint 3</h2></summary>
+
+### Tech Tree - Sprint 3
+
+#### Frontend (Web)
+- **React 18** - Modern React with concurrent features
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **shadcn/ui** - Modern UI component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Query** - Server state management
+- **React Hook Form** - Form management
+- **Zod** - Schema validation
+
+#### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **Socket.io** - Real-time communication
+- **Helmet.js** - Security middleware
+- **MongoDB** - NoSQL database
+- **Redis** - Caching and session store
+
+#### Mobile
+- **Capacitor** - Cross-platform mobile development
+- **React** - UI framework
+- **TypeScript** - Type safety
+
+#### AI & Cloud Services
+- **Google Gemini AI** - Advanced AI analysis
+- **Google Cloud** - Cloud infrastructure
+
+#### Development Tools
+- **Vite** - Build tool
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+
+#### Security
+- **Helmet.js** - Security headers
+- **CORS** - Cross-origin resource sharing
+- **Rate Limiting** - API protection
+
+---
+
+### Sprint 3 Technology Evolution
+
+#### New Additions in Sprint 3
+- **Capacitor**: Cross-platform mobile development framework
+- **React Query**: Advanced server state management
+- **shadcn/ui**: Modern, accessible UI components
+- **Vite**: Fast build tool replacing Create React App
+- **Helmet.js**: Enhanced security middleware
+- **Recharts**: Data visualization library
+- **jsPDF**: PDF generation capability
+- **Zod**: Runtime type validation
+- **React Hook Form**: Efficient form management
+
+#### Enhanced Features
+- **Socket.io**: Improved real-time communication
+- **Google Gemini AI**: Advanced analysis capabilities
+- **QR Code**: International data sharing
+- **Security**: Multi-layer protection with Helmet.js
+
+---
+<details>
+  <summary><h2>App Map</h2></summary>
+
+### Shifha Application Architecture Map
+![App Map](https://viewer.diagrams.net/index.html?tags=%7B%7D&lightbox=1&highlight=99FFFF&layers=1&nav=1&title=ShifhaAppMap.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1cioWUCyPWPY1tWFCgLK_tOLGnaN9Ozzz%26export%3Ddownload#%7B"pageId"%3A"KyPbk5wrGZAwVsf7y1UN"%7D)
+
+*Interactive application architecture diagram showing the complete structure and flow of the Shifha application for Sprint 3.*
+
+</details>
+
+---
+<details>
+  <summary><h2>App Screenshots S3</h2></summary>
+
+### Web Application Screenshots
+![Web App 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web1.png)
+![Web App 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web2.png)
+![Web App 3](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/web3.png)
+
+### Mobile Application Screenshots
+![Mobile App 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile1.png)
+![Mobile App 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile2.png)
+![Mobile App 3](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/mobile3.png)
+
+### AI Analysis Screenshots
+![AI Analysis 1](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/ai1.png)
+![AI Analysis 2](https://github.com/selimsaricicek/shifha/blob/main/AppScreenshotsS3/ai2.png)
+
+</details>
+
+---
+<details>
+  <summary><h2>Project Management S3</h2></summary>
+
+### Jira Board 1
+![Jira1](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/1.png)
+
+---
+### Jira Board 2
+![Jira2](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/2.png)
+
+---
+### Jira Board 3
+![Jira3](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/3.png)
+
+---
+### Jira Board 4
+![Jira4](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/4.png)
+
+---
+### Jira Board 5
+![Jira5](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/5.png)
+
+---
+### Jira Board 6
+![Jira6](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/6.png)
+
+---
+### Jira Board 7
+![Jira7](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/7.png)
+
+---
+### Jira Board 8
+![Jira8](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/8.png)
+
+---
+### Jira Board 9
+![Jira9](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/9.png)
+
+---
+### Jira Board 10
+![Jira10](https://github.com/selimsaricicek/shifha/blob/main/ProjectManagementS3/10.png)
+
+</details>
+
+---
+<details>
+  <summary><h2>Burndown Chart S3</h2></summary>
+
+### Burndown Chart 3
+![Burndown Chart 1](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS3/burndownChartS3chart.jpg)
+
+---
+### Burndown Graph 3
+![Burndown Chart 2](https://github.com/selimsaricicek/shifha/blob/main/burndownChartsS3/burndownChartS3Graph.jpg)
+
+</details>
+
+---
+<details>
+  <summary><h2>Daily Scrum S3</h2></summary>
+
+### 20.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/20.07.2025/3.png) |
+
+### 21.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/21.07.2025/3.png) |
+
+### 22.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/22.07.2025/3.png) |
+
+### 23.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/23.07.2025/3.png) |
+
+### 24.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/24.07.2025/3.png) |
+
+### 25.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/25.07.2025/3.png) |
+
+### 26.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/26.07.2025/3.png) |
+
+### 27.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/27.07.2025/3.png) |
+
+### 28.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/28.07.2025/3.png) |
+
+### 29.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/29.07.2025/3.png) |
+
+### 30.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/30.07.2025/3.png) |
+
+### 31.07.2025
+|  |  |  |
+|--|--|--|
+| ![1.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/1.png) | ![2.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/2.png) | ![3.png](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/31.07.2025/3.png) |
+
+</details>
+
+---
+<details>
+<summary><strong>🟦 Sprint 3 Özeti (Türkçe)</strong></summary>
+
+### Sprint Notları
+- [x] _'Capacitor'_ ile cross-platform mobil uygulama geliştirme
+- [x] _'React Query'_ ile gelişmiş veri yönetimi
+- [x] _'shadcn/ui'_ ile modern UI bileşenleri
+- [x] _'Vite'_ ile hızlı build ve geliştirme
+- [x] _'Socket.io'_ ile real-time iletişim geliştirmeleri
+- [x] _'Recharts'_ ile gelişmiş veri görselleştirme
+- [x] _'jsPDF'_ ile PDF oluşturma ve raporlama
+- [x] _'Helmet.js'_ ile güvenlik iyileştirmeleri
+- [x] _'QR Kod'_ ile uluslararası veri paylaşımı
+- [x] _'Google Gemini AI'_ ile gelişmiş analiz
+- [x] _'Zod'_ ile form validasyonu
+- [x] _'React Hook Form'_ ile form yönetimi
+
+### Ürün Backlog'u
+- **Ürün Backlog'u:** [Jira Board Linki](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
+
+### Beklenen Puan
+_'400'_ Puan
+
+### Puan Tamamlama Mantığı
+Sprint 3'te kalan işlerin tamamlanması ve entegrasyon çalışmalarına odaklanıldığı için _'400'_ puan hedeflendi. Bu sprintte Capacitor ile cross-platform geliştirme, gelişmiş UI bileşenleri, güvenlik iyileştirmeleri ve AI analiz sisteminin optimize edilmesi tamamlandı.
+
+### Sprint Değerlendirmesi
+- Capacitor framework ile cross-platform mobil uygulama geliştirildi
+- React Query ile gelişmiş veri yönetimi implementasyonu yapıldı
+- shadcn/ui ile modern ve tutarlı UI bileşenleri eklendi
+- Vite ile build süreçleri optimize edildi
+- Socket.io ile real-time iletişim sistemi geliştirildi
+- Recharts ile gelişmiş veri görselleştirme eklendi
+- jsPDF ile PDF oluşturma ve raporlama sistemi kuruldu
+- Helmet.js ile güvenlik iyileştirmeleri yapıldı
+- QR kod ile uluslararası veri paylaşımı implementasyonu tamamlandı
+- Google Gemini AI ile gelişmiş analiz sistemi optimize edildi
+- Zod ve React Hook Form ile form yönetimi geliştirildi
+
+### Sprint 3 Retrospektifi
+- Capacitor framework kullanımı ile cross-platform geliştirme sürecinde verimlilik artışı sağlandı
+- React Query ile veri yönetimi ve caching sisteminde önemli iyileştirmeler yapıldı
+- shadcn/ui bileşenleri ile UI tutarlılığı ve kullanıcı deneyimi geliştirildi
+- Vite build tool kullanımı ile geliştirme süreçleri hızlandırıldı
+- Real-time iletişim sistemi Socket.io ile optimize edildi
+- PDF oluşturma ve raporlama sistemi jsPDF ile başarıyla implementasyonu yapıldı
+- Güvenlik katmanları Helmet.js ile güçlendirildi
+- QR kod sistemi ile uluslararası veri paylaşımı güvenli hale getirildi
+- AI analiz sistemi Google Gemini ile daha doğru sonuçlar üretecek şekilde optimize edildi
+- Form validasyonu ve yönetimi Zod ve React Hook Form ile profesyonel seviyeye çıkarıldı
+
+### Katılımcılar
+Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
+
+<details>
+<summary><strong>🟩 Sprint 3 Summary (English)</strong></summary>
+
+### Sprint Notes
+- [x] Cross-platform mobile application development with _'Capacitor'_
+- [x] Advanced data management with _'React Query'_
+- [x] Modern UI components with _'shadcn/ui'_
+- [x] Fast build and development with _'Vite'_
+- [x] Real-time communication improvements with _'Socket.io'_
+- [x] Advanced data visualization with _'Recharts'_
+- [x] PDF creation and reporting with _'jsPDF'_
+- [x] Security improvements with _'Helmet.js'_
+- [x] International data sharing with _'QR Code'_
+- [x] Advanced analysis with _'Google Gemini AI'_
+- [x] Form validation with _'Zod'_
+- [x] Form management with _'React Hook Form'_
+
+### Product Backlog
+- **Product Backlog:** [Jira Board Link](https://selimsaricicek1.atlassian.net/jira/software/projects/BTS/boards/1)
+
+### Expected Points
+_'400'_ Points
+
+### Point Completion Logic
+In Sprint 3, _'400'_ points were targeted as the focus was on completing remaining tasks and integration work. This sprint completed Capacitor cross-platform development, advanced UI components, security improvements, and AI analysis system optimization.
+
+### Sprint Review
+- Cross-platform mobile application developed with Capacitor framework
+- Advanced data management implementation with React Query
+- Modern and consistent UI components added with shadcn/ui
+- Build processes optimized with Vite
+- Real-time communication system enhanced with Socket.io
+- Advanced data visualization added with Recharts
+- PDF creation and reporting system established with jsPDF
+- Security improvements made with Helmet.js
+- International data sharing implementation completed with QR code
+- Advanced analysis system optimized with Google Gemini AI
+- Form management enhanced with Zod and React Hook Form
+
+### Sprint 3 Retrospective
+- Efficiency increase achieved in cross-platform development process with Capacitor framework usage
+- Significant improvements made in data management and caching system with React Query
+- UI consistency and user experience improved with shadcn/ui components
+- Development processes accelerated with Vite build tool usage
+- Real-time communication system optimized with Socket.io
+- PDF creation and reporting system successfully implemented with jsPDF
+- Security layers strengthened with Helmet.js
+- International data sharing made secure with QR code system
+- AI analysis system optimized with Google Gemini to produce more accurate results
+- Form validation and management elevated to professional level with Zod and React Hook Form
 
 ### Participants
 Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar, Nurhayat Doğan
