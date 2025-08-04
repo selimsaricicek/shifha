@@ -12,6 +12,13 @@
 | [Miyase Elif Aksoy](#)         | Developer     | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](http://www.linkedin.com/in/myelifss) |
 | [Erva Nazlı Tüccar](#)         | Product Owner       | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](https://www.linkedin.com/in/ervanazl%C4%B1t%C3%BCccar/ ) |
 | [Nurhayat Doğan](#)         | Developer         | [<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20"/>](https://www.linkedin.com/in/1nurhayat-dogan/) |
+
+## 🎥 Proje Videosu
+
+[![Shifha Proje Videosu](https://img.shields.io/badge/YouTube-Watch%20Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=6SQy6XAwkfE)
+
+**Shifha'yı çalışırken görmek için proje sunumumuzu ve demo videomuzu izleyin!**
+
 ---
 
 ## Product Description
