@@ -15,7 +15,7 @@
 
 ## 🎥 Proje Videosu
 
-[![Shifha Proje Videosu](https://img.shields.io/badge/YouTube-Watch%20Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=6SQy6XAwkfE)
+[![Shifha Proje Videosu](https://img.shields.io/badge/YouTube-Video%20İzle-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=6SQy6XAwkfE)
 
 **Shifha'yı çalışırken görmek için proje sunumumuzu ve demo videomuzu izleyin!**
 
