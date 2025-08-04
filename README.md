@@ -963,6 +963,30 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 </details>
 
 ---
+<details>
+  <summary><h2>Admin Panel Screenshots S3</h2></summary>
+
+### Admin Paneli S3
+![Admin1](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin1S3.png)
+![Admin2](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin2S3.png)
+![Admin3](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin3S3.png)
+![Admin4](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin4S3.png)
+![Admin5](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin5S3.png)
+![Admin6](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin6S3.png)
+![Admin7](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin7S3.png)
+![Admin8](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin8S3.png)
+![Admin9](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin9S3.png)
+![Admin10](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin10S3.png)
+![Admin11](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin11S3.png)
+![Admin12](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin12S3.png)
+![Admin13](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin13S3.png)
+![Admin14](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin14S3.png)
+![Admin15](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin15S3.png)
+![Admin16](https://github.com/selimsaricicek/shifha/blob/main/AdminShifhaS3/Admin16S3.png)
+
+</details>
+
+---
 
 <details>
   <summary><h2>Project Management S3</h2></summary>
