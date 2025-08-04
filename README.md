@@ -1069,90 +1069,74 @@ Kenan Selim Sarıçiçek, Mehmet Pektaş, Miyase Elif Aksoy, Erva Nazlı Tüccar
 |  |  |  |
 |--|--|--|
 | ![wt4.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt4.jpg) | ![wt5.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt5.jpg) | ![wt6.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt6.jpg) |
+| ![wt7.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt7.jpg) | ![wt8.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt8.jpg) |  |
 
 ### 3. Gün
 |  |  |  |
 |--|--|--|
-| ![wt7.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt7.jpg) | ![wt8.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt8.jpg) | ![wt9.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt9.jpg) |
+| ![wt9.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt9.jpg) | ![wt10.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt10.jpg) | ![wt11.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt11.jpg) |
+| ![wt12.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt12.jpg) |  |  |
 
 ### 4. Gün
 |  |  |  |
 |--|--|--|
-| ![wt10.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt10.jpg) | ![wt11.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt11.jpg) | ![wt12.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt12.jpg) |
+| ![wt13.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt13.jpg) | ![wt14.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt14.jpg) |  |
 
 ### 5. Gün
 |  |  |  |
 |--|--|--|
-| ![wt13.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt13.jpg) | ![wt14.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt14.jpg) | ![wt15.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt15.jpg) |
+| ![wt15.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt15.jpg) | ![wt16.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt16.jpg) | ![wt17.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt17.jpg) |
+| ![wt18.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt18.jpg) | ![wt19.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt19.jpg) | ![wt20.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt20.jpg) |
 
 ### 6. Gün
 |  |  |  |
 |--|--|--|
-| ![wt16.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt16.jpg) | ![wt17.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt17.jpg) | ![wt18.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt18.jpg) |
+| ![wt21.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt21.jpg) | ![wt22.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt22.jpg) | ![wt23.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt23.jpg) |
 
 ### 7. Gün
 |  |  |  |
 |--|--|--|
-| ![wt19.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt19.jpg) | ![wt20.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt20.jpg) | ![wt21.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt21.jpg) |
+| ![wt24.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt24.jpg) | ![wt25.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt25.jpg) | ![wt26.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt26.jpg) |
+| ![wt27.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt27.jpg) |  |  |
 
 ### 8. Gün
 |  |  |  |
 |--|--|--|
-| ![wt22.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt22.jpg) | ![wt23.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt23.jpg) | ![wt24.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt24.jpg) |
+| ![wt28.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt28.jpg) | ![wt29.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt29.jpg) | ![wt30.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt30.jpg) |
+| ![wt31.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt31.jpg) | ![wt32.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt32.jpg) |  |
 
 ### 9. Gün
 |  |  |  |
 |--|--|--|
-| ![wt25.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt25.jpg) | ![wt26.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt26.jpg) | ![wt27.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt27.jpg) |
+| ![wt33.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt33.jpg) | ![wt34.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt34.jpg) | ![wt35.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt35.jpg) |
 
 ### 10. Gün
 |  |  |  |
 |--|--|--|
-| ![wt28.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt28.jpg) | ![wt29.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt29.jpg) | ![wt30.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt30.jpg) |
+| ![wt36.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt36.jpg) | ![wt37.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt37.jpg) | ![wt38.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt38.jpg) |
+| ![wt39.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt39.jpg) |  |  |
 
 ### 11. Gün
 |  |  |  |
 |--|--|--|
-| ![wt31.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt31.jpg) | ![wt32.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt32.jpg) | ![wt33.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt33.jpg) |
+| ![wt40.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt40.jpg) | ![wt41.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt41.jpg) |  |
 
 ### 12. Gün
 |  |  |  |
 |--|--|--|
-| ![wt34.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt34.jpg) | ![wt35.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt35.jpg) | ![wt36.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt36.jpg) |
+| ![wt42.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt42.jpg) | ![wt43.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt43.jpg) | ![wt44.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt44.jpg) |
+| ![wt45.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt45.jpg) | ![wt46.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt46.jpg) | ![wt47.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt47.jpg) |
 
 ### 13. Gün
 |  |  |  |
 |--|--|--|
-| ![wt37.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt37.jpg) | ![wt38.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt38.jpg) | ![wt39.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt39.jpg) |
+| ![wt48.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt48.jpg) | ![wt49.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt49.jpg) | ![wt50.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt50.jpg) |
+| ![wt51.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt51.jpg) |  |  |
 
 ### 14. Gün
 |  |  |  |
 |--|--|--|
-| ![wt40.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt40.jpg) | ![wt41.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt41.jpg) | ![wt42.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt42.jpg) |
-
-### 15. Gün
-|  |  |  |
-|--|--|--|
-| ![wt43.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt43.jpg) | ![wt44.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt44.jpg) | ![wt45.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt45.jpg) |
-
-### 16. Gün
-|  |  |  |
-|--|--|--|
-| ![wt46.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt46.jpg) | ![wt47.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt47.jpg) | ![wt48.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt48.jpg) |
-
-### 17. Gün
-|  |  |  |
-|--|--|--|
-| ![wt49.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt49.jpg) | ![wt50.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt50.jpg) | ![wt51.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt51.jpg) |
-
-### 18. Gün
-|  |  |  |
-|--|--|--|
 | ![wt52.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt52.jpg) | ![wt53.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt53.jpg) | ![wt54.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt54.jpg) |
-
-### 19. Gün
-|  |  |  |
-|--|--|--|
 | ![wt55.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt55.jpg) | ![wt56.jpg](https://github.com/selimsaricicek/shifha/blob/main/ScrumsS3/wt56.jpg) |  |
 
 </details>
