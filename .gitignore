@@ -15,3 +15,14 @@ READMEasdasd.md
 TEST_ENDPOINTS.md
 supabase_fixed.sql
 MULTI_DOCTOR_SETUP.md
+
+# User requested additions
+.vscode/
+mobil-yeni/
+shifha backend/
+shifha frontend/
+ShifhaMobile/
+package-lock.json
+package.json
+test-pdf-upload.html
+TestGemini.pdf
